@@ -1,0 +1,33 @@
+@import '../../Misc/mixins';
+
+.add-new-schedule-item-backdrop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 94vh;
+    margin-top: 6vh;
+    background: rgba(0, 0, 0, 0.5);
+    @include flex(center,center);
+    .add-new-schedule-item-form{
+        @include widthAndHeight(calc(min(95%, 45rem)),calc(min(100%,20rem))); 
+        display: grid;
+        grid-template:repeat(20,5%) / repeat(10,10%) ;
+        border-radius: 5px;
+        padding: 1%;
+        .add-new-schedule-item-time{
+            justify-self: center;
+            grid-area: 1 / 1  / span 3 / span 10;
+        } 
+        .add-new-schedule-item-taskname{
+            grid-area: 6 / 1  / span 3 / span 10;
+            @include widthAndHeight(calc(min(98%, 98%)),calc(min(85%,2.8rem))); 
+            justify-self: center;
+            align-self: center;
+        }
+        .add-new-schedule-item-buttons{
+            @include flex(space-around,center);
+            grid-area: 17 / 1  / span 4 / span 10; 
+        }
+    } 
+}

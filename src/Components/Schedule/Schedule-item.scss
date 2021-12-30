@@ -1,0 +1,20 @@
+@import '../../Misc/mixins';
+
+.scheduleItem{
+    @include grid(100%,70% 15% 15%);
+    border-bottom: black 2px dotted;
+    .scheduleItemTitle{
+        @include flex(center,center);
+        font-size: 1.2rem;    
+    }
+    .scheduleItemTime{
+        @include flex(center,center);
+        font-size: 1.2rem;
+    }
+    .deleteScheduleItem{
+        @include flex(center,center);
+        .deleteScheduleItemIcon{
+            font-size: 1.5rem;
+        }
+    }
+}

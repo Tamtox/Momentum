@@ -1,0 +1,37 @@
+@import '../../Misc/mixins';
+
+.detailed-todo{
+    height:93vh;
+    width: 100%;
+    margin-top: 7vh;
+    @include flex(center,center);
+    .detailed-todo-form{
+        @include widthAndHeight(calc(min(95%, 45rem)),calc(min(90%,75rem))); 
+        display: grid;
+        grid-template-rows: repeat(20,5%);
+        grid-template-columns: 100%;
+        justify-items: center;
+        align-items: center;
+        .detailed-date-picker{
+            grid-area: 1 / 1 / span 3/ span 1;
+        }
+        .detailed-title{
+            @include widthAndHeight(calc(min(95%,85%)),calc(min(80%, 80%))); 
+            grid-area: 4 / 1 / span 2/ span 1;
+        }
+        .detailed-description{
+            @include widthAndHeight(calc(min(95%,85%)),calc(min(100%, 100%))); 
+            grid-area: 7 / 1 / span 9/ span 1;  
+        }
+        .detailed-buttons{
+            @include widthAndHeight(calc(min(100%,85%)),calc(min(100%, 100%))); 
+            @include flex(space-around,center);
+            align-self: start;
+            grid-area: 17 / 1 / span 2/ span 1;
+        }
+        .detailed-creation-date{
+            @include flex(center,center);
+            grid-area: 19 / 1 / span 1/ span 1;
+        }
+    }
+}

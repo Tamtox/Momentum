@@ -1,0 +1,38 @@
+@import '../../Misc/mixins';
+
+.add-new-todo{
+    @include widthAndHeight(calc(min(100%, 100%)),calc(min(93vh,93vh))); 
+    margin-top: 7vh; 
+    @include flex(center,center);
+    .add-new-todo-card{
+        @include widthAndHeight(calc(min(95%, 45rem)),calc(min(90%,75rem))); 
+        @include flex(center,center);
+        .add-new-todo-form{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%))); 
+            display: grid;
+            grid-template-rows: repeat(20,5%);
+            justify-items: center;
+            align-items: center;
+            padding: 3% 0 3% 0 ;
+            .add-new-todo-date{
+                grid-area: 1 / 1 / span 3/ span 1; 
+            }
+            .add-new-todo-title{
+                @include widthAndHeight(calc(min(95%,85%)),calc(min(80%, 80%))); 
+                grid-area: 4 / 1 / span 2/ span 1;
+                padding: 1%;
+            }
+            .add-new-todo-description{
+                @include widthAndHeight(calc(min(95%,85%)),calc(min(100%, 100%))); 
+                grid-area: 7 / 1 / span 11/ span 1;
+                padding: 1%;        
+            }
+            .add-new-todo-buttons{
+                @include widthAndHeight(calc(min(100%,85%)),calc(min(100%, 100%))); 
+                @include flex(space-around,center);
+                align-self: center;
+                grid-area: 19 / 1 / span 2/ span 1;;
+            }
+        }
+    }
+}

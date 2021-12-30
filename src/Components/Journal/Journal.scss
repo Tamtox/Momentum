@@ -1,0 +1,28 @@
+@import '../../Misc/mixins';
+.journal{
+    @include widthAndHeight(calc(min(100%,100%)),calc(min(100vh,93vh))); 
+    @include flex(center,center);
+    .journal-card{
+        @include widthAndHeight(calc(min(95%, 45rem)),calc(min(90%,75rem))); 
+        display: grid;
+        grid-template-rows: 10% 90%;
+        justify-items: center;
+        align-items: center;
+        padding: 1%;
+        .journal-date{
+            justify-self: center;
+        }
+        .journal-form{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%))); 
+            @include grid(85% 15%,100%);
+            justify-items: center;
+            align-items: center;
+            .journal-entry{
+                width: 95%;
+                height: 95%;
+                border-radius: 5px;
+                padding: 2%;   
+            }
+        } 
+    }
+}

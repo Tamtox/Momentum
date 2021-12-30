@@ -1,0 +1,34 @@
+@import '../../Misc/mixins';
+
+.add-new-habit-backdrop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    @include flex(center,center);
+    .add-new-habit-form{
+        @include widthAndHeight(calc(min(95%, 45rem)),calc(min(100%,20rem))); 
+        display: grid;
+        grid-template:repeat(20,5%) / repeat(10,10%) ;
+        border-radius: 5px;
+        padding: 1%;
+        background: rgb(255, 255, 255) ;
+        .add-new-habit-taskname{
+            grid-area: 3 / 1  / span 3 / span 10;
+            @include widthAndHeight(calc(min(98%, 98%)),calc(min(85%,2.8rem))); 
+            justify-self: center;
+            align-self: center;
+            padding: 2%;
+            border-radius: 5px; 
+        }
+        .weekdays-selector{
+            grid-area: 8 / 1  / span 6 / span 10;
+        }
+        .add-new-habit-buttons{
+            @include flex(space-around,center);
+            grid-area: 17 / 1  / span 4 / span 10; 
+        }
+    } 
+}

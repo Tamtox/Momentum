@@ -1,0 +1,56 @@
+@import '../../Misc/mixins';
+
+.todo{
+    @include grid(10vh 0%,100%);
+    .todo-controls{
+        @include widthAndHeight(calc(min(100%, 100rem)),calc(min(100%, 100%)));
+        @include grid(100%,1fr 2fr 1fr);
+        justify-self: center;
+        justify-items: center;
+        align-items: center;
+        #search-todo{
+            @include widthAndHeight(calc(min(98%, 30rem)),calc(min(100%, 36px)));
+            padding: 0 2% 0 2%;
+        }
+        .add-new-todo{
+            @include flex;
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .loading{
+        height: 90%;
+    }
+    .todo-list{
+        @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
+        display: grid;
+        grid-template-columns: repeat(auto-fill,calc(min(98%, 30rem)));
+        justify-self: center;
+        justify-content: space-around;
+        grid-auto-rows: 7rem;
+        gap: 1.5rem 0%;
+        padding: 2% 0% 0% 0%;
+        margin: auto;
+        .hidden{
+            visibility: hidden;
+        }
+    }
+}
+
+@media only screen and (max-width: 850px) {
+    .todo{
+        @include grid(20vh 0%,100%);
+        .todo-controls{
+            @include grid(50% 50%, 50% 50%);
+            #search-todo{
+                grid-area: 1 / 1 / span 1 / span 20;
+            }
+            .sort-todo{
+                grid-area: 2 / 1 / span 1 / span 1;
+            }
+            .add-new-todo{
+                grid-area: 2 / 2 / span 1 / span 1;
+            }
+        }
+    }
+}

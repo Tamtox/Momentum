@@ -1,0 +1,28 @@
+@import '../../Misc/mixins';
+
+.schedule{
+    @include grid(10% 90%,100%);
+    .schedule-controls{
+        @include flex(center,center);
+        .select-day{
+            margin-right:1% ;
+        }
+        .add-new-schedule-entry{
+            margin-left:1% ;
+        }
+    }
+    .schedule-list{
+        width: 100%;
+        display: grid;
+        grid-template-columns: 40rem;
+        grid-auto-rows: 2rem;
+        gap: 5% 2%;
+        justify-content: center;
+        overflow: hidden;
+        padding: 3% 1% 0% 1%;
+        .hidden{
+            height: 10%;
+            visibility: hidden
+        }
+    }
+}
