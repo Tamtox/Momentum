@@ -9,19 +9,11 @@
 
 // Color mode
 .nav-dark{
-    background: rgb(21, 34, 49);
+    background: rgb(19, 30, 44);
     transition: background 0.3s;
 }
 .nav-light{
     background: rgb(74, 0, 224);
-    transition: background 0.3s;
-}
-.bg-dark{
-    background: rgb(9, 12, 20);
-    transition: background 0.3s;
-}
-.bg-light{
-    background: white;
     transition: background 0.3s;
 }
 .item{
@@ -36,6 +28,20 @@
 #app {
     text-align: center;
     @include flex;
+    max-width: 100%;
+    .backdrop{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: calc(min(100%,100vw));
+        height: calc(min(100%,100vh));
+        background: rgba(0, 0, 0, 0.3);
+        @include flex(center,center);
+    }
+    .backdrop-dark{
+        @extend .backdrop;
+        background: rgba(255, 255, 255, 0.2); 
+    }
     .border-radius{
         border-radius: 4px;
     }
@@ -48,38 +54,42 @@
         transition: box-shadow 0.3s;
     }
     .button{
-        @include widthAndHeight(calc(min(100%, 160px)),calc(min(100%, 36px)));
-        background: white;
-        border: none;
-        color: inherit;
-        padding: 0;
-        font: inherit;
-        outline: inherit;
-        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
-        border-radius: 4px;
-        text-align: center;
-    }
-    .button-dark{
-        @extend .button;
-        color: white;
-        background: rgb(9, 12, 20);
-        box-shadow: 0px 0px 4px rgb(255, 255, 255);
-    }
-    .date-picker{
-        @include widthAndHeight(calc(min(100%, 180px)),calc(min(100%, 36px)));
-        border: none;
-        border-radius: 4px;
-        box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.7);
+        @include widthAndHeight(calc(min(100%, 150px)),calc(min(100%, 36px)));
         font-size: 16px;
-        text-align: center ;
-        cursor: pointer;
+        // border: solid 1px rgb(74, 0, 224);
+        // border-radius: 5px;
+        padding: 4px 0 0 0 ;
+        // color: rgb(74, 0, 224);
+        // transition: 0.3s;
+        text-transform: none;
     }
-    .date-picker-dark{
-        @extend .date-picker;
-        color: white;
-        background: rgb(9, 12, 20);
-        box-shadow: 0px 0px 4px rgb(255, 255, 255);
-    }  
+    .button-fab{
+        @include widthAndHeight(calc(min(100%, 150px)),calc(min(100%, 36px)));  
+        font-size: 16px;
+        padding: 4px 0 0 0 ;
+        text-transform: none;
+    }
+    // .button:hover{
+    //     background: rgb(74, 0, 224);
+    //     color: white;
+    // }
+    // .button-dark{
+    //     @extend .button;
+    //     color: white;
+    //     border: solid 2px rgb(31, 50, 73);
+    // }
+    // .button-dark:hover{
+    //     background: rgb(31, 50, 73);
+    // }
+    .date-picker{
+        @include widthAndHeight(calc(min(100%, 200px)),calc(min(100%, 36px)));
+    }
+    // .date-picker-dark{
+    //     @extend .date-picker;
+    //     color: white;
+    //     background: inherit;
+    //     border: solid 1px rgb(48, 77, 110);
+    // }  
     .display-none{
         display: none;
     }
@@ -89,18 +99,18 @@
     .focus:focus{
         transform: scale(1.005);
     }
-    .hover{
-        transition: box-shadow 0.3s;
-    }
-    .hover-dark{
-        transition: box-shadow 0.3s;
-    }
-    .hover:hover{
-        box-shadow: 0px 0px 6px rgb(0, 0, 0); 
-    }
-    .hover-dark:hover{
-        box-shadow: 0px 0px 6px rgb(255, 255, 255); 
-    }
+    // .hover{
+    //     transition: box-shadow 0.3s;
+    // }
+    // .hover-dark{
+    //     transition: box-shadow 0.3s;
+    // }
+    // .hover:hover{
+    //     box-shadow: 0px 0px 6px rgb(0, 0, 0); 
+    // }
+    // .hover-dark:hover{
+    //     box-shadow: 0px 0px 6px rgb(255, 255, 255); 
+    // }
     .hover-filter{
         transition: 0.3s;
     }
@@ -118,19 +128,11 @@
     }
     .input{
         font-size: 16px;
-        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
-        border: none;
-        border-radius: 4px;
-        padding: 2%;
-        background: white;
-        transition: background 0.3s;
     }
-    .input-dark{
-        @extend .input;
-        color: white;
-        background: rgb(9, 12, 20);
-        box-shadow: 0px 0px 4px rgb(255, 255, 255);
-    }
+    // .input-dark{
+    //     @extend .input;
+    //     border: solid 1px rgb(48, 77, 110);
+    // }
     .link{
         text-decoration: none;
         color: inherit;
@@ -148,59 +150,31 @@
     .page{
         min-height: 94vh;
         width: 100%;
+        max-width: 100%;
         margin-top: 6vh;
+        padding: 0 1% 0 1%;
     }
     .select{
-        @include widthAndHeight(calc(min(95%,11rem)),calc(min(95%, 36px)));
-        background: white;
-        padding: 0;
-        outline: inherit;
-        border: none;
-        color: black;
-        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
-        border-radius: 4px;
-        text-align: center;
+        @include widthAndHeight(calc(min(100%, 150px)),calc(min(100%, 36px)));
         font-size: 16px;
     }
-    .select-dark{
-        @extend .select;
-        color: white;
-        background: rgb(9, 12, 20);
-        box-shadow:0px 0px 4px rgb(255, 255, 255);
+    // .select-dark{
+    //     @extend .select;
+    //     color: white;
+    //     background: inherit;
+    //     border: solid 1px rgb(48, 77, 110);
+    // }
+    .text-area{
+        font-size: 16px;
+        border: solid 1px rgb(74, 0, 224);
+        border-radius: 4px;
+        padding: 2% 2% 2% 2%;
+        background: inherit;
+        transition: background 0.3s, transform 0.3s ;
     }
-    //App specific styles
-    .weekdays-selector{
-        grid-area: 10 / 1  / span 6 / span 10;
-        @include flex(space-around,center);
-        flex-wrap: wrap;
-        button{
-            @include widthAndHeight(calc(min(100%, 5rem)),calc(min(100%,2.4rem))); 
-            background: none;
-            padding: 0;
-            font: inherit;
-            outline: inherit;
-            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
-            border-radius: 4px;
-            text-align: center;
-            transition: box-shadow 0.3s;
-        }
-        button:hover{
-            box-shadow: 0px 0px 6px rgb(0, 0, 0); 
-        }
-        .selector-on{
-            background-color: green;
-            color: white;
-        }
-    }
-    .weekdays-selector-dark{
-        @extend .weekdays-selector;
-        button{
-            color: white;
-        }
-        .selector-on{
-            background-color: rgb(20, 30, 48);
-            color: white;
-        }
+    .text-area-dark{
+        @extend .text-area;
+        border: solid 1px rgb(48, 77, 110);
     }
     // Transition Animations
     .fade-in {

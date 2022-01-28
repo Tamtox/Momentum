@@ -1,13 +1,18 @@
 // Styles
 import './Todo.scss';
 // Components
-import TodoItem from './Todo-item';
 import Loading from '../Misc/Loading';
+import { todoActions,authActions } from '../../Store/Store';
 import {RootState} from '../../Store/Store';
 //Dependencies
-import {useSelector} from 'react-redux';
-import React,{ useRef} from 'react';
-import {Link,useNavigate,useLocation} from 'react-router-dom';
+import Cookies from "js-cookie";
+import {useSelector,useDispatch} from 'react-redux';
+import axios from "axios";
+import React,{useState,useRef,useEffect} from 'react';
+import {useNavigate,useLocation} from 'react-router-dom';
+import AddNewTodo from './Add-new-todo';
+import { Icon } from '@iconify/react';
+import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
 
 // Sorting algorithm
 function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
@@ -28,17 +33,19 @@ function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 
 
 const Todo:React.FC = () => {
-    const todoList = useSelector<RootState,{title:string,description:string,creationDate:string,targetDate:string,status:string,_id:string}[]>(state=>state.todoSlice.todoList);
+    const token = Cookies.get('token');
+    const dispatch = useDispatch();
+    const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
-    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode)
      // Sorting by query params
-    const [sortRef,searchRef] = [useRef<HTMLSelectElement>(null),useRef<HTMLInputElement>(null)];
+    const [sortRef,searchRef] = [useRef<HTMLSelectElement>(null),useRef<HTMLInputElement>(null)] 
     const [navigate,location] = [useNavigate(),useLocation()];
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] 
     const sortedList = sortList([...todoList],sortQuery,searchQuery);
-    function setSortQuery() {
-        const [sortInput,searchInput] = [sortRef.current?.value,searchRef.current?.value];
+    const [sortQueryOption,setSortQueryOption] = useState('');
+    function setQueries(newSortQuery?:string) {
+        const [sortInput,searchInput] = [newSortQuery,searchRef.current!.value];
         if(!!sortInput) {
             if(!!searchInput) {
                 navigate(`/todo?sort=${sortInput}&search=${searchInput}`);
@@ -55,31 +62,107 @@ const Todo:React.FC = () => {
             }
         }
     }
+    // Toggle new/detailed todo
+    const [toggleNewTodo,setToggleNewTodo] = useState(false);
+    // Set detailed id
+    const [detailedItem,setDetailedItem] = useState()
+     // Toggle Todo status
+    const changeTodoStatus = async (_id:string,todoStatus:string) => {
+        try {
+            await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/todo/updateTodo`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{_id,todoStatus:todoStatus==="Pending"?"Complete":"Pending"}
+            })
+            dispatch(todoActions.changeToDoStatus(_id))
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                error.response !== undefined?alert(error.response!.data):alert(error.message)
+            } else {
+                console.log(error);
+            }
+        }   
+    }
+    // Delete Todo
+    const deleteToDo = async (_id:string) => {
+        try {
+            await axios.request({
+                method:'DELETE',
+                url:`http://localhost:3001/todo/deleteTodo`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{_id:_id}
+            })
+            dispatch(todoActions.deleteToDo(_id))
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                error.response !== undefined?alert(error.response!.data):alert(error.message)
+            } else {
+                console.log(error);
+            }
+        }   
+    }
+     // Load todo data
+    const loadTodoData = async () => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const todoList = await axios.request({
+                method:'GET',
+                url:`http://localhost:3001/todo/getTodos`,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(todoActions.setToDoList(todoList.data))
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                error.response !== undefined?alert(error.response!.data):alert(error.message)
+            } else {
+                console.log(error);
+            }
+        }
+        dispatch(authActions.setLoading(false))   
+    }
+    useEffect(() => {
+        if(!!token && todoList.length<1) {
+            loadTodoData()
+        }
+    }, [])
     return (
-        <section className={`todo page`}>
-            <div className='todo-controls'>
-                <select onChange={setSortQuery} ref={sortRef} name="sort" className={`sort-todo select${isDarkMode?'-dark':''} hover${isDarkMode?'-dark':''}`}>
-                    <option value="">Sort By</option>
-                    <option value="dateAsc">Date Ascending</option>
-                    <option value="dateDesc">Date Descending</option>
-                    <option value="statusPend">Status Pending</option>
-                    <option value="statusComp">Status Complete</option>
-                </select>
-                <input ref={searchRef} onChange={setSortQuery} type="text" id="search-todo" className={`focus input${isDarkMode?'-dark':''}`} placeholder="Search" />
-                <Link to="/add-new-todo" className={`link${isDarkMode?'-dark':''} add-new-todo hover${isDarkMode?'-dark':''} button${isDarkMode?'-dark':''}`}>New To Do</Link>
-            </div>
-            {loading?<Loading/>:
-            <div className="todo-list">
-                {sortedList.map((todoItem,index)=>{
+        <Container component="main" className='todo page'>
+            <Box className='todo-controls'>
+                <FormControl className='sort-todo select' size='small'>
+                    <InputLabel id="todo-sort-label">Sort</InputLabel>
+                    <Select id='sort-todo' labelId="todo-sort-label" inputRef={sortRef} value={sortQueryOption} onChange={(event)=>{setSortQueryOption(event.target.value);setQueries(event.target.value)}} label="Sort">
+                        <MenuItem value="">Default</MenuItem>
+                        <MenuItem value="dateAsc">Date Ascending</MenuItem>
+                        <MenuItem value="dateDesc">Date Descending</MenuItem>
+                        <MenuItem value="statusPend">Status Pending</MenuItem>
+                        <MenuItem value="statusComp">Status Complete</MenuItem>
+                        
+                    </Select>
+                </FormControl>
+                <TextField id="search-todo" inputRef={searchRef} onChange={()=>{setQueries()}} fullWidth label="Search" size='small'  />
+                <Button variant="outlined" className={`add-new-todo button`} onClick={()=>{setToggleNewTodo(!toggleNewTodo)}}>New To Do</Button>
+            </Box>
+            {loading?
+            <Loading/>:
+            <Box className="todo-list">
+                {sortedList.map((todoItem)=>{
                     return (
-                        <TodoItem {...todoItem} key={index}/>
+                        <Card className={`todo-item scale-in`}>
+                            <Typography className={`todo-item-title`}>{todoItem.todoTitle}</Typography>
+                            <Box className='todo-item-icons'>
+                                <Icon onClick={()=>{changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`change-todo-status-icon ${todoItem.todoStatus}`} icon={todoItem.todoStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
+                                <Icon onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`detailed-todo-icon`} icon="feather:edit" />
+                                <Icon onClick={()=>{deleteToDo(todoItem._id)}} className={`delete-todo-icon`} icon="clarity:remove-line" />
+                            </Box>
+                        </Card>
                     )
                 })}
-                <div className='hidden'>123</div>
-                <div className='hidden'>123</div>
-            </div>}
-        </section>
+            </Box>}
+            {toggleNewTodo && <AddNewTodo detailedItem={detailedItem} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />}
+        </Container>
     )
 }
 
 export default Todo
+

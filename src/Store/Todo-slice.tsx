@@ -2,11 +2,11 @@ import {createSlice} from '@reduxjs/toolkit';
 
 interface TodoSchema {
     todoList:{
-        title:string,
-        description:string,
-        creationDate:string,
-        targetDate:string,
-        status:string,
+        todoTitle:string,
+        todoDescription:string,
+        todoCreationDate:string,
+        todoTargetDate:string,
+        todoStatus:string,
         _id:string
     }[]
 }
@@ -29,7 +29,7 @@ const todoSlice = createSlice({
         changeToDoStatus(state,action) {
             state.todoList = state.todoList.map(item=>{
                 if(item._id === action.payload) {
-                    item.status = item.status === 'Pending'?'Complete':'Pending'
+                    item.todoStatus = item.todoStatus === 'Pending'?'Complete':'Pending'
                 }
                 return item
             })

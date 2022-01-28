@@ -1,29 +1,27 @@
 @import '../../Misc/mixins';
 
 .habits{
-    @include grid(10vh 90%,100%);
-    .habits-controls{
-        @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
-        @include flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-self: center;
+    .habit-controls{
+        @include widthAndHeight(calc(min(100%, 70rem)),10vh);
+        @include grid(100%,1fr 1fr 1fr);
+        justify-items: center;
+        align-items: center;
+        margin: auto;
     }
     .loading{
         max-height: 100%;
     }
-    .habits-list{
+    .habit-list{
         @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
         display: grid;
         grid-template-columns: repeat(auto-fill,calc(min(98%, 30rem)));
-        justify-self: center;
         justify-content: space-around;
         grid-auto-rows: 7rem;
-        gap: 1.5rem 0%;
-        padding: 2% 0% 0% 0%;
-        .hidden{
-            height: 1vh;
-            visibility: hidden;
+        padding: 1rem 0 1rem 0;
+        gap: 1rem 0%;
+        margin: auto;
+        .habit-item{
+
         }
     }
 }

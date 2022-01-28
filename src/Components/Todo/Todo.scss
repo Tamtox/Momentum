@@ -1,21 +1,20 @@
 @import '../../Misc/mixins';
 
 .todo{
-    @include grid(10vh 0%,100%);
     .todo-controls{
-        @include widthAndHeight(calc(min(100%, 100rem)),calc(min(100%, 100%)));
+        @include widthAndHeight(calc(min(100%, 70rem)),10vh);
         @include grid(100%,1fr 2fr 1fr);
-        justify-self: center;
         justify-items: center;
         align-items: center;
-        #search-todo{
-            @include widthAndHeight(calc(min(98%, 30rem)),calc(min(100%, 36px)));
-            padding: 0 2% 0 2%;
+        margin: auto;
+        #sort-todo{
+            @include widthAndHeight(calc(min(100%, 180px)),calc(min(100%, 36px)));
+            height: 36px;
+            padding: 0;
         }
-        .add-new-todo{
-            @include flex;
-            width: 100%;
-            height: 100%;
+        #search-todo{
+            @include widthAndHeight(calc(min(100%, 30rem)),36px);
+            padding: 0 2% 0 2%;
         }
     }
     .loading{
@@ -25,31 +24,64 @@
         @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
         display: grid;
         grid-template-columns: repeat(auto-fill,calc(min(98%, 30rem)));
-        justify-self: center;
         justify-content: space-around;
         grid-auto-rows: 7rem;
-        gap: 1.5rem 0%;
-        padding: 2% 0% 0% 0%;
+        padding: 1rem 0 1rem 0;
+        gap: 1rem 0%;
         margin: auto;
-        .hidden{
-            visibility: hidden;
+        .todo-item{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+            display: grid;
+            grid-template: repeat(10,10%) / repeat(10,10%) ;
+            border-radius: 5px;
+            padding: 2%;
+            transition: 0.3s;
+            .todo-item-title{
+                @include flex(center,center);
+                font-size: 16px;
+                grid-area: 3 / 1 / span 10 / span 10;
+            }
+            .todo-item-icons{
+                @include flex(space-around,center);
+                grid-area: 1 / 8 / span 3 / span 4; 
+                .detailed-todo-icon{
+                    color: rgb(70, 116, 255);
+                    font-size: 24px;
+                }
+                .delete-todo-icon{
+                    font-size: 24px;
+                    color: red;
+                }
+                .change-todo-status-icon{
+                    font-size: 24px;
+                }
+                .Pending{
+                    color: rgb(255, 175, 28);
+                }
+                .Complete{
+                    color: rgb(1, 194, 1);
+                }
+            }
         }
     }
 }
 
-@media only screen and (max-width: 850px) {
+@media only screen and (max-width: 769px) {
     .todo{
-        @include grid(20vh 0%,100%);
         .todo-controls{
-            @include grid(50% 50%, 50% 50%);
+            @include widthAndHeight(calc(min(95%, 70rem)),20vh);
+            @include flex(space-around,center);
+            flex-wrap: wrap;
             #search-todo{
-                grid-area: 1 / 1 / span 1 / span 20;
+                @include widthAndHeight(calc(min(100%, 20rem)),36px);
+                grid-area: 1 / 1 / span 1 / span 2;
+                order: 0;
             }
             .sort-todo{
-                grid-area: 2 / 1 / span 1 / span 1;
+                order: 1;
             }
             .add-new-todo{
-                grid-area: 2 / 2 / span 1 / span 1;
+                order: 2;
             }
         }
     }

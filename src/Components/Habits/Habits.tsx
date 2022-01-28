@@ -2,16 +2,15 @@
 import './Habits.scss';
 //Dependencies
 import {useSelector,useDispatch} from 'react-redux';
-import React,{ useState} from 'react';
+import React,{ useState,useEffect} from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/airbnb.css";
+import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card } from '@mui/material';
+import { DatePicker } from '@mui/lab';
 //Components
 import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
-import HabitsItem from './Habits-item';
-import { habitsActions } from '../../Store/Store';
+import { habitsActions,authActions } from '../../Store/Store';
 import type {RootState} from '../../Store/Store';
 
 const Habits:React.FC = () => {
@@ -19,20 +18,42 @@ const Habits:React.FC = () => {
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const dispatch = useDispatch();
-    const habitList = useSelector<RootState,{title:string,weekdays:{[key:number]:boolean},creationDate:string,targetDate:string,_id:string}[]>(state=>state.habitsSlice.habitList);
-    const habitEntries = useSelector<RootState,{title:string,date:string,status:string,_id:string}[]>(state=>state.habitsSlice.habitEntries);
+    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},_id:string}[]>(state=>state.habitsSlice.habitList);
+    const habitEntries = useSelector<RootState,{habitTitle:string,habitTime:string,habitStatus:string,habitId:string,date:string,_id:string}[]>(state=>state.habitsSlice.habitEntries);
     // States: date,toggle new habit, loader
     const [selectedDate, setSelectedDate] = useState(new Date());
+    // Set detailed item
+    const [detailedHabit,setDetailedItem] = useState()
+    // Toggle new/detailed habit
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
-    // Toggle habits list or habits completion
-    const [isHabitsList,setIsHabitsList] = useState(false)
     // Load habits data
     async function loadHabitsData(date:Date) {
+        dispatch(authActions.setLoading(true))
+        try {
+            const habits = await axios.request({
+                method:'POST',
+                url:`http://localhost:3001/habits/getHabits`,
+                data:{selectedDate:date.toString()},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            console.log(habits.data)
+            // dispatch(habitsActions.setHabits(todoList.data))
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                error.response !== undefined?alert(error.response!.data):alert(error.message)
+            } else {
+                console.log(error);
+            }
+        }
+        dispatch(authActions.setLoading(false))   
     }
     // Load selected date's data
-    function loadSelectedData(date:Date) {
-        setSelectedDate(date)
-        loadHabitsData(date)
+    function loadSelectedDateData(newDate:Date|null) {
+        if(newDate === null) {
+            newDate = new Date()
+        }
+        setSelectedDate(newDate)
+        loadHabitsData(newDate)
     }
     // Delete habit
     function deleteHabit(habitName:string) {
@@ -40,36 +61,43 @@ const Habits:React.FC = () => {
     // Change habit status
     function changeHabitStatus(date:Date,habitName:string,status:string):any {
     }
+    useEffect(() => {
+        if(!!token && habitList.length<1) {
+            loadHabitsData(new Date())
+        }
+    }, [])
     return (
-        <section className="habits page">
-            <div className="habits-controls">
-                <Flatpickr 
-                    className={`habits-date-selection hover date-picker${isDarkMode?'-dark':''}`} 
-                    options={{dateFormat:'d-m-Y ',enableTime:false,disableMobile:true,maxDate:new Date()}}  
-                    value={selectedDate} onChange={date => {loadSelectedData(date[0])}}
+        <Container component="main" className="habits page">
+            <Box className='habit-controls'>
+                <DatePicker 
+                inputFormat="DD/MM/YYYY" desktopModeMediaQuery='@media (min-width:769px)'
+                renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date`}  {...props} />}
+                value={selectedDate} onChange={newDate=>{loadSelectedDateData(newDate);}}
                 />
-                <select className={`habits-view-selection select${isDarkMode?'-dark':''} hover `} name="">
-                    <option value="">Sort By</option>
-                </select>
-                <button className={`add-new-habit hover button${isDarkMode?'-dark':''}`} onClick={()=>setToggleNewHabit(!toggleNewHabit)}>New Habit</button>
-            </div>
+                <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
+            </Box>
             {loading?<Loading/>:
-            <div className='habits-list'>
-                {isHabitsList?
-                habitEntries.map((item:any,index)=>{
-                    return <HabitsItem key={index} title={item.title} status={item.status} changeStatus={()=>changeHabitStatus(selectedDate,item.title,item.status)} />
-                }):
-                habitList.map((item:any,index)=>{
-                    let activeWeekdays = `${item.weekdays[1]?'Mon,':''}${item.weekdays[2]?'Tue,':''}${item.weekdays[3]?'Wed,':''}${item.weekdays[4]?'Thu,':''}${item.weekdays[5]?'Fri,':''}${item.weekdays[6]?'Sat,':''}${item.weekdays[0]?'Sun,':''}`;
-                    return <HabitsItem key={index} title={item.title} weekdays={activeWeekdays} deleteHabit={():any=>deleteHabit(item.title)} />
-                })
-                }
-                <div className='hidden'>123</div>
-                <div className='hidden'>123</div>
-            </div>
+            <Box className='habit-list'>
+                {habitEntries.map((habitEntry:any)=>{
+                    return (
+                        <Card className='habit-entry'>
+
+                        </Card>
+                    )
+                })}
+                {habitList.map((habitListEntry:any)=>{
+                    return (
+                        <Card className='habit-list-entry'>
+
+                        </Card>
+                    )
+                })}
+                <Card className='habit-item'>123</Card>
+                <Card className='habit-item'>123</Card>
+            </Box>
             } 
-            {toggleNewHabit && <AddNewHabit token={token} selectedDate={selectedDate.toString()} returnToHabits={():any=>setToggleNewHabit(false)} />}
-        </section>
+            {toggleNewHabit && <AddNewHabit detailedHabit={undefined} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToHabits={():any=>setToggleNewHabit(false)} />}
+        </Container>
     )
 }
 

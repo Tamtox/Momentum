@@ -1,0 +1,36 @@
+@import '../../Misc/mixins';
+
+.auth{
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    .auth-card{
+        @include widthAndHeight(calc(min(100%,30rem)),calc(min(90vh, 60vh)));
+        @include grid(10% 80% 10%,100%);
+        align-items: center;
+        .auth-form{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+            @include grid(3fr 1fr,100%);
+            align-items: center;
+            .auth-form-inputs{
+                @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+                @include flex(center,center);
+                gap: 1rem;
+                flex-direction: column;
+            }
+            .auth-button{
+                justify-self: center;
+                align-self: center;
+            }
+        }
+        .auth-switch{
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .auth-switch:hover{
+            transform: scale(1.05);
+        }
+    }
+}

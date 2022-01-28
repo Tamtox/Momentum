@@ -9,29 +9,34 @@ import {useSelector,useDispatch} from 'react-redux';
 import React,{ useRef,useState,useEffect} from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/airbnb.css";
+import { Container,TextField,Button,Box} from '@mui/material';
+import { DatePicker} from '@mui/lab';
 
 const Journal:React.FC = () => {
     const token = Cookies.get('token');
-    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-    const journalEntry = useSelector<RootState,{date:string,entry:string,_id:string}>(state=>state.journalSlice)
+    const journalEntry = useSelector<RootState,{date:string|null,journalEntry:string,_id:string}>(state=>state.journalSlice);
     const journalRef = useRef<HTMLTextAreaElement>(null);
     const dispatch = useDispatch();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    let x = 123
-    // Load journal entry from database if it exists or create one if not
-    async function loadJournalData(date:string){
+    // Load journal entry from database if it exists 
+    const [entryExists, setEntryExists] = useState(false);
+    const loadJournalData = async (date:string) => {
         dispatch(authActions.setLoading(true))
         try {
-            const journalEntry:{data:any[]} = await axios.request({
+            const journalEntryResponse:{data:any[]} = await axios.request({
                 method:'POST',
                 url:`http://localhost:3001/journal/getJournal`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{selectedDate:date}
             })
-            dispatch(journalActions.setEntry(journalEntry.data[0]))
+            if(journalEntryResponse.data.length>0) {
+                setEntryExists(true)
+                dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
+            } 
+            if (journalEntryResponse.data.length === 0) {
+                dispatch(journalActions.setEntry({date:selectedDate.toString(),entry:'',id:''}))
+            }
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 error.response !== undefined?alert(error.response!.data):alert(error.message)
@@ -42,20 +47,24 @@ const Journal:React.FC = () => {
         dispatch(authActions.setLoading(false))
     }
      // Select Journal Entry of different Date
-    function selectJournalEntryByDate(newDate:Date) {
+    const selectJournalEntryByDate = (newDate:Date|null) => {
+        if(newDate === null) {
+            newDate = new Date()
+        }
         setSelectedDate(newDate);
+        setEntryExists(false);
         loadJournalData(newDate.toString());
     }
     // Submit new journal entry
-    async function updateJournalEntry(event:React.FormEvent) {
+    const updateJournalEntry = async (event:React.FormEvent) => {
         event.preventDefault();
         dispatch(authActions.setLoading(true))
         const journalInput = journalRef.current!.value
-        const updatedEntry = {selectedDate:selectedDate.toString(),entry:journalInput}
+        const updatedEntry = {selectedDate:selectedDate.toString(),journalEntry:journalInput}
         try {
             await axios.request({
-                method:'PATCH',
-                url:`http://localhost:3001/journal/updateJournalEntry`,
+                method:`${entryExists?'PATCH':'POST'}`,
+                url:`http://localhost:3001/journal/${entryExists?'updateJournalEntry':'createJournalEntry'}`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:updatedEntry
             })
@@ -71,20 +80,24 @@ const Journal:React.FC = () => {
     }
     // Load journal data on component mount
     useEffect(() => {
-        if(journalEntry.date === "") {
+        if(!!token && journalEntry.date === null) {
             loadJournalData(new Date().toString())
         }
-    }, [loadJournalData])
+    }, [journalEntry.journalEntry])
     return (
-        <section className="journal page">
-            <div className={`journal-card box-shadow${isDarkMode?'-dark':''} item${isDarkMode?'-dark':''} border-radius`}>
-                <Flatpickr className={`hover${isDarkMode?'-dark':''} focus date-picker${isDarkMode?'-dark':''} journal-date`} options={{ dateFormat:'d-m-Y ',enableTime:false,disableMobile:true,maxDate:new Date() }} value={selectedDate} onChange={date => {selectJournalEntryByDate(date[0]);}}/>
-                <form className="journal-form" onSubmit={updateJournalEntry} >
-                    {loading?<Loading/>:<textarea ref={journalRef} className={`focus journal-entry input${isDarkMode?'-dark':''}`} cols={1} rows={1} required >{journalEntry.entry}</textarea>}
-                    <button className={`button${isDarkMode?'-dark':''} hover${isDarkMode?'-dark':''}`}>Save</button>
-                </form>
-            </div>
-        </section>
+        <Container component="section" className='journal page' sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
+            {loading?
+            <Loading/>:
+            <Box component="form" className="journal-form" onSubmit={updateJournalEntry} >
+                <DatePicker 
+                inputFormat="DD/MM/YYYY" desktopModeMediaQuery='@media (min-width:769px)'
+                renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date`}  {...props} />}
+                value={selectedDate} onChange={newDate=>{selectJournalEntryByDate(newDate);}}
+                />
+                <TextField inputRef={journalRef} className={`focus journal-entry input`} defaultValue={journalEntry.journalEntry} placeholder="Write down what's on you mind" fullWidth multiline required />
+                <Button type="submit" variant="outlined" className={`journal-button button`}>{entryExists?'Save':'New Entry'}</Button>
+            </Box>}
+        </Container>
     )
 }
 

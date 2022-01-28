@@ -2,17 +2,19 @@ import {createSlice} from '@reduxjs/toolkit';
 
 interface HabitsSchema {
     habitList: {
-        title:string,
-        weekdays:{[key:number]:boolean},
-        creationDate:string,
-        targetDate:string,
-        _id:string
+        habitTitle:string,
+        habitTime:string,
+        habitCreationDate:string,
+        habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},
+        _id:string,
     }[],
     habitEntries: {
-        title:string,
+        habitTitle:string,
+        habitTime:string,
+        habitStatus:string,
+        habitId:string,
         date:string,
-        status:string,
-        _id:string
+        _id:string,
     }[]
 }
 
@@ -38,14 +40,14 @@ const habitsSlice = createSlice({
         changeHabitStatus(state,action) {
             state.habitEntries = state.habitEntries.map(item=>{
                 if(item._id === action.payload) {
-                    item.status = item.status === 'Pending'?'Complete':'Pending'
+                    item.habitStatus = item.habitStatus === 'Pending'?'Complete':'Pending'
                 }
                 return item
             })
         },
         setHabits(state,action) {
-            state.habitList = action.payload
-            state.habitEntries = action.payload
+            state.habitList = action.payload.habitList
+            state.habitEntries = action.payload.habitEntries
         },
         clearHabitData(state) {
             state.habitEntries = []

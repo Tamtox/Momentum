@@ -1,14 +1,14 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 interface JournalSchema {
-    date:string,
-    entry:string,
+    date:string|null,
+    journalEntry:string,
     _id:string
 }
 
 const initialJournalState:JournalSchema = {
-    date:"",
-    entry:"",
+    date:null,
+    journalEntry:"",
     _id:"",
 };
 
@@ -18,15 +18,15 @@ const journalSlice = createSlice({
     reducers:{
         setEntry(state,action) {
             state.date = action.payload.date
-            state.entry = action.payload.entry
+            state.journalEntry = action.payload.journalEntry
             state._id = action.payload._id
         },
         updateEntry(state,action) {
-            state.entry = action.payload
+            state.journalEntry = action.payload
         },
         clearEntry(state) {
             state.date = ""
-            state.entry = ""
+            state.journalEntry = ""
             state._id = ""
         }
     }

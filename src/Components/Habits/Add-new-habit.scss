@@ -1,34 +1,35 @@
 @import '../../Misc/mixins';
 
 .add-new-habit-backdrop{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    @include flex(center,center);
     .add-new-habit-form{
-        @include widthAndHeight(calc(min(95%, 45rem)),calc(min(100%,20rem))); 
-        display: grid;
-        grid-template:repeat(20,5%) / repeat(10,10%) ;
+        @include widthAndHeight(calc(min(95%,45rem)),fit-content); 
+        @include flex;
+        flex-direction: column;
         border-radius: 5px;
-        padding: 1%;
-        background: rgb(255, 255, 255) ;
+        padding: 1rem;
+        gap: 1rem;
+        .add-new-habit-goal{
+            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+        }
         .add-new-habit-taskname{
-            grid-area: 3 / 1  / span 3 / span 10;
-            @include widthAndHeight(calc(min(98%, 98%)),calc(min(85%,2.8rem))); 
-            justify-self: center;
-            align-self: center;
-            padding: 2%;
-            border-radius: 5px; 
+            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
         }
         .weekdays-selector{
-            grid-area: 8 / 1  / span 6 / span 10;
+            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+            .weekdays-selector-checkboxes{
+                @include flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 1rem;
+                .weekdays-selector-checkbox{
+                    @include flex;
+                    margin: 0;
+                }
+            }
         }
         .add-new-habit-buttons{
+            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
             @include flex(space-around,center);
-            grid-area: 17 / 1  / span 4 / span 10; 
         }
     } 
 }
