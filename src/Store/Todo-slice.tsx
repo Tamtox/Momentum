@@ -5,7 +5,7 @@ interface TodoSchema {
         todoTitle:string,
         todoDescription:string,
         todoCreationDate:string,
-        todoTargetDate:string,
+        todoTargetDate:string | null,
         todoStatus:string,
         _id:string
     }[]
@@ -37,7 +37,7 @@ const todoSlice = createSlice({
         setToDoList(state,action) {
             state.todoList = action.payload
         },
-        editToDo(state,action) {
+        updateToDo(state,action) {
             state.todoList = state.todoList.map(item=>{
                 if(item._id === action.payload._id) {
                     item = action.payload

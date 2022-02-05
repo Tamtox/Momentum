@@ -1,7 +1,5 @@
 @import '../../Misc/mixins';
 
-
-
 .navbar{
     @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,6vh)));
     position: fixed;
@@ -14,18 +12,16 @@
     max-width: 100%;
     .toggle-sidebar{
         color: white;
-        grid-area: 1 / 1 / span 1 / span 1;
     }
     .navbar-title{
+        @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
         @include flex;
         color: white;
-        grid-area: 1 / 2 / span 1 / span 1;
     }
     .navbar-utility{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
         @include flex(end,center);
         gap: 1rem;
-        grid-area: 1 / 3 / span 1 / span 1;
         .toggle-dark-mode{
             @include widthAndHeight(calc(min(100%, 3.5rem)),calc(min(100%,1.6rem)));
             @include flex(space-around,center);
@@ -61,127 +57,78 @@
             }
         }
     }
-}
-.nav-sidebar{
-    height: calc(min(100%,94vh));
-    position: fixed;
-    top: 6vh;
-    left: 0;
-    z-index: 50;
-    display: grid;
-    grid-auto-rows: calc(min(100%,2.6rem));
-    color: white;
-    gap: 0.3rem;
-    overflow-x: hidden;
-    padding: 1rem 0.5rem 1rem 0.5rem;
-    box-shadow: 0 3px 4px black;
-    transition: width 0.5s;
-    border-top: 2px white dotted;
-    .toggle-sidebar{
-        justify-content: center !important;
-    }
-    .toggle-sidebar-arrow-full{
-        transform: rotateY(180deg);
-        transition: transform 0.7s !important;
-    }
-    .toggle-sidebar-arrow-compact{
-        transform: rotateY(0);
-        transition: transform 0.7s !important;
-    }
-    .nav-link{
-        text-decoration: none;
+    .nav-sidebar{
+        height: calc(min(100%,94vh));
+        position: fixed;
+        left: 0;
+        top: 6vh;
+        display: grid;
+        grid-auto-rows: calc(min(100%,2.6rem));
         color: white;
-        font-size: 16px;
+        gap: 0.3rem;
+        overflow-x: hidden;
+        padding: 1rem 0.5rem 1rem 0.5rem;
+        box-shadow: 0 3px 4px black;
+        transition: width 0.5s;
+        border-top: 2px white dotted;
+        .toggle-sidebar{
+            justify-content: center !important;
+        }
+        .toggle-sidebar-arrow-full{
+            transform: rotateY(180deg);
+            transition: transform 0.7s !important;
+        }
+        .toggle-sidebar-arrow-compact{
+            transform: rotateY(0);
+            transition: transform 0.7s !important;
+        }
+        .nav-link{
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+        }
+        .nav-link-active{
+            @extend .nav-link;
+            background: white;
+            color: black ;
+            border-radius: 30px;
+        }
+        .nav-link-active-dark{
+            @extend .nav-link;
+            background: rgb(5, 7, 12);
+            color: white;
+        }
+        .nav-element{
+            @include flex(start,center);
+            white-space: nowrap;
+            position: relative;
+            padding: 0 0.5rem 0 0.5rem ; 
+            gap: 1rem;
+            transition: 0.3s;
+            border-radius: 20px;
+            cursor: default;
+        }
+        .nav-element-dark{
+            @extend .nav-element;
+        }
+        .nav-element:hover{
+            background: white;
+            color: black ;
+        }
+        .nav-element-dark:hover{
+            background: rgb(9, 12, 20);
+            color: white;
+        }
     }
-    .nav-link-active{
-        @extend .nav-link;
-        background: white;
-        color: black ;
-        border-radius: 30px;
+    .sidebar-full{
+        width: calc(min(100%,15rem));
     }
-    // .nav-link-active::before{
-    //     content: '';
-    //     position: absolute;
-    //     transform: translateY(39px);
-    //     right: 0px;
-    //     width: 30px;
-    //     height: 30px;
-    //     background: none;
-    //     border-radius: 50%;
-    //     box-shadow: 15px -15px 0 white;
-    //     transition: 0.3s;
-    // }
-    // .nav-link-active::after{
-    //     content: '';
-    //     position: absolute;
-    //     transform: translateY(-39px);
-    //     right: 0px;
-    //     width: 30px;
-    //     height: 30px;
-    //     background: none;
-    //     border-radius: 50%;
-    //     box-shadow: 15px 15px 0 white;
-    //     transition: 0.3s;
-    // }
-    .nav-link-active-dark{
-        @extend .nav-link;
-        background: rgb(5, 7, 12);
-        color: white;
+    .sidebar-compact{
+        width: calc(min(100%,3.5rem));
     }
-    // .nav-link-active-dark::before{
-    //     content: '';
-    //     position: absolute;
-    //     transform: translateY(39px);
-    //     right: 0px;
-    //     width: 30px;
-    //     height: 30px;
-    //     background: none;
-    //     border-radius: 50%;
-    //     box-shadow: 15px -15px 0 rgb(9, 12, 20);
-    //     transition: 0.3s;
-    // }
-    // .nav-link-active-dark::after{
-    //     content: '';
-    //     position: absolute;
-    //     transform: translateY(-39px);
-    //     right: 0px;
-    //     width: 30px;
-    //     height: 30px;
-    //     background: none;
-    //     border-radius: 50%;
-    //     box-shadow: 15px 15px 0 rgb(9, 12, 20);
-    //     transition: 0.3s;
-    // }
-    .nav-element{
-        @include flex(start,center);
-        white-space: nowrap;
-        position: relative;
-        padding: 0 0.5rem 0 0.5rem ; 
-        gap: 1rem;
-        transition: 0.3s;
-        border-radius: 20px;
-        cursor: default;
-    }
-    .nav-element-dark{
-        @extend .nav-element;
-    }
-    .nav-element:hover{
-        background: white;
-        color: black ;
-    }
-    .nav-element-dark:hover{
-        background: rgb(9, 12, 20);
-        color: white;
-    }
-}
-.sidebar-full{
-    width: calc(min(100%,15rem));
-}
-.sidebar-compact{
-    width: calc(min(100%,3.5rem));
 }
 
-@media only screen and (max-width: 769px) {
+@media only screen and (max-width: 900px) {
     .navbar{
         padding: 0 0.5rem 0 1rem;
         .navbar-utility{
@@ -194,6 +141,15 @@
                 .sign-icon{
                     display: block;
                 }
+            }
+        }
+        .nav-sidebar{
+            width: calc(min(100%,15rem));
+            .nav-text{
+                display: block !important;
+            }
+            .toggle-sidebar{
+                display: none;
             }
         }
     }

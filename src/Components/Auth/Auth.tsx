@@ -11,7 +11,6 @@ import { LoadingButton } from '@mui/lab';
 
 const Auth:React.FC = () => {
     const dispatch = useDispatch();
-    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     // Toggle sign in/sign up
     const [login, setLogin] = useState(true);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
@@ -19,7 +18,7 @@ const Auth:React.FC = () => {
     const authFormSubmit = async (event:React.FormEvent) => {
         event.preventDefault();
         // Check if necessary inputs are filled 
-        const [emailInput,usernameInput,passwordInput] = [emailRef!.current!.value,userNameRef.current!.value,passwordRef!.current!.value];
+        const [emailInput,usernameInput,passwordInput] = [emailRef!.current!.value,userNameRef.current?.value,passwordRef!.current!.value];
         // Check if passwors match
         if(!login) {
             if(passwordInput !== repeatRef?.current?.value) {

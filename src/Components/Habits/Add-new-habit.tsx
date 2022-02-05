@@ -7,15 +7,27 @@ import {useDispatch,useSelector} from 'react-redux';
 import React,{ useRef,useState } from 'react';
 import { habitsActions,RootState } from "../../Store/Store";
 import { TextField,Button,Box,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Fab} from '@mui/material';
-import { DateTimePicker } from '@mui/lab';
+import { DateTimePicker,TimePicker } from '@mui/lab';
 
 const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string,_id:string}|undefined,setDetailedItem:()=>{},returnToHabits:()=>{}}> = (props) => {
     const dispatch = useDispatch();
     const token = Cookies.get('token');
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
+    const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
+    const detailedGoal = goalList.filter((item)=>item._id === props.detailedHabit?._id)[0]
     const [habitNameRef,goalNameRef] = [useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null)];
     // Switch to goal mode
     const [goalMode,setGoalMode] = useState(false)
+    // Habit time Pick
+    const [timePickerUsed,setTimePickerUsed] = useState(false);
+    const [selectedTime, setSelectedTime] = useState(new Date());
+    function habitTimePick(newTime:Date | null) {
+        if(!!!newTime) {
+            newTime=new Date()
+        }
+        setSelectedTime(newTime);
+        setTimePickerUsed(true)
+    }
     // Goal Date Pick 
     const [datePickerUsed,setDatePickerUsed] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -31,14 +43,15 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
     // Add new habit
     const addNewHabit = async (event:React.FormEvent) => {
         event.preventDefault();
-        const [habitName,goalName] = [habitNameRef.current!.value,goalNameRef.current?.value];
+        const [habitTitle,goalName] = [habitNameRef.current!.value,goalNameRef.current?.value];
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
-        const newHabit = {
+        const newHabit:{ habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{[key:number]:boolean},goalId:string | null, _id:string | null,} = {
+            habitTitle:habitTitle,
+            habitTime:timePickerUsed? selectedTime.toString() : (props.detailedHabit?.habitTime || null),
+            habitCreationDate:props.detailedHabit?.habitCreationDate || new Date().toString(),
             habitWeekdays:activeDays,
-            habitTitle:habitName,
-            goalTitle:goalName ?? "",
-            goalTargetDate: datePickerUsed?selectedDate:'',
-            habitCreationDate: new Date().toString(),
+            goalId:props.detailedHabit?.goalId || null, 
+            _id:props.detailedHabit?._id || null
         }
         try {
             const newTodoItem = await axios.request({
@@ -67,18 +80,19 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
     return (
         <Box className={`opacity-transition add-new-habit-backdrop backdrop${isDarkMode?'-dark':''}`}>
             <Card component="form" onSubmit={addNewHabit} className={`add-new-habit-form scale-in`}>
-                {!!!props.detailedHabit && <FormGroup>
-                    <FormControlLabel control={<Switch onChange={()=>setGoalMode(!goalMode)} />} label="Set goal" />
+                {props.detailedHabit || <FormGroup>
+                    <FormControlLabel control={<Switch onChange={()=>setGoalMode(!goalMode)} />} label="Add paired goal" />
                 </FormGroup>}
-                {goalMode && !!!props.detailedHabit && <DateTimePicker 
-                inputFormat="DD/MM/YYYY HH:mm" label="Goal Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                value={selectedDate} onChange={newDate=>{datePick(newDate);}}
-                />}
-                {goalMode && !!!props.detailedHabit && <TextField label='Goal Name' inputRef={goalNameRef} className="add-new-habit-goal" multiline required />}
-                <TextField label='Habit Name' inputRef={habitNameRef} className="add-new-habit-taskname" multiline required />
+                <TimePicker 
+                    inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                    renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
+                    value={selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
+                />
+                <TextField label='Habit Title' inputRef={habitNameRef} className="add-new-habit-title" multiline required />
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
-                    <FormLabel><Tooltip {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Active Weekdays</Typography> }}/></FormLabel>
+                    <FormLabel>
+                        <Tooltip enterDelay={500} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
+                    </FormLabel>
                     <FormGroup className="weekdays-selector-checkboxes">
                         <FormControlLabel className={`weekdays-selector-checkbox`} {...{'checked':checkBoxes[1]}} control={<Checkbox onClick={()=>setCheckboxes({...checkBoxes,1:!checkBoxes[1]})}/>} label="Mon" />
                         <FormControlLabel className={`weekdays-selector-checkbox`} {...{'checked':checkBoxes[2]}} control={<Checkbox onClick={()=>setCheckboxes({...checkBoxes,2:!checkBoxes[2]})}/>} label="Tue" />
@@ -89,6 +103,12 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
                         <FormControlLabel className={`weekdays-selector-checkbox`} {...{'checked':checkBoxes[0]}} control={<Checkbox onClick={()=>setCheckboxes({...checkBoxes,0:!checkBoxes[0]})}/>} label="Sun" />
                     </FormGroup>
                 </FormControl>
+                {(goalMode || props.detailedHabit?.goalId) && <DateTimePicker 
+                    inputFormat="DD/MM/YYYY HH:mm" label="Goal Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                    renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                    value={selectedDate} onChange={newDate=>{datePick(newDate);}}
+                />}
+                {(goalMode || props.detailedHabit?.goalId) && <TextField label='Goal Title' inputRef={goalNameRef} className="add-new-habit-goal-title" multiline required />}
                 <Box className="add-new-habit-buttons">
                     <Button variant="outlined" type='button' className='button' onClick={props.returnToHabits}>Go Back</Button>
                     <Button variant="outlined" type='submit' className='button' >Submit</Button>

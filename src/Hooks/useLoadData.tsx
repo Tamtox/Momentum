@@ -10,7 +10,7 @@ import { RootState } from "../Store/Store";
 const useLoadData = (loadComponentData:string[]) => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
-    const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
+    const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
      // Load todo data
     const loadTodoData = async () => {
         dispatch(authActions.setLoading(true))

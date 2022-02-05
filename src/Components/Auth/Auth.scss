@@ -5,7 +5,7 @@
     justify-content: center !important;
     align-items: center !important;
     .auth-card{
-        @include widthAndHeight(calc(min(100%,30rem)),calc(min(90vh, 60vh)));
+        @include widthAndHeight(calc(min(98%,30rem)),calc(min(90vh, 65vh)));
         @include grid(10% 80% 10%,100%);
         align-items: center;
         .auth-form{
@@ -15,7 +15,7 @@
             .auth-form-inputs{
                 @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
                 @include flex(center,center);
-                gap: 1rem;
+                gap: 1.7rem;
                 flex-direction: column;
             }
             .auth-button{
@@ -27,10 +27,10 @@
             background: none;
             cursor: pointer;
             font-weight: 500;
-            transition: 0.3s;
+            transition: font-size 0.3s;
         }
         .auth-switch:hover{
-            transform: scale(1.05);
+            font-size: 1.4rem;
         }
     }
 }

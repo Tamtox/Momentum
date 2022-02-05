@@ -10,15 +10,15 @@ import Cookies from 'js-cookie';
 import { TextField,Button,Box,Card} from '@mui/material';
 import { DateTimePicker } from '@mui/lab';
 
-const AddNewTodo:React.FC<{detailedItem:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string,todoStatus:string,_id:string}|undefined,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
+const AddNewTodo:React.FC<{detailedItem:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}|undefined,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode)
     const [newTodoTitileRef,newTodoDescriptionRef] = [useRef<HTMLInputElement>(null),useRef<HTMLTextAreaElement>(null)];
     // Date Pick 
     const [datePickerUsed,setDatePickerUsed] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(props.detailedItem === undefined? new Date() : new Date(props.detailedItem.todoTargetDate));
-    const datePick = (newDate:Date | null) => {
+    const [selectedDate, setSelectedDate] = useState(props.detailedItem?.todoTargetDate ? new Date(props.detailedItem.todoTargetDate) : new Date());
+    const datePick = (newDate: Date | null) => {
         if(!!!newDate) {
             newDate=new Date()
         }
@@ -29,22 +29,22 @@ const AddNewTodo:React.FC<{detailedItem:{todoTitle:string,todoDescription:string
     const updateTodo = async (event:React.FormEvent) => {
         event.preventDefault();
         const [titleInput,descriptionInput] = [newTodoTitileRef.current!.value,newTodoDescriptionRef.current!.value];
-        const newTodo:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string,todoStatus:string,_id:string|undefined} = {
+        const newTodo:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string|undefined} = {
             todoTitle:titleInput,
             todoDescription:descriptionInput,
-            todoCreationDate:props.detailedItem? props.detailedItem.todoCreationDate : new Date().toString(),
-            todoTargetDate:props.detailedItem? datePickerUsed ? selectedDate.toString() : props.detailedItem.todoTargetDate : datePickerUsed ? selectedDate.toString() : "",
-            todoStatus:props.detailedItem? props.detailedItem.todoStatus :'Pending',
-            _id: props.detailedItem? props.detailedItem._id : undefined
+            todoCreationDate:props.detailedItem?.todoCreationDate || new Date().toString(),
+            todoTargetDate:datePickerUsed ? selectedDate.toString() : (props.detailedItem?.todoTargetDate || null),
+            todoStatus:props.detailedItem?.todoStatus || 'Pending',
+            _id: props.detailedItem?._id || undefined
         }
         try {
             const newTodoResponse = await axios.request({
-                method:props.detailedItem === undefined?'POST':'PATCH',
-                url:`http://localhost:3001/todo/${props.detailedItem === undefined?'addNewTodo':'updateTodo'}`,
+                method:props.detailedItem ? 'PATCH' : 'POST',
+                url:`http://localhost:3001/todo/${props.detailedItem ? 'updateTodo' : 'addNewTodo'}`,
                 data:newTodo,
                 headers:{Authorization: `Bearer ${token}`}
             })
-            props.detailedItem === undefined?dispatch(todoActions.addToDo(newTodoResponse.data)):dispatch(todoActions.editToDo(newTodo))
+            props.detailedItem ? dispatch(todoActions.updateToDo(newTodo)) : dispatch(todoActions.addToDo(newTodoResponse.data))
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 alert(error.message)
@@ -64,8 +64,8 @@ const AddNewTodo:React.FC<{detailedItem:{todoTitle:string,todoDescription:string
                 renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                 value={selectedDate} onChange={newDate=>{datePick(newDate);}}
                 />
-                <TextField inputRef={newTodoTitileRef} className={`add-new-todo-title focus input`} label='Title' defaultValue={props.detailedItem === undefined?'': props.detailedItem.todoTitle} multiline required />
-                <TextField inputRef={newTodoDescriptionRef} label="Description (Optional) " className={`add-new-todo-description focus`} defaultValue={props.detailedItem === undefined?'': props.detailedItem.todoDescription} multiline />
+                <TextField inputRef={newTodoTitileRef} className={`add-new-todo-title focus input`} label='Title' defaultValue={props.detailedItem?.todoTitle || ''} multiline required />
+                <TextField inputRef={newTodoDescriptionRef} label="Description (Optional) " className={`add-new-todo-description focus`} defaultValue={props.detailedItem?.todoDescription || ''} multiline />
                 <Box className={`add-new-todo-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{props.setDetailedItem();props.returnToTodo()}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{props.detailedItem?'Update':'Submit'}</Button>

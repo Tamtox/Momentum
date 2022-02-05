@@ -3,24 +3,25 @@ import {createSlice} from '@reduxjs/toolkit';
 interface HabitsSchema {
     habitList: {
         habitTitle:string,
-        habitTime:string,
+        habitTime:string | null,
         habitCreationDate:string,
         habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},
+        goalId:string | null, 
         _id:string,
     }[],
     habitEntries: {
         habitTitle:string,
-        habitTime:string,
+        habitTime:string | null,
         habitStatus:string,
         habitId:string,
         date:string,
         _id:string,
-    }[]
+    }[],
 }
 
 const initialHabitsState:HabitsSchema = {
     habitList:[],
-    habitEntries:[]
+    habitEntries:[],
 };
 const habitsSlice = createSlice({
     name:'habits',

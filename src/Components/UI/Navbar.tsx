@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch,} from 'react-redux';
 import type {RootState} from '../../Store/Store';
-import {Button,Box,Typography,Fab} from '@mui/material';
+import {Box,Typography,Fab} from '@mui/material';
 //Components
 import { authActions,todoActions,scheduleActions,journalActions,habitsActions } from '../../Store/Store';
 
@@ -15,7 +15,9 @@ const  Navbar:React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     // Toggle dark mode slider
-    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode)
+    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
+    const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
+    const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const toggleDarkMode = () => {
         dispatch(authActions.setDarkMode())
     }
@@ -29,30 +31,30 @@ const  Navbar:React.FC = () => {
         dispatch(scheduleActions.clearSchedule());
         dispatch(authActions.logout());
     }
-      // Toggle sidebar size
-    const [sidebarFull,setSidebarFull] = useState(false);
-    // Toggle sidebar 
-    const [sidebarVisible,setSidebarVisible] = useState(true);
     let sidebar = (
         <Box className={`nav-sidebar ${isDarkMode?'nav-dark':'nav-light'} ${!sidebarVisible&&'display-none'} sidebar${sidebarFull?'-full':'-compact'}`}>
-            <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{setSidebarFull(!sidebarFull)}}>
+            <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
                 <Icon className={`nav-icon hover-filter toggle-sidebar-arrow${sidebarFull?'-full':'-compact'}`} icon="ep:arrow-right-bold" />
             </Box>
             <NavLink to="/profile" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-profile`}>
                 <Icon className='nav-icon hover-filter' icon="iconoir:profile-circled" />
-                <Typography className={`${!sidebarFull&&'display-none'}`}>Profile</Typography>
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Profile</Typography>
             </NavLink>
             <NavLink to="/todo" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-todo`}>
                 <Icon className='nav-icon hover-filter' icon="wpf:todo-list" />
-                <Typography className={`${!sidebarFull&&'display-none'}`}>To Do</Typography>
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>To Do</Typography>
             </NavLink>
             <NavLink to="/journal" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-journal`}>
                 <Icon className='nav-icon hover-filter' icon="uil:diary-alt" />
-                <Typography className={`${!sidebarFull&&'display-none'}`}>Journal</Typography>
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Journal</Typography>
             </NavLink>
             <NavLink to="/habits" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-habits`}>
                 <Icon className='nav-icon hover-filter' icon="akar-icons:schedule" />
-                <Typography className={`${!sidebarFull&&'display-none'}`}>Habits</Typography>
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Habits</Typography>
+            </NavLink>
+            <NavLink to="/goals" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-goals`}>
+                <Icon className='nav-icon hover-filter' icon="icon-park-outline:target" />
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Goals</Typography>
             </NavLink>
         </Box>
     )
@@ -62,7 +64,7 @@ const  Navbar:React.FC = () => {
     }
     return (
         <Box component="header" className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
-            {isLoggedIn && <Icon className='toggle-sidebar nav-icon hover-filter' onClick={()=>{setSidebarVisible(!sidebarVisible)}} icon="codicon:three-bars" />}
+            {isLoggedIn && <Icon className='toggle-sidebar nav-icon hover-filter' onClick={()=>{dispatch(authActions.toggleSidebarVisibility())}} icon="codicon:three-bars" />}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
             <Box className={`navbar-utility`}>
                 <Box className="toggle-dark-mode" onClick={toggleDarkMode}>

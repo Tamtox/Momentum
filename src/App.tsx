@@ -1,11 +1,11 @@
 //Styles
 import './App.scss';
 //Dependencies
-import {useSelector,useDispatch} from 'react-redux';
-import React,{ Suspense} from 'react';
+import Cookies from 'js-cookie';
+import {useSelector} from 'react-redux';
+import React,{useState,Suspense} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import type {RootState} from './Store/Store';
-import Cookies from 'js-cookie';
 import { CssBaseline,ThemeProvider,createTheme,Container,Box } from '@mui/material';
 //Components
 import useLoadData from './Hooks/useLoadData';
@@ -16,15 +16,42 @@ const Profile = React.lazy(()=> import('./Components/Auth/Profile'));
 const Todo = React.lazy(()=> import('./Components/Todo/Todo'));
 const Journal = React.lazy(()=> import('./Components/Journal/Journal'));
 const Habits = React.lazy(()=> import('./Components/Habits/Habits'));
+const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
 
 const App:React.FC = () => {
-  const token = Cookies.get('token');
-  const dispatch = useDispatch()
   const isLoggedIn:boolean = !!useSelector<RootState>(state=>state.authSlice.token);
+  const token = Cookies.get('token');
   const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode)
-  // useLoadData(['todo'])
-  // Light/ Dare themes
+  // MUI Styles Ovveride
   const theme =  createTheme({
+    components: {
+      MuiInputBase: {
+        styleOverrides: {
+          root:{
+          }
+        }
+      },
+      MuiTextField: {
+        styleOverrides: {
+          root:{
+            fontSize: '1rem',
+            width:'calc(min(100%, 100%))',
+            height:'36px',
+          }
+        }
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            fontSize: '1rem',
+            width:'calc(min(100%, 150px))',
+            height:'40px',
+            transform:'translateY(2px)',
+            textTransform: 'none',
+          },
+        },
+      },
+    },
     palette:{
         mode: isDarkMode ? 'dark' : 'light',
         // primary:{
@@ -40,13 +67,13 @@ const App:React.FC = () => {
         //     contrastText: "#000"
         // }
     }
-})
+  })
   return (
     <ThemeProvider theme={theme}>
       <Box id='app' className={`App ${isDarkMode?"bg-dark":"bg-light"}`} sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
         <CssBaseline/>
-        <Navbar/>
-        <Suspense fallback={<Loading/>}>
+        <Navbar />
+        <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
               <Route path='/' element={<Profile/>} />
               <Route path='/auth' element={isLoggedIn?<Todo/>:<Auth/>} />
@@ -54,6 +81,7 @@ const App:React.FC = () => {
               <Route path='/todo' element={isLoggedIn?<Todo/>:<Auth />} />
               <Route path='/journal' element={isLoggedIn?<Journal/>:<Auth/>} />
               <Route path='/habits' element={isLoggedIn?<Habits/>:<Auth/>} />
+              <Route path='/goals' element={isLoggedIn?<Goals/>:<Auth/>} />
             </Routes>
         </Suspense>
       </Box>

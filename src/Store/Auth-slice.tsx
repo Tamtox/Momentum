@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
+import { createFalse } from 'typescript';
 
 const initialToken = Cookies.get('token');
 const initialUserId = Cookies.get('userId');
@@ -12,7 +13,9 @@ interface AuthSchema {
         email:string|null
     },
     loading:boolean,
-    darkMode:boolean|undefined
+    darkMode:boolean|undefined,
+    sidebarFull:boolean,
+    sidebarVisible:boolean
 }
 
 const initialAuthState:AuthSchema = {
@@ -22,7 +25,9 @@ const initialAuthState:AuthSchema = {
         email:null
     },
     loading:false,
-    darkMode:initialDarkMode === undefined?false:initialDarkMode === "true"?true:false
+    darkMode:initialDarkMode === undefined?false:initialDarkMode === "true"?true:false,
+    sidebarFull:true,
+    sidebarVisible:true
 } 
 const authSlice = createSlice({
     name:'auth',
@@ -49,6 +54,12 @@ const authSlice = createSlice({
             state.darkMode = !state.darkMode
             Cookies.set('darkMode',`${state.darkMode}`,{sameSite:"Strict",secure:true,path:'/'});
         },
+        toggleSidebarSize(state) {
+            state.sidebarFull = !state.sidebarFull 
+        },
+        toggleSidebarVisibility(state) {
+            state.sidebarVisible = !state.sidebarVisible 
+        }
     }
 })
 

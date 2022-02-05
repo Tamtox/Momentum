@@ -4,14 +4,15 @@ interface GoalSchema {
     goalList: {
         goalTitle:string,
         goalCreationDate:string,
-        goalTargetDate:string,
+        goalTargetDate:string | null,
         goalStatus:string,
+        habitId:string | null,
         _id:string
-    }[]
+    }[],
 }
 
 const initialGoalState:GoalSchema = {
-    goalList: []
+    goalList: [],
 }
 
 const goalSlice = createSlice({
@@ -34,7 +35,15 @@ const goalSlice = createSlice({
                 return item
             })
         },
-        setHabits(state,action) {
+        updateGoal(state,action) {
+            state.goalList = state.goalList.map(item=>{
+                if(item._id === action.payload._id) {
+                    item = action.payload
+                }
+                return item
+            })
+        },
+        setGoalList(state,action) {
             state.goalList = action.payload.goalList
         },
         clearGoalData(state) {

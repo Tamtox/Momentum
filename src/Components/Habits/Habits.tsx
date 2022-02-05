@@ -17,9 +17,11 @@ const Habits:React.FC = () => {
     const token = Cookies.get('token');
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
+    const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
+    const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const dispatch = useDispatch();
-    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},_id:string}[]>(state=>state.habitsSlice.habitList);
-    const habitEntries = useSelector<RootState,{habitTitle:string,habitTime:string,habitStatus:string,habitId:string,date:string,_id:string}[]>(state=>state.habitsSlice.habitEntries);
+    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
+    const habitEntries = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitStatus:string,habitId:string,date:string,_id:string}[]>(state=>state.habitsSlice.habitEntries);
     // States: date,toggle new habit, loader
     const [selectedDate, setSelectedDate] = useState(new Date());
     // Set detailed item
@@ -30,13 +32,13 @@ const Habits:React.FC = () => {
     async function loadHabitsData(date:Date) {
         dispatch(authActions.setLoading(true))
         try {
-            const habits = await axios.request({
+            const habitsResponse:{data:{habitList:any[]}} = await axios.request({
                 method:'POST',
                 url:`http://localhost:3001/habits/getHabits`,
                 data:{selectedDate:date.toString()},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            console.log(habits.data)
+            console.log(habitsResponse.data.habitList)
             // dispatch(habitsActions.setHabits(todoList.data))
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -67,7 +69,7 @@ const Habits:React.FC = () => {
         }
     }, [])
     return (
-        <Container component="main" className="habits page">
+        <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Box className='habit-controls'>
                 <DatePicker 
                 inputFormat="DD/MM/YYYY" desktopModeMediaQuery='@media (min-width:769px)'
@@ -76,7 +78,7 @@ const Habits:React.FC = () => {
                 />
                 <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
             </Box>
-            {loading?<Loading/>:
+            {loading?<Loading height='100%'/>:
             <Box className='habit-list'>
                 {habitEntries.map((habitEntry:any)=>{
                     return (

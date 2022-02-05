@@ -18,7 +18,10 @@ const Journal:React.FC = () => {
     const journalRef = useRef<HTMLTextAreaElement>(null);
     const dispatch = useDispatch();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
+    const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
+    const initialDate = journalEntry.date ? new Date(Number(journalEntry.date.split("/")[2]),Number(journalEntry.date.split("/")[1])-1,Number(journalEntry.date.split("/")[0])) : new Date();
+    const [selectedDate, setSelectedDate] = useState(initialDate);
     // Load journal entry from database if it exists 
     const [entryExists, setEntryExists] = useState(false);
     const loadJournalData = async (date:string) => {
@@ -35,7 +38,7 @@ const Journal:React.FC = () => {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
             } 
             if (journalEntryResponse.data.length === 0) {
-                dispatch(journalActions.setEntry({date:selectedDate.toString(),entry:'',id:''}))
+                dispatch(journalActions.setEntry({date:'',entry:'',id:''}))
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -85,16 +88,16 @@ const Journal:React.FC = () => {
         }
     }, [journalEntry.journalEntry])
     return (
-        <Container component="section" className='journal page' sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
+        <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
             {loading?
-            <Loading/>:
+            <Loading height='100%'/>:
             <Box component="form" className="journal-form" onSubmit={updateJournalEntry} >
                 <DatePicker 
                 inputFormat="DD/MM/YYYY" desktopModeMediaQuery='@media (min-width:769px)'
                 renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date`}  {...props} />}
                 value={selectedDate} onChange={newDate=>{selectJournalEntryByDate(newDate);}}
                 />
-                <TextField inputRef={journalRef} className={`focus journal-entry input`} defaultValue={journalEntry.journalEntry} placeholder="Write down what's on you mind" fullWidth multiline required />
+                <TextField inputRef={journalRef} className={`focus journal-entry input`} defaultValue={journalEntry.journalEntry} placeholder="Write down what's on you mind" fullWidth multiline required autoFocus />
                 <Button type="submit" variant="outlined" className={`journal-button button`}>{entryExists?'Save':'New Entry'}</Button>
             </Box>}
         </Container>

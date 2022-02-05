@@ -8,10 +8,10 @@
         border-radius: 5px;
         padding: 1rem;
         gap: 1rem;
-        .add-new-habit-goal{
+        .add-new-habit-goal-title{
             @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
         }
-        .add-new-habit-taskname{
+        .add-new-habit-title{
             @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
         }
         .weekdays-selector{
