@@ -35,6 +35,7 @@ function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 const Todo:React.FC = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
+    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -79,11 +80,7 @@ const Todo:React.FC = () => {
             })
             dispatch(todoActions.changeToDoStatus(_id))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined ? alert(error.response!.data) : alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
     // Delete Todo
@@ -97,11 +94,7 @@ const Todo:React.FC = () => {
             })
             dispatch(todoActions.deleteToDo(_id))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined ? alert(error.response!.data) : alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
      // Load todo data
@@ -115,11 +108,7 @@ const Todo:React.FC = () => {
             })
             dispatch(todoActions.setToDoList(todoList.data))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined ? alert(error.response!.data) : alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))   
     }
@@ -130,7 +119,7 @@ const Todo:React.FC = () => {
     }, [])
     return (
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Box className='todo-controls'>
+            <Box className={`todo-controls${isDarkMode?'-dark':''}`}>
                 <FormControl className='sort-todo select' size='small'>
                     <InputLabel id="todo-sort-label">Sort</InputLabel>
                     <Select labelId="todo-sort-label" inputRef={sortRef} value={sortQueryOption} onChange={(event)=>{setSortQueryOption(event.target.value);setQueries(event.target.value)}} size='small' label="Sort">
@@ -142,7 +131,7 @@ const Todo:React.FC = () => {
                         
                     </Select>
                 </FormControl>
-                <TextField variant='outlined' inputRef={searchRef} onChange={()=>{setQueries()}} fullWidth size='small' label="Search"/>
+                <TextField className={`search-todo`} sx={{width:"calc(min(100%, 33rem))"}} variant='outlined' inputRef={searchRef} onChange={()=>{setQueries()}}  size='small' label="Search"/>
                 <Button variant="outlined"  className={`add-new-todo`} onClick={()=>{setToggleNewTodo(!toggleNewTodo)}}>New To Do</Button>
             </Box>
             {loading?
@@ -161,7 +150,7 @@ const Todo:React.FC = () => {
                     )
                 })}
             </Box>}
-            {toggleNewTodo && <AddNewTodo detailedItem={detailedItem} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />}
+            {toggleNewTodo && <AddNewTodo detailedTodo={detailedItem} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />}
         </Container>
     )
 }

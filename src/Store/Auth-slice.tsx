@@ -57,8 +57,8 @@ const authSlice = createSlice({
         toggleSidebarSize(state) {
             state.sidebarFull = !state.sidebarFull 
         },
-        toggleSidebarVisibility(state) {
-            state.sidebarVisible = !state.sidebarVisible 
+        toggleSidebarVisibility(state,action) {
+            state.sidebarVisible = action.payload || !state.sidebarVisible
         }
     }
 })

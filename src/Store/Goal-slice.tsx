@@ -20,7 +20,7 @@ const goalSlice = createSlice({
     initialState:initialGoalState, 
     reducers:{
         addGoal(state,action) {
-            state.goalList.push(action.payload.newGoal)
+            state.goalList.push(action.payload)
         },
         deleteGoal(state,action) {
             state.goalList = state.goalList.filter(item=>{
@@ -43,8 +43,16 @@ const goalSlice = createSlice({
                 return item
             })
         },
+        updateHabitId(state,action) {
+            state.goalList = state.goalList.map(item=>{
+                if(item._id === action.payload._id) {
+                    item.habitId = action.payload.habitId
+                }
+                return item
+            })
+        },
         setGoalList(state,action) {
-            state.goalList = action.payload.goalList
+            state.goalList = action.payload
         },
         clearGoalData(state) {
             state.goalList = []

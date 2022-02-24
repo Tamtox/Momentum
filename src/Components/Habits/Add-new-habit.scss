@@ -1,35 +1,33 @@
 @import '../../Misc/mixins';
 
-.add-new-habit-backdrop{
-    .add-new-habit-form{
-        @include widthAndHeight(calc(min(95%,45rem)),fit-content); 
-        @include flex;
-        flex-direction: column;
-        border-radius: 5px;
-        padding: 1rem;
-        gap: 1rem;
-        .add-new-habit-goal-title{
-            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        }
-        .add-new-habit-title{
-            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        }
-        .weekdays-selector{
-            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-            .weekdays-selector-checkboxes{
+.add-new-habit-form{
+    @include widthAndHeight(calc(min(98%,45rem)),fit-content); 
+    @include flex;
+    flex-direction: column;
+    border-radius: 5px;
+    padding: 1rem;
+    gap: 1.5rem;
+    .add-new-habit-goal-title{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+    }
+    .add-new-habit-title{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+    }
+    .weekdays-selector{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+        .weekdays-selector-checkboxes{
+            @include flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 1rem;
+            .weekdays-selector-checkbox{
                 @include flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 1rem;
-                .weekdays-selector-checkbox{
-                    @include flex;
-                    margin: 0;
-                }
+                margin: 0;
             }
         }
-        .add-new-habit-buttons{
-            @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-            @include flex(space-around,center);
-        }
-    } 
-}
+    }
+    .add-new-habit-buttons{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+        @include flex(space-around,center);
+    }
+} 

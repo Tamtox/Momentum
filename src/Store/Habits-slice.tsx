@@ -4,17 +4,21 @@ interface HabitsSchema {
     habitList: {
         habitTitle:string,
         habitTime:string | null,
-        habitCreationDate:string,
+        habitCreationDate:string, /* Date format : Date.toString() */
         habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},
-        goalId:string | null, 
+        goalId:string | null,
+        goalTargetDate:string | null,
         _id:string,
     }[],
     habitEntries: {
-        habitTitle:string,
-        habitTime:string | null,
-        habitStatus:string,
+        weekStart:string,  /* Date format : "day/month/year" */
+        weekEnd:string, /* Date format : "day/month/year" */
         habitId:string,
-        date:string,
+        year:string, /* Date format : .getFullYear() */
+        month:string, /* Date format : .getMonth() + 1 */
+        date:string, /* Date format : .getDate() */
+        weekday:string,
+        habitEntryStatus:string
         _id:string,
     }[],
 }
@@ -29,19 +33,36 @@ const habitsSlice = createSlice({
     reducers:{
         addHabit(state,action) {
             state.habitList.push(action.payload.newHabit)
-            if(action.payload.newHabitEntry) {
-                state.habitEntries.push(action.payload.newHabitEntry)
-            }
+            state.habitEntries.push(action.payload.newHabitEntries)
         },
         deleteHabit(state,action) {
             state.habitList = state.habitList.filter(item=>{
                 return item._id !== action.payload
             })
+            state.habitEntries = state.habitEntries.filter(item=>{
+                return item.habitId !== action.payload
+            })
         },
         changeHabitStatus(state,action) {
             state.habitEntries = state.habitEntries.map(item=>{
                 if(item._id === action.payload) {
-                    item.habitStatus = item.habitStatus === 'Pending'?'Complete':'Pending'
+                    item.habitEntryStatus = item.habitEntryStatus === 'Pending'?'Complete':'Pending'
+                }
+                return item
+            })
+        },
+        updateHabit(state,action) {
+            state.habitList = state.habitList.map(item=>{
+                if(item._id === action.payload._id) {
+                    item = action.payload
+                }
+                return item
+            })
+        },
+        updateGoalId(state,action) {
+            state.habitList = state.habitList.map(item=>{
+                if(item._id === action.payload._id) {
+                    item.goalId = action.payload.goalId
                 }
                 return item
             })
@@ -51,8 +72,8 @@ const habitsSlice = createSlice({
             state.habitEntries = action.payload.habitEntries
         },
         clearHabitData(state) {
-            state.habitEntries = []
             state.habitList = []
+            state.habitEntries = []
         }
     }
 });

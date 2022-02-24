@@ -6,7 +6,7 @@ import axios from 'axios';
 import {useDispatch,useSelector} from 'react-redux';
 //Components
 import { RootState,authActions } from '../../Store/Store';
-import { Container,TextField,Button,Box,Typography,createTheme} from '@mui/material';
+import { Container,TextField,Button,Box,Typography} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 const Auth:React.FC = () => {
@@ -35,11 +35,7 @@ const Auth:React.FC = () => {
             })
             dispatch(authActions.login(authData.data))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                alert(`${error.response!.status} ${error.response!.data}`);
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))
     }
@@ -56,7 +52,7 @@ const Auth:React.FC = () => {
                     </Box>
                     {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>{login?'Sign In':'Sign Up'}</Button>}
                 </Box>
-                <Typography className={`auth-switch`} component="h6" variant="h6" onClick={()=>setLogin(!login)}>{login?"Don't have an account?":"Use existing account"}</Typography>
+                <Typography className={`auth-switch`} component="h6" variant="h6" onClick={()=>setLogin(!login)}>{login?"Don't have an account ?":"Use existing account"}</Typography>
             </Box>
         </Container>
     )

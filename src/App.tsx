@@ -3,10 +3,10 @@ import './App.scss';
 //Dependencies
 import Cookies from 'js-cookie';
 import {useSelector} from 'react-redux';
-import React,{useState,Suspense} from 'react';
+import React,{Suspense} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import type {RootState} from './Store/Store';
-import { CssBaseline,ThemeProvider,createTheme,Container,Box } from '@mui/material';
+import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
 //Components
 import useLoadData from './Hooks/useLoadData';
 import Navbar from './Components/UI/Navbar';
@@ -28,6 +28,13 @@ const App:React.FC = () => {
       MuiInputBase: {
         styleOverrides: {
           root:{
+          }
+        }
+      },
+      MuiCard: {
+        styleOverrides: {
+          root:{
+            backgroundImage: 'none',
           }
         }
       },
@@ -53,19 +60,19 @@ const App:React.FC = () => {
       },
     },
     palette:{
-        mode: isDarkMode ? 'dark' : 'light',
-        // primary:{
-        //     light: "#757ce8",
-        //     main: "#3f50b5",
-        //     dark: "#002884",
-        //     contrastText: "#fff",
-        // },
-        // secondary: {
-        //     light: "#ff7961",
-        //     main: "#f44336",
-        //     dark: "#ba000d",
-        //     contrastText: "#000"
-        // }
+      mode: isDarkMode ? 'dark' : 'light',
+      // primary:{
+      //     light: "#757ce8",
+      //     main: "#3f50b5",
+      //     dark: "#002884",
+      //     contrastText: "#fff",
+      // },
+      // secondary: {
+      //     light: "#ff7961",
+      //     main: "#f44336",
+      //     dark: "#ba000d",
+      //     contrastText: "#000"
+      // }
     }
   })
   return (

@@ -1,19 +1,21 @@
 //Styles
 import './Navbar.scss';
 //Dependencies
-import React,{ useState } from 'react';
+import React, { useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch,} from 'react-redux';
 import type {RootState} from '../../Store/Store';
 import {Box,Typography,Fab} from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 //Components
 import { authActions,todoActions,scheduleActions,journalActions,habitsActions } from '../../Store/Store';
 
 const  Navbar:React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const compact = useMediaQuery('(max-width:900px)');
     // Toggle dark mode slider
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -32,7 +34,7 @@ const  Navbar:React.FC = () => {
         dispatch(authActions.logout());
     }
     let sidebar = (
-        <Box className={`nav-sidebar ${isDarkMode?'nav-dark':'nav-light'} ${!sidebarVisible&&'display-none'} sidebar${sidebarFull?'-full':'-compact'}`}>
+        <Box className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`}>
             <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
                 <Icon className={`nav-icon hover-filter toggle-sidebar-arrow${sidebarFull?'-full':'-compact'}`} icon="ep:arrow-right-bold" />
             </Box>
@@ -62,9 +64,12 @@ const  Navbar:React.FC = () => {
     const signHandler = () => {
         isLoggedIn?logout():navigate('/auth')
     }
+    useEffect(()=>{
+        compact? dispatch(authActions.toggleSidebarVisibility(false)) : dispatch(authActions.toggleSidebarVisibility(true))
+    },[compact])
     return (
         <Box component="header" className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
-            {isLoggedIn && <Icon className='toggle-sidebar nav-icon hover-filter' onClick={()=>{dispatch(authActions.toggleSidebarVisibility())}} icon="codicon:three-bars" />}
+            {isLoggedIn && <Icon className='toggle-sidebar nav-icon hover-filter' onClick={()=>{dispatch(authActions.toggleSidebarVisibility(null))}} icon="codicon:three-bars" />}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
             <Box className={`navbar-utility`}>
                 <Box className="toggle-dark-mode" onClick={toggleDarkMode}>

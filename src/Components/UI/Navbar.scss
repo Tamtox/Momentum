@@ -17,11 +17,13 @@
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
         @include flex;
         color: white;
+        grid-area: 1 / 2 / span 1 / span 1;
     }
     .navbar-utility{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
-        @include flex(end,center);
+        @include flex(flex-end,center);
         gap: 1rem;
+        grid-area: 1 / 3 / span 1 / span 1;
         .toggle-dark-mode{
             @include widthAndHeight(calc(min(100%, 3.5rem)),calc(min(100%,1.6rem)));
             @include flex(space-around,center);
@@ -69,7 +71,7 @@
         overflow-x: hidden;
         padding: 1rem 0.5rem 1rem 0.5rem;
         box-shadow: 0 3px 4px black;
-        transition: width 0.5s;
+        transition: width 0.3s;
         border-top: 2px white dotted;
         .toggle-sidebar{
             justify-content: center !important;
@@ -99,7 +101,7 @@
             color: white;
         }
         .nav-element{
-            @include flex(start,center);
+            @include flex(flex-start,center);
             white-space: nowrap;
             position: relative;
             padding: 0 0.5rem 0 0.5rem ; 
@@ -125,6 +127,9 @@
     }
     .sidebar-compact{
         width: calc(min(100%,3.5rem));
+    }
+    .sidebar-hidden{
+        display: none;
     }
 }
 

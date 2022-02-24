@@ -2,7 +2,7 @@
 import './Goals.scss';
 // Components
 import Loading from '../Misc/Loading';
-import { goalActions,authActions } from '../../Store/Store';
+import { goalActions,authActions,habitsActions } from '../../Store/Store';
 import {RootState} from '../../Store/Store';
 import AddNewGoal from './Add-new-goal';
 // Dependencies
@@ -34,6 +34,7 @@ function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 const Goals:React.FC = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
+    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -78,15 +79,11 @@ const Goals:React.FC = () => {
             })
             dispatch(goalActions.changeGoalStatus(_id))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined?alert(error.response!.data):alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
     // Delete Goal
-    const deleteGoal = async (_id:string) => {
+    const deleteGoal = async (_id:string,pairedHabitId?:string) => {
         try {
             await axios.request({
                 method:'DELETE',
@@ -94,42 +91,43 @@ const Goals:React.FC = () => {
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:_id}
             })
+            if(pairedHabitId) {
+                await axios.request({
+                    method:'DELETE',
+                    url:`http://localhost:3001/habits/deleteHabit`,
+                    data:{_id:pairedHabitId},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.deleteHabit(pairedHabitId))
+            }
             dispatch(goalActions.deleteGoal(_id))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined?alert(error.response!.data):alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
      // Load goal data
     const loadGoalData = async () => {
         dispatch(authActions.setLoading(true))
         try {
-            const goalList = await axios.request({
+            const goalListResponse = await axios.request({
                 method:'GET',
                 url:`http://localhost:3001/goals/getGoals`,
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(goalActions.setGoalList(goalList.data))
+            dispatch(goalActions.setGoalList(goalListResponse.data))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined?alert(error.response!.data):alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))   
-    }
+    }   
     useEffect(() => {
-        // if(!!token && goalList.length<1) {
-        //     loadGoalData()
-        // }
+        if(!!token && goalList.length<1) {
+            loadGoalData()
+        }
     }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Box className='goal-controls'>
+            <Box className={`goal-controls${isDarkMode?'-dark':''}`}>
                 <FormControl className='sort-goals select' size='small'>
                     <InputLabel id="goal-sort-label">Sort</InputLabel>
                     <Select labelId="goal-sort-label" inputRef={sortRef} value={sortQueryOption} onChange={(event)=>{setSortQueryOption(event.target.value);setQueries(event.target.value)}} size='small' label="Sort">
@@ -138,24 +136,23 @@ const Goals:React.FC = () => {
                         <MenuItem value="dateDesc">Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>
                         <MenuItem value="statusComp">Status Complete</MenuItem>
-                        
                     </Select>
                 </FormControl>
-                <TextField inputRef={searchRef} onChange={()=>{setQueries()}} fullWidth size='small' label="Search"/>
+                <TextField  className={`search-goals`} sx={{width:"calc(min(100%, 33rem))"}} inputRef={searchRef} onChange={()=>{setQueries()}} fullWidth size='small' label="Search"/>
                 <Button variant="outlined"  className={`add-new-goal`} onClick={()=>{setToggleNewGoal(!toggleNewGoal)}}>New Goal</Button>
             </Box>
             {loading?
-            <Loading height='100%'/>:
+            <Loading height='80vh'/>:
             <Box className="goal-list">
                 {sortedList.map((goalItem)=>{
                     return (
-                        <Card variant='outlined' className={`goal-item scale-in`}>
-                            <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
+                        <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
                             <Box className='goal-item-icons'>
                                 <Icon onClick={()=>{changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`change-goal-status-icon ${goalItem.goalStatus}`} icon={goalItem.goalStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
                                 <Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`detailed-goal-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{deleteGoal(goalItem._id)}} className={`delete-goal-icon`} icon="clarity:remove-line" />
+                                <Icon onClick={()=>{deleteGoal(goalItem._id,goalItem.habitId)}} className={`delete-goal-icon`} icon="clarity:remove-line" />
                             </Box>
+                            <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
                         </Card>
                     )
                 })}

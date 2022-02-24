@@ -5,17 +5,17 @@
     justify-content: center !important;
     align-items: center !important;
     .auth-card{
-        @include widthAndHeight(calc(min(98%,30rem)),calc(min(90vh, 65vh)));
+        @include widthAndHeight(calc(min(98%,30rem)),calc(min(90vh, 70vh)));
         @include grid(10% 80% 10%,100%);
         align-items: center;
         .auth-form{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
-            @include grid(3fr 1fr,100%);
+            @include grid(4fr 1fr,100%);
             align-items: center;
             .auth-form-inputs{
                 @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
                 @include flex(center,center);
-                gap: 1.7rem;
+                gap: 2.2rem;
                 flex-direction: column;
             }
             .auth-button{
@@ -24,13 +24,12 @@
             }
         }
         .auth-switch{
-            background: none;
             cursor: pointer;
             font-weight: 500;
             transition: font-size 0.3s;
         }
         .auth-switch:hover{
-            font-size: 1.4rem;
+            font-size: 1.35rem;
         }
     }
 }

@@ -35,12 +35,9 @@
         left: 0;
         width: calc(min(100%,100vw));
         height: calc(min(100%,100vh));
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 99;
         @include flex(center,center);
-    }
-    .backdrop-dark{
-        @extend .backdrop;
-        background: rgba(255, 255, 255, 0.2); 
     }
     .border-radius{
         border-radius: 4px;
@@ -105,20 +102,20 @@
     }
     .page{
         min-height: 100vh;
-        width: 100rem;
+        width: 100%;
         max-width: 100%;
         margin-left: 0 ;
         padding-top: 6vh;
-        transition: 0.5s;
+        transition: 0.3s;
     }
     .page-full{
         @extend .page;
-        width: 96.5rem;
+        width: calc(100%-3.5rem);
         margin-left: 3.5rem ;
     }
     .page-compact{
         @extend .page;
-        width: 85rem;
+        width: calc(100%-15rem);
         margin-left: 15rem ;
     }
     .select{

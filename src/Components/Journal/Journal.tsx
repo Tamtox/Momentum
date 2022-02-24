@@ -41,11 +41,7 @@ const Journal:React.FC = () => {
                 dispatch(journalActions.setEntry({date:'',entry:'',id:''}))
             }
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined?alert(error.response!.data):alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))
     }
@@ -73,11 +69,7 @@ const Journal:React.FC = () => {
             })
             dispatch(journalActions.updateEntry(journalInput))
         } catch (error) {
-            if (axios.isAxiosError(error)) {    
-                error.response !== undefined?alert(error.response!.data):alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))
     }

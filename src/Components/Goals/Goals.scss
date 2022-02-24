@@ -3,10 +3,19 @@
 .goals{
     .goal-controls{
         @include widthAndHeight(calc(min(100%, 70rem)),10vh);
+        position: -webkit-sticky;
+        position: sticky;
+        top: 6vh;
+        z-index: 49;
         @include grid(100%,1fr 2fr 1fr);
         justify-items: center;
         align-items: center;
         margin: auto;
+        background: white;
+    }
+    .goal-controls-dark{
+        @extend .goal-controls;
+        background: #121212;
     }
     .loading{
         height: 90%;
@@ -14,26 +23,28 @@
     .goal-list{
         @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
         display: grid;
-        grid-template-columns: repeat(auto-fill,calc(min(98%, 30rem)));
+        grid-template-columns: repeat(auto-fill,calc(min(98%, 33rem)));
         justify-content: space-around;
-        grid-auto-rows: 7rem;
+        grid-auto-rows: 4rem;
         padding: 1rem 0 1rem 0;
         gap: 1rem 0%;
         margin: auto;
         .goal-item{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
-            display: grid;
-            grid-template: repeat(10,10%) / repeat(10,10%) ;
-            border-radius: 5px;
-            padding: 2%;
+            @include grid(100%, 1fr 3fr);
+            box-shadow: 0px 1px 3px gray;
             .goal-item-title{
-                @include flex(center,center);
-                font-size: 16px;
-                grid-area: 3 / 1 / span 10 / span 10;
+                align-self: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align: center;
+                padding: 2px 1rem 0 0rem ;
             }
             .goal-item-icons{
-                @include flex(space-around,center);
-                grid-area: 1 / 8 / span 3 / span 4; 
+                @include flex(center,center);
+                gap: 1rem;
+                padding: 0 1rem 0 1rem;
                 .detailed-goal-icon{
                     color: rgb(70, 116, 255);
                     font-size: 24px;
@@ -59,14 +70,13 @@
 @media only screen and (max-width: 769px) {
     .goals{
         .goal-controls{
-            @include widthAndHeight(calc(min(100%, 70rem)),20vh);
-            @include flex(space-around,center);
-            flex-wrap: wrap;
-            #search-goal{
+            @include widthAndHeight(calc(min(98%, 70rem)),20vh);
+            @include grid(1fr 1fr,1fr 1fr);
+            .search-goals{
                 grid-area: 1 / 1 / span 1 / span 2;
                 order: 0;
             }
-            .goal-todo{
+            .sort-goals{
                 order: 1;
             }
             .add-new-goal{

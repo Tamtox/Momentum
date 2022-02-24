@@ -10,18 +10,18 @@ import { DatePicker } from '@mui/lab';
 //Components
 import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
-import { habitsActions,authActions } from '../../Store/Store';
+import { habitsActions,authActions,goalActions } from '../../Store/Store';
 import type {RootState} from '../../Store/Store';
 
 const Habits:React.FC = () => {
     const token = Cookies.get('token');
-    const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const dispatch = useDispatch();
-    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
-    const habitEntries = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitStatus:string,habitId:string,date:string,_id:string}[]>(state=>state.habitsSlice.habitEntries);
+    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
+    const habitEntries = useSelector<RootState,{habitEntryStatus:string,habitId:string,year:string,month:string,date:string,weekday:string,weekStart:string,weekEnd:string,_id:string}[]>(state=>state.habitsSlice.habitEntries);
+    console.log(habitList,habitEntries);
     // States: date,toggle new habit, loader
     const [selectedDate, setSelectedDate] = useState(new Date());
     // Set detailed item
@@ -29,7 +29,7 @@ const Habits:React.FC = () => {
     // Toggle new/detailed habit
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
     // Load habits data
-    async function loadHabitsData(date:Date) {
+    const loadHabitsData = async (date:Date) => {
         dispatch(authActions.setLoading(true))
         try {
             const habitsResponse:{data:{habitList:any[]}} = await axios.request({
@@ -38,19 +38,14 @@ const Habits:React.FC = () => {
                 data:{selectedDate:date.toString()},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            console.log(habitsResponse.data.habitList)
-            // dispatch(habitsActions.setHabits(todoList.data))
+            dispatch(habitsActions.setHabits(habitsResponse.data))
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                error.response !== undefined?alert(error.response!.data):alert(error.message)
-            } else {
-                console.log(error);
-            }
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))   
     }
     // Load selected date's data
-    function loadSelectedDateData(newDate:Date|null) {
+    const loadSelectedDateData = async (newDate:Date|null) => {
         if(newDate === null) {
             newDate = new Date()
         }
@@ -58,10 +53,41 @@ const Habits:React.FC = () => {
         loadHabitsData(newDate)
     }
     // Delete habit
-    function deleteHabit(habitName:string) {
+    const deleteHabit = async (habitId:string,pairedGoalId?:string) => {
+        try {
+            await axios.request({
+                method:'DELETE',
+                url:`http://localhost:3001/habits/deleteHabit`,
+                data:{_id:habitId},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            if(pairedGoalId) {
+                await axios.request({
+                    method:'DELETE',
+                    url:`http://localhost:3001/goals/deleteGoal`,
+                    headers:{Authorization: `Bearer ${token}`},
+                    data:{_id:pairedGoalId}
+                })
+                dispatch(goalActions.deleteGoal(pairedGoalId))
+            }
+            dispatch(habitsActions.deleteHabit(habitId))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
     }
     // Change habit status
-    function changeHabitStatus(date:Date,habitName:string,status:string):any {
+    const changeHabitStatus = async (habitEntryId:string) => {
+        try {
+            await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/habits/updateHabitEntryStatus`,
+                data:{_id:habitEntryId},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(habitsActions.changeHabitStatus(habitEntryId))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
     }
     useEffect(() => {
         if(!!token && habitList.length<1) {
@@ -78,24 +104,22 @@ const Habits:React.FC = () => {
                 />
                 <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
             </Box>
-            {loading?<Loading height='100%'/>:
+            {loading?<Loading height='80vh'/>:
             <Box className='habit-list'>
                 {habitEntries.map((habitEntry:any)=>{
                     return (
-                        <Card className='habit-entry'>
+                        <Card className='habit-entry' key={habitEntry._id}>
 
                         </Card>
                     )
                 })}
-                {habitList.map((habitListEntry:any)=>{
+                {habitList.map((habitListItem:any)=>{
                     return (
-                        <Card className='habit-list-entry'>
+                        <Card className='habit-list-item' key={habitListItem._id}>
 
                         </Card>
                     )
                 })}
-                <Card className='habit-item'>123</Card>
-                <Card className='habit-item'>123</Card>
             </Box>
             } 
             {toggleNewHabit && <AddNewHabit detailedHabit={undefined} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToHabits={():any=>setToggleNewHabit(false)} />}
