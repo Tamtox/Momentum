@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {BrowserRouter} from 'react-router-dom';
 import {LocalizationProvider} from '@mui/lab';
-import DateAdapter from '@mui/lab/AdapterDayjs';
+import DateAdapter from '@mui/lab/AdapterDateFns';
 // Components
 import App from './App';
 import store from './Store/Store';

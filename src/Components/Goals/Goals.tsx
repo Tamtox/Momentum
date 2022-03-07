@@ -148,9 +148,9 @@ const Goals:React.FC = () => {
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
                             <Box className='goal-item-icons'>
-                                <Icon onClick={()=>{changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`change-goal-status-icon ${goalItem.goalStatus}`} icon={goalItem.goalStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
-                                <Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`detailed-goal-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{deleteGoal(goalItem._id,goalItem.habitId)}} className={`delete-goal-icon`} icon="clarity:remove-line" />
+                                <Icon onClick={()=>{changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} icon={goalItem.goalStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
+                                <Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} icon="feather:edit" />
+                                <Icon onClick={()=>{deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} icon="clarity:remove-line" />
                             </Box>
                             <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
                         </Card>

@@ -36,26 +36,30 @@ const  Navbar:React.FC = () => {
     let sidebar = (
         <Box className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`}>
             <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
-                <Icon className={`nav-icon hover-filter toggle-sidebar-arrow${sidebarFull?'-full':'-compact'}`} icon="ep:arrow-right-bold" />
+                <Icon className={`nav-icon toggle-sidebar-arrow${sidebarFull?'-full':'-compact'}`} icon="ep:arrow-right-bold" />
             </Box>
+            <NavLink to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
+                <Icon className='nav-icon' icon="bx:home" />
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Home</Typography>
+            </NavLink>
             <NavLink to="/profile" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-profile`}>
-                <Icon className='nav-icon hover-filter' icon="iconoir:profile-circled" />
+                <Icon className='nav-icon' icon="iconoir:profile-circled" />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Profile</Typography>
             </NavLink>
             <NavLink to="/todo" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-todo`}>
-                <Icon className='nav-icon hover-filter' icon="wpf:todo-list" />
+                <Icon className='nav-icon' icon="wpf:todo-list" />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>To Do</Typography>
             </NavLink>
             <NavLink to="/journal" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-journal`}>
-                <Icon className='nav-icon hover-filter' icon="uil:diary-alt" />
+                <Icon className='nav-icon' icon="uil:diary-alt" />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Journal</Typography>
             </NavLink>
             <NavLink to="/habits" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-habits`}>
-                <Icon className='nav-icon hover-filter' icon="akar-icons:schedule" />
+                <Icon className='nav-icon' icon="akar-icons:schedule" />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Habits</Typography>
             </NavLink>
             <NavLink to="/goals" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-goals`}>
-                <Icon className='nav-icon hover-filter' icon="icon-park-outline:target" />
+                <Icon className='nav-icon' icon="icon-park-outline:target" />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Goals</Typography>
             </NavLink>
         </Box>
@@ -69,7 +73,7 @@ const  Navbar:React.FC = () => {
     },[compact])
     return (
         <Box component="header" className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
-            {isLoggedIn && <Icon className='toggle-sidebar nav-icon hover-filter' onClick={()=>{dispatch(authActions.toggleSidebarVisibility(null))}} icon="codicon:three-bars" />}
+            {isLoggedIn && <Icon className='icon-interactive toggle-sidebar nav-icon' onClick={()=>{dispatch(authActions.toggleSidebarVisibility(null))}} icon="codicon:three-bars" />}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
             <Box className={`navbar-utility`}>
                 <Box className="toggle-dark-mode" onClick={toggleDarkMode}>
@@ -79,7 +83,7 @@ const  Navbar:React.FC = () => {
                 </Box>
                 <Box className='sign-buttons'>
                     <Fab onClick={signHandler} variant="extended" className={`button-fab sign-button`}>{isLoggedIn?'Sign Out':'Sign In'}</Fab>
-                    <Icon className='sign-icon icon hover-filter' icon={isLoggedIn?"fa-solid:sign-out-alt":"fa-solid:sign-in-alt"} onClick={signHandler} />
+                    <Icon className='sign-icon icon' icon={isLoggedIn?"fa-solid:sign-out-alt":"fa-solid:sign-in-alt"} onClick={signHandler} />
                 </Box>
             </Box>
             {isLoggedIn && sidebar}

@@ -56,7 +56,7 @@ const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string
         <Box className={`add-new-todo-backdrop backdrop opacity-transition`}>
             <Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
                 <DateTimePicker 
-                inputFormat="DD/MM/YYYY HH:mm" label="Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                inputFormat="dd/MM/yyyy HH:mm" label="Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
                 renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                 value={selectedDate} onChange={newDate=>{datePick(newDate);}}
                 />

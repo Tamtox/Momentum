@@ -141,9 +141,9 @@ const Todo:React.FC = () => {
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
                             <Box className='todo-item-icons'>
-                                <Icon onClick={()=>{changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`change-todo-status-icon ${todoItem.todoStatus}`} icon={todoItem.todoStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
-                                <Icon onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`detailed-todo-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{deleteToDo(todoItem._id)}} className={`delete-todo-icon`} icon="clarity:remove-line" />
+                                <Icon onClick={()=>{changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`} icon={todoItem.todoStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
+                                <Icon onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`icon-interactive detailed-todo-icon`} icon="feather:edit" />
+                                <Icon onClick={()=>{deleteToDo(todoItem._id)}} className={`icon-interactive delete-todo-icon`} icon="clarity:remove-line" />
                             </Box>
                             <Typography className={`todo-item-title`}>{todoItem.todoTitle}</Typography>
                         </Card>

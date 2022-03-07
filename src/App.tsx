@@ -8,9 +8,9 @@ import {Route, Routes} from 'react-router-dom';
 import type {RootState} from './Store/Store';
 import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
 //Components
-import useLoadData from './Hooks/useLoadData';
 import Navbar from './Components/UI/Navbar';
 import Loading from './Components/Misc/Loading';
+const Home = React.lazy(()=> import('./Components/Misc/Home'));
 const Auth = React.lazy(()=> import('./Components/Auth/Auth'));
 const Profile = React.lazy(()=> import('./Components/Auth/Profile'));
 const Todo = React.lazy(()=> import('./Components/Todo/Todo'));
@@ -31,10 +31,18 @@ const App:React.FC = () => {
           }
         }
       },
+      MuiTypography: {
+        styleOverrides: {
+          root:{
+            lineHeight: "1",
+          }
+        }
+      },
       MuiCard: {
         styleOverrides: {
           root:{
-            backgroundImage: 'none',
+            boxShadow: "0px 2px 3px gray",
+            lineHeight: "1",
           }
         }
       },
@@ -53,7 +61,7 @@ const App:React.FC = () => {
             fontSize: '1rem',
             width:'calc(min(100%, 150px))',
             height:'40px',
-            transform:'translateY(2px)',
+            lineHeight: "1",
             textTransform: 'none',
           },
         },
@@ -82,8 +90,8 @@ const App:React.FC = () => {
         <Navbar />
         <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
-              <Route path='/' element={<Profile/>} />
-              <Route path='/auth' element={isLoggedIn?<Todo/>:<Auth/>} />
+              <Route path='/' element={<Home/>} />
+              <Route path='/auth' element={isLoggedIn?<Home/>:<Auth/>} />
               <Route path='/profile' element={isLoggedIn?<Profile/>:<Auth/>} />
               <Route path='/todo' element={isLoggedIn?<Todo/>:<Auth />} />
               <Route path='/journal' element={isLoggedIn?<Journal/>:<Auth/>} />

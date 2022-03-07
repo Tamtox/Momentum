@@ -1,0 +1,64 @@
+// Dependencies
+import { useEffect } from "react";
+import Cookies from "js-cookie";
+import {useSelector,useDispatch} from 'react-redux';
+import axios from "axios";
+// Components
+import { todoActions,authActions } from "../Store/Store";
+import { RootState } from "../Store/Store";
+
+const useTodoApi = () => {
+    const token = Cookies.get('token');
+    const dispatch = useDispatch();
+    const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
+     // Load todo data
+    const changeTodoStatus = async (_id:string,todoStatus:string) => {
+        try {
+            await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/todo/updateTodo`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{_id,todoStatus:todoStatus==="Pending"?"Complete":"Pending"}
+            })
+            dispatch(todoActions.changeToDoStatus(_id))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
+    }
+    // Delete Todo
+    const deleteToDo = async (_id:string) => {
+        try {
+            await axios.request({
+                method:'DELETE',
+                url:`http://localhost:3001/todo/deleteTodo`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{_id:_id}
+            })
+            dispatch(todoActions.deleteToDo(_id))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
+    }
+     // Load todo data
+    const loadTodoData = async () => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const todoList = await axios.request({
+                method:'GET',
+                url:`http://localhost:3001/todo/getTodos`,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(todoActions.setToDoList(todoList.data))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))   
+    }
+    useEffect(() => {
+        if(!!token && todoList.length<1) {
+            loadTodoData()
+        }
+    }, [])
+}
+
+export default useTodoApi

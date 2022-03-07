@@ -12,6 +12,9 @@
         align-items: center;
         margin: auto;
         background: white;
+        .add-new-todo{
+            transform: translateY(2px)
+        }
     }
     .todo-controls-dark{
         @extend .todo-controls;
@@ -32,7 +35,6 @@
         .todo-item{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
             @include grid(100%, 1fr 3fr);
-            box-shadow: 0px 1px 3px gray;
             .todo-item-title{
                 align-self: center;
                 white-space: nowrap;

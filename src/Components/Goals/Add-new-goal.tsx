@@ -8,11 +8,12 @@ import React,{useRef,useState} from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { TextField,Button,Box,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
-import { DateTimePicker,TimePicker } from '@mui/lab';
+import { DatePicker,TimePicker } from '@mui/lab';
 
 const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
+    // Get paired habit if one exists
     const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.filter((item)=>item.goalId === props.detailedGoal?._id)[0];
     const [newGoalTitleRef,newHabitTitleRef] = [useRef<HTMLInputElement>(null),useRef<HTMLTextAreaElement>(null)];
@@ -55,7 +56,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
         }
         const newHabit:{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{[key:number]:boolean},goalId:string | null, goalTargetDate:string|null, _id:string | null,} = {
             habitTitle: habitTitle || '' ,
-            habitTime: timePickerUsed ? `${new Date(selectedTime).getHours()}:${new Date(selectedTime).getMinutes()}` : (detailedHabit?.habitTime || null),
+            habitTime: timePickerUsed ? `${new Date(selectedTime).getHours()}:${new Date(selectedTime).getMinutes() ? new Date(selectedTime).getMinutes() : '00'}` : (detailedHabit?.habitTime || null),
             habitCreationDate:detailedHabit?.habitCreationDate || new Date().toString(),
             habitWeekdays:activeDays,
             goalId:detailedHabit?.goalId || null, 
@@ -110,8 +111,8 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
                 {!!props.detailedGoal?.habitId || <FormGroup>
                     <FormControlLabel control={<Switch onChange={()=>setHabitMode(!habitMode)} />} label="Add Paired Habit" />
                 </FormGroup>}
-                <DateTimePicker 
-                    inputFormat="DD/MM/YYYY HH:mm" label="Goal Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                <DatePicker 
+                    inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                     renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                     value={selectedDate} onChange={newDate=>{datePick(newDate);}}
                 />

@@ -6,12 +6,13 @@ import axios from 'axios';
 import {useDispatch,useSelector} from 'react-redux';
 import React,{ useRef,useState } from 'react';
 import { goalActions, habitsActions,RootState } from "../../Store/Store";
-import { TextField,Button,Box,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Fab} from '@mui/material';
-import { DateTimePicker,TimePicker } from '@mui/lab';
+import { TextField,Button,Box,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
+import { DatePicker,TimePicker } from '@mui/lab';
 
 const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalTargetDate:string|null,goalId:string|null,_id:string}|undefined,setDetailedItem:()=>{},returnToHabits:()=>{}}> = (props) => {
     const dispatch = useDispatch();
     const token = Cookies.get('token');
+    // Get paired goal if one exists
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
     const detailedGoal = goalList.filter((item)=>item.habitId === props.detailedHabit?._id)[0];
     const [newHabitTitleRef,newGoalTitleRef] = [useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null)];
@@ -46,7 +47,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
         const newHabit:{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{[key:number]:boolean},goalId:string | null, goalTargetDate:string|null, _id:string | null,} = {
             habitTitle: habitTitle ,
-            habitTime: timePickerUsed ? `${new Date(selectedTime).getHours()}:${new Date(selectedTime).getMinutes()}` : (props.detailedHabit?.habitTime || null),
+            habitTime: timePickerUsed ? `${new Date(selectedTime).getHours()}:${new Date(selectedTime).getMinutes() ? new Date(selectedTime).getMinutes() : '00'}` : (props.detailedHabit?.habitTime || null),
             habitCreationDate:props.detailedHabit?.habitCreationDate || new Date().toString(),
             habitWeekdays:activeDays,
             goalId:props.detailedHabit?.goalId || null, 
@@ -128,8 +129,8 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
                         <FormControlLabel className={`weekdays-selector-checkbox`} {...{'checked':checkBoxes[0]}} control={<Checkbox onClick={()=>setCheckboxes({...checkBoxes,0:!checkBoxes[0]})}/>} label="Sun" />
                     </FormGroup>
                 </FormControl>
-                {(goalMode || props.detailedHabit?.goalId) && <DateTimePicker 
-                    inputFormat="DD/MM/YYYY HH:mm" label="Goal Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                {(goalMode || props.detailedHabit?.goalId) && <DatePicker 
+                    inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                     renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                     value={selectedDate} onChange={newDate=>{datePick(newDate);}}
                 />}

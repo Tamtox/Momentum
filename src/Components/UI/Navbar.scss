@@ -30,6 +30,7 @@
             border-radius: 20px;
             background-color: white;
             box-shadow: 0 0 4px black;
+            cursor: pointer;
             .toggle-dark-mode-slider{
                 @include widthAndHeight(calc(min(100%,23px)),calc(min(100%,23px)));
                 border-radius: 50%;

@@ -12,6 +12,9 @@
         align-items: center;
         margin: auto;
         background: white;
+        .add-new-goal{
+            transform: translateY(2px)
+        }
     }
     .goal-controls-dark{
         @extend .goal-controls;

@@ -1,7 +1,7 @@
 @import '../../Misc/mixins';
 .journal{
     .journal-form{
-        @include widthAndHeight(calc(min(98%,45rem)),fit-content); 
+        @include widthAndHeight(calc(min(100%,45rem)),fit-content); 
         @include flex;
         flex-direction: column;
         gap: 1rem;
@@ -15,7 +15,7 @@
             @include flex;
         }
         .journal-button{
-            @include widthAndHeight(calc(min(100%, 150px)),calc(min(100%,100%))); 
+            @include widthAndHeight(calc(min(100%, 180px)),40px); 
             @include flex;
         }
     } 
