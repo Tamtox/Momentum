@@ -1,16 +1,15 @@
 import {createSlice} from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
-import { createFalse } from 'typescript';
 
 const initialToken = Cookies.get('token');
-const initialUserId = Cookies.get('userId');
 const initialDarkMode = Cookies.get('darkMode')
 
 interface AuthSchema {
     token:string|undefined,
-    userId:string|undefined,
     user:{
-        email:string|null
+        email:string,
+        name:string,
+        emailConfirmationStatus:string,
     },
     loading:boolean,
     darkMode:boolean|undefined,
@@ -20,9 +19,10 @@ interface AuthSchema {
 
 const initialAuthState:AuthSchema = {
     token:initialToken,
-    userId:initialUserId,
     user:{
-        email:null
+        email:'',
+        name:'',
+        emailConfirmationStatus:'',
     },
     loading:false,
     darkMode:initialDarkMode === undefined?false:initialDarkMode === "true"?true:false,
@@ -35,17 +35,26 @@ const authSlice = createSlice({
     reducers:{
         login(state,action) {
             state.token = action.payload.token;
-            state.userId = action.payload.userId
+            state.user.email = action.payload.email;
+            state.user.name = action.payload.name;
+            state.user.emailConfirmationStatus = action.payload.emailConfirmationStatus;
             Cookies.set('token',action.payload.token,{expires:7,sameSite:"Strict",secure:true,path:'/'});
             Cookies.set('userId',action.payload.userId,{expires:7,sameSite:"Strict",secure:true,path:'/'});
         },
         logout(state) {
             state.token = undefined;
-            state.userId = undefined;
-            state.user = {email:null}
+            state.user = {email:'',name:'',emailConfirmationStatus:''}
             Cookies.remove('token');
             Cookies.remove('userId');
             Cookies.remove('darkMode');
+        },
+        setUsetData(state,action) {
+            state.user.email = action.payload.email;
+            state.user.name = action.payload.name;
+            state.user.emailConfirmationStatus = action.payload.emailConfirmationStatus;
+        },
+        verifyAccount(state,action) {
+            state.user.emailConfirmationStatus = action.payload;
         },
         setLoading(state,action) {
             state.loading = action.payload

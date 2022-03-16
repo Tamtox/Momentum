@@ -2,14 +2,12 @@
 import './Goals.scss';
 // Components
 import Loading from '../Misc/Loading';
-import { goalActions,authActions,habitsActions } from '../../Store/Store';
 import {RootState} from '../../Store/Store';
 import AddNewGoal from './Add-new-goal';
+import useGoalHooks from '../../Hooks/userGoalHooks';
 // Dependencies
-import Cookies from "js-cookie";
-import {useSelector,useDispatch} from 'react-redux';
-import axios from "axios";
-import React,{useState,useRef,useEffect} from 'react';
+import {useSelector} from 'react-redux';
+import React,{useState,useRef} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
@@ -32,8 +30,7 @@ function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 }
 
 const Goals:React.FC = () => {
-    const token = Cookies.get('token');
-    const dispatch = useDispatch();
+    const goalHooks = useGoalHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
@@ -68,63 +65,6 @@ const Goals:React.FC = () => {
     const [toggleNewGoal,setToggleNewGoal] = useState(false);
     // Set detailed id
     const [detailedItem,setDetailedItem] = useState()
-     // Toggle Goal status
-    const changeGoalStatus = async (_id:string,goalStatus:string) => {
-        try {
-            await axios.request({
-                method:'PATCH',
-                url:`http://localhost:3001/goals/updateGoal`,
-                headers:{Authorization: `Bearer ${token}`},
-                data:{_id,goalStatus:goalStatus==="Pending"?"Complete":"Pending"}
-            })
-            dispatch(goalActions.changeGoalStatus(_id))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-    }
-    // Delete Goal
-    const deleteGoal = async (_id:string,pairedHabitId?:string) => {
-        try {
-            await axios.request({
-                method:'DELETE',
-                url:`http://localhost:3001/goals/deleteGoal`,
-                headers:{Authorization: `Bearer ${token}`},
-                data:{_id:_id}
-            })
-            if(pairedHabitId) {
-                await axios.request({
-                    method:'DELETE',
-                    url:`http://localhost:3001/habits/deleteHabit`,
-                    data:{_id:pairedHabitId},
-                    headers:{Authorization: `Bearer ${token}`}
-                })
-                dispatch(habitsActions.deleteHabit(pairedHabitId))
-            }
-            dispatch(goalActions.deleteGoal(_id))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-    }
-     // Load goal data
-    const loadGoalData = async () => {
-        dispatch(authActions.setLoading(true))
-        try {
-            const goalListResponse = await axios.request({
-                method:'GET',
-                url:`http://localhost:3001/goals/getGoals`,
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(goalActions.setGoalList(goalListResponse.data))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(authActions.setLoading(false))   
-    }   
-    useEffect(() => {
-        if(!!token && goalList.length<1) {
-            loadGoalData()
-        }
-    }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Box className={`goal-controls${isDarkMode?'-dark':''}`}>
@@ -148,9 +88,9 @@ const Goals:React.FC = () => {
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
                             <Box className='goal-item-icons'>
-                                <Icon onClick={()=>{changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} icon={goalItem.goalStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
+                                <Icon onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} icon={goalItem.goalStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
                                 <Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} icon="clarity:remove-line" />
+                                <Icon onClick={()=>{goalHooks.deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} icon="clarity:remove-line" />
                             </Box>
                             <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
                         </Card>

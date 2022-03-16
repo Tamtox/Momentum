@@ -1,26 +1,23 @@
 //Styles
 import './Habits.scss';
 //Dependencies
-import {useSelector,useDispatch} from 'react-redux';
-import React,{ useState,useEffect} from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { Container,TextField,Button,Box,Typography,Card,Fab } from '@mui/material';
+import {useSelector} from 'react-redux';
+import React,{ useState } from 'react';
+import { Container,TextField,Button,Box,Typography,Card } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { Icon } from '@iconify/react';
 //Components
 import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
-import { habitsActions,authActions,goalActions } from '../../Store/Store';
 import type {RootState} from '../../Store/Store';
+import useHabitHooks from '../../Hooks/useHabitHooks';
 
 const Habits:React.FC = () => {
-    const token = Cookies.get('token');
+    const habitHooks = useHabitHooks();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-    const dispatch = useDispatch();
     const datepickerDate = useSelector<RootState,string>(state=>state.habitsSlice.datepickerDate);
     const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
     // Date selection and max date for datepicker
@@ -36,22 +33,6 @@ const Habits:React.FC = () => {
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
     // Toggle Habit List / Habit Entries
     const [habitListMode,setHabitListMode] = useState(true);
-    // Load habits data
-    const loadHabitsData = async (date:Date) => {
-        dispatch(authActions.setLoading(true))
-        try {
-            const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
-                method:'POST',
-                url:`http://localhost:3001/habits/getHabits`,
-                data:{selectedDate:date.toString()},
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:date.toString()}))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(authActions.setLoading(false))   
-    }
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
         if(newDate === null) {
@@ -62,52 +43,10 @@ const Habits:React.FC = () => {
         const selectedWeekStart = new Date(new Date(selectedWeekStartTime).setHours(0,0,0,0));
         const selectedWeekEnd = new Date(new Date(selectedWeekStartTime+86400000*6).setHours(23,59,59,999));
         if(newDate.getTime()<selectedWeekStart.getTime() || newDate.getTime()> selectedWeekEnd.getTime()) {
-            loadHabitsData(newDate)
+            habitHooks.loadHabitsData(newDate)
         }
         setSelectedDate(newDate);
     }
-    // Delete habit
-    const deleteHabit = async (habitId:string,pairedGoalId?:string) => {
-        try {
-            await axios.request({
-                method:'DELETE',
-                url:`http://localhost:3001/habits/deleteHabit`,
-                data:{_id:habitId},
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            if(pairedGoalId) {
-                await axios.request({
-                    method:'DELETE',
-                    url:`http://localhost:3001/goals/deleteGoal`,
-                    headers:{Authorization: `Bearer ${token}`},
-                    data:{_id:pairedGoalId}
-                })
-                dispatch(goalActions.deleteGoal(pairedGoalId))
-            }
-            dispatch(habitsActions.deleteHabit(habitId))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-    }
-    // Change habit status
-    const changeHabitStatus = async (habitId:string,habitEntryId:string,habitEntryStatus:string) => {
-        try {
-            await axios.request({
-                method:'PATCH',
-                url:`http://localhost:3001/habits/updateHabitEntryStatus`,
-                data:{_id:habitEntryId,habitEntryStatus:habitEntryStatus==="Pending"?"Complete":"Pending"},
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId}))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-    }
-    useEffect(() => {
-        if(!!token && habitList.length<1) {
-            loadHabitsData(new Date())
-        }
-    }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Box className={`habit-controls${isDarkMode?'-dark':''}`}>
@@ -139,7 +78,7 @@ const Habits:React.FC = () => {
                         <Card variant='elevation' className={`habit-item habit-list-item`} key={habitListItem._id}>
                             <Box className='habit-list-item-icons'>
                                 <Icon onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}} className={`icon-interactive detailed-habit-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} icon="clarity:remove-line" />
+                                <Icon onClick={()=>{habitHooks.deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} icon="clarity:remove-line" />
                             </Box>
                             <Typography className={`habit-list-item-habit-title`}>{habitListItem.habitTitle}</Typography>
                         </Card>)
@@ -152,7 +91,7 @@ const Habits:React.FC = () => {
                                     {habitListItem.habitEntries.map((habitEntry:any)=>{
                                         return (
                                             <Box key={habitEntry._id} className={`habit-entry-weekday habit-entry-weekday${habitEntry.weekday}`}>
-                                                <Icon className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}} icon={`akar-icons:${habitEntry.habitEntryStatus === 'Complete' ? 'check-' : ''}box`} />
+                                                <Icon className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}} icon={`akar-icons:${habitEntry.habitEntryStatus === 'Complete' ? 'check-' : ''}box`} />
                                             </Box>
                                         )
                                     })}

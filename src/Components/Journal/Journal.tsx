@@ -14,9 +14,9 @@ import { DatePicker} from '@mui/lab';
 
 const Journal:React.FC = () => {
     const token = Cookies.get('token');
+    const dispatch = useDispatch();
     const journalEntry = useSelector<RootState,{date:string|null,journalEntry:string,_id:string}>(state=>state.journalSlice);
     const journalRef = useRef<HTMLTextAreaElement>(null);
-    const dispatch = useDispatch();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
@@ -75,8 +75,10 @@ const Journal:React.FC = () => {
     }
     // Load journal data on component mount
     useEffect(() => {
-        if(!!token && journalEntry.date === null) {
-            loadJournalData(new Date().toString())
+        if (token) {
+            journalEntry.date === null && loadJournalData(new Date().toString())
+        } else { 
+            dispatch(authActions.logout())
         }
     }, [journalEntry.journalEntry])
     return (

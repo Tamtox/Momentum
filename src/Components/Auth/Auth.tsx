@@ -2,15 +2,15 @@
 import './Auth.scss';
 //Dependencies
 import React,{ useRef,useState,} from 'react';
-import axios from 'axios';
-import {useDispatch,useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
+import useAuthHooks from '../../Hooks/useAuthHooks';
 //Components
-import { RootState,authActions } from '../../Store/Store';
+import { RootState} from '../../Store/Store';
 import { Container,TextField,Button,Box,Typography} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 const Auth:React.FC = () => {
-    const dispatch = useDispatch();
+    const authHooks = useAuthHooks();
     // Toggle sign in/sign up
     const [login, setLogin] = useState(true);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
@@ -26,18 +26,7 @@ const Auth:React.FC = () => {
                 return
             }
         } 
-        dispatch(authActions.setLoading(true))
-        try {
-            const authData = await axios.request({
-                method:'POST',
-                url:`http://localhost:3001/users/${login?'login':'signup'}`,
-                data:{email:emailInput,password:passwordInput,name:usernameInput,creationDate:new Date().toString()},
-            })
-            dispatch(authActions.login(authData.data))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(authActions.setLoading(false))
+        authHooks.signInUp(emailInput,passwordInput,login,usernameInput)
     }
     return (
         <Container component="main" className='auth page' sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>

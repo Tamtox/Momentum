@@ -18,7 +18,7 @@
             @include flex;
             cursor: pointer;
             gap: 0.5rem;
-            border-radius: 15px;
+            border-radius: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
             .habit-list-label-icon{
                 font-size: 20px;

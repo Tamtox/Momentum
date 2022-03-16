@@ -1,0 +1,15 @@
+@import '../../Misc/mixins';
+
+.home{
+    @include flex(center,center);
+    height: 100vh;
+    .verification-form{
+        @include widthAndHeight(calc(min(98%, 50rem)),calc(min(100%, 35vh)));
+        @include flex(space-around,center);
+        flex-direction: column;
+        margin: auto;
+        .verification-label{
+            font-size: 1.1rem;
+        }
+    }
+}

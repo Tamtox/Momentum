@@ -3,13 +3,15 @@ import './App.scss';
 //Dependencies
 import Cookies from 'js-cookie';
 import {useSelector} from 'react-redux';
-import React,{Suspense} from 'react';
+import React,{Suspense,useEffect} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import type {RootState} from './Store/Store';
 import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
 //Components
 import Navbar from './Components/UI/Navbar';
 import Loading from './Components/Misc/Loading';
+import useLoadUserData from './Hooks/useLoadData';
+
 const Home = React.lazy(()=> import('./Components/Misc/Home'));
 const Auth = React.lazy(()=> import('./Components/Auth/Auth'));
 const Profile = React.lazy(()=> import('./Components/Auth/Profile'));
@@ -20,8 +22,10 @@ const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
 
 const App:React.FC = () => {
   const isLoggedIn:boolean = !!useSelector<RootState>(state=>state.authSlice.token);
+  const verificationStatus = useSelector<RootState,string>(state=>state.authSlice.user.emailConfirmationStatus);
   const token = Cookies.get('token');
-  const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode)
+  const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
+  useLoadUserData();
   // MUI Styles Ovveride
   const theme =  createTheme({
     components: {
@@ -91,12 +95,12 @@ const App:React.FC = () => {
         <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
               <Route path='/' element={<Home/>} />
-              <Route path='/auth' element={isLoggedIn?<Home/>:<Auth/>} />
-              <Route path='/profile' element={isLoggedIn?<Profile/>:<Auth/>} />
-              <Route path='/todo' element={isLoggedIn?<Todo/>:<Auth />} />
-              <Route path='/journal' element={isLoggedIn?<Journal/>:<Auth/>} />
-              <Route path='/habits' element={isLoggedIn?<Habits/>:<Auth/>} />
-              <Route path='/goals' element={isLoggedIn?<Goals/>:<Auth/>} />
+              <Route path='/auth' element={isLoggedIn ? <Home/> : <Auth/>} />
+              <Route path='/profile' element={isLoggedIn ? (verificationStatus === "Complete" ? <Profile/> : <Home/>) : <Auth/>} />
+              <Route path='/todo' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Home/>) : <Auth />} />
+              <Route path='/journal' element={isLoggedIn ? (verificationStatus === "Complete" ? <Journal/> : <Home/>) : <Auth/>} />
+              <Route path='/habits' element={isLoggedIn ? (verificationStatus === "Complete" ? <Habits/> : <Home/>) : <Auth/>} />
+              <Route path='/goals' element={isLoggedIn ? (verificationStatus === "Complete" ? <Goals/> : <Home/>) : <Auth/>} />
             </Routes>
         </Suspense>
       </Box>

@@ -7,11 +7,26 @@ import axios from "axios";
 import { todoActions,authActions } from "../Store/Store";
 import { RootState } from "../Store/Store";
 
-const useTodoApi = () => {
+const useTodoHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
     const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
-     // Load todo data
+    // Load todo data
+    const loadTodoData = async () => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const todoList = await axios.request({
+                method:'GET',
+                url:`http://localhost:3001/todo/getTodos`,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(todoActions.setToDoList(todoList.data))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))   
+    }
+    // Toggle Todo status
     const changeTodoStatus = async (_id:string,todoStatus:string) => {
         try {
             await axios.request({
@@ -39,26 +54,14 @@ const useTodoApi = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-     // Load todo data
-    const loadTodoData = async () => {
-        dispatch(authActions.setLoading(true))
-        try {
-            const todoList = await axios.request({
-                method:'GET',
-                url:`http://localhost:3001/todo/getTodos`,
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(todoActions.setToDoList(todoList.data))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(authActions.setLoading(false))   
-    }
     useEffect(() => {
-        if(!!token && todoList.length<1) {
-            loadTodoData()
+        if (token) {
+            todoList.length<1 && loadTodoData();
+        } else { 
+            dispatch(authActions.logout())
         }
     }, [])
+    return {loadTodoData,changeTodoStatus,deleteToDo}
 }
 
-export default useTodoApi
+export default useTodoHooks

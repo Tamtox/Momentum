@@ -2,14 +2,12 @@
 import './Todo.scss';
 // Components
 import Loading from '../Misc/Loading';
-import { todoActions,authActions } from '../../Store/Store';
 import {RootState} from '../../Store/Store';
 import AddNewTodo from './Add-new-todo';
+import useTodoHooks from '../../Hooks/useTodoHooks';
 //Dependencies
-import Cookies from "js-cookie";
-import {useSelector,useDispatch} from 'react-redux';
-import axios from "axios";
-import React,{useState,useRef,useEffect} from 'react';
+import {useSelector} from 'react-redux';
+import React,{useState,useRef} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
@@ -33,8 +31,7 @@ function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 
 
 const Todo:React.FC = () => {
-    const token = Cookies.get('token');
-    const dispatch = useDispatch();
+    const todoHooks = useTodoHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
@@ -69,54 +66,6 @@ const Todo:React.FC = () => {
     const [toggleNewTodo,setToggleNewTodo] = useState(false);
     // Set detailed id
     const [detailedItem,setDetailedItem] = useState()
-     // Toggle Todo status
-    const changeTodoStatus = async (_id:string,todoStatus:string) => {
-        try {
-            await axios.request({
-                method:'PATCH',
-                url:`http://localhost:3001/todo/updateTodo`,
-                headers:{Authorization: `Bearer ${token}`},
-                data:{_id,todoStatus:todoStatus==="Pending"?"Complete":"Pending"}
-            })
-            dispatch(todoActions.changeToDoStatus(_id))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-    }
-    // Delete Todo
-    const deleteToDo = async (_id:string) => {
-        try {
-            await axios.request({
-                method:'DELETE',
-                url:`http://localhost:3001/todo/deleteTodo`,
-                headers:{Authorization: `Bearer ${token}`},
-                data:{_id:_id}
-            })
-            dispatch(todoActions.deleteToDo(_id))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-    }
-     // Load todo data
-    const loadTodoData = async () => {
-        dispatch(authActions.setLoading(true))
-        try {
-            const todoList = await axios.request({
-                method:'GET',
-                url:`http://localhost:3001/todo/getTodos`,
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(todoActions.setToDoList(todoList.data))
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(authActions.setLoading(false))   
-    }
-    useEffect(() => {
-        if(!!token && todoList.length<1) {
-            loadTodoData()
-        }
-    }, [])
     return (
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Box className={`todo-controls${isDarkMode?'-dark':''}`}>
@@ -128,22 +77,21 @@ const Todo:React.FC = () => {
                         <MenuItem value="dateDesc">Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>
                         <MenuItem value="statusComp">Status Complete</MenuItem>
-                        
                     </Select>
                 </FormControl>
                 <TextField className={`search-todo`} sx={{width:"calc(min(100%, 33rem))"}} variant='outlined' inputRef={searchRef} onChange={()=>{setQueries()}}  size='small' label="Search"/>
                 <Button variant="outlined"  className={`add-new-todo`} onClick={()=>{setToggleNewTodo(!toggleNewTodo)}}>New To Do</Button>
             </Box>
             {loading?
-            <Loading height='100%'/>:
+            <Loading height='80vh'/>:
             <Box className="todo-list">
                 {sortedList.map((todoItem)=>{
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
                             <Box className='todo-item-icons'>
-                                <Icon onClick={()=>{changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`} icon={todoItem.todoStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
+                                <Icon onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`} icon={todoItem.todoStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
                                 <Icon onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`icon-interactive detailed-todo-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{deleteToDo(todoItem._id)}} className={`icon-interactive delete-todo-icon`} icon="clarity:remove-line" />
+                                <Icon onClick={()=>{todoHooks.deleteToDo(todoItem._id)}} className={`icon-interactive delete-todo-icon`} icon="clarity:remove-line" />
                             </Box>
                             <Typography className={`todo-item-title`}>{todoItem.todoTitle}</Typography>
                         </Card>
