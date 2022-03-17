@@ -12,13 +12,13 @@ const useGoalHooks = () => {
     const dispatch = useDispatch();
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
      // Load goal data
-    const loadGoalData = async () => {
+    const loadGoalData = async (newToken?:string) => {
         dispatch(authActions.setLoading(true))
         try {
             const goalListResponse = await axios.request({
                 method:'GET',
                 url:`http://localhost:3001/goals/getGoals`,
-                headers:{Authorization: `Bearer ${token}`}
+                headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(goalActions.setGoalList(goalListResponse.data))
         } catch (error) {

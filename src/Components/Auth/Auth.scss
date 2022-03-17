@@ -1,9 +1,9 @@
 @import '../../Misc/mixins';
 
 .auth{
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
     .auth-card{
         @include widthAndHeight(calc(min(98%,30rem)),calc(min(90vh, 70vh)));
         @include grid(10% 80% 10%,100%);

@@ -1,5 +1,8 @@
 @import '../../Misc/mixins';
 .journal{
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
     .journal-form{
         @include widthAndHeight(calc(min(100%,45rem)),fit-content); 
         @include flex;

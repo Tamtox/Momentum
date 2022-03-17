@@ -1,5 +1,13 @@
 @import '../../Misc/mixins';
 
 .profile{
-    
+    display: flex ;
+    justify-content: center ;
+    align-items: center ;
+    .profile-card{
+        @include widthAndHeight(calc(min(100%, 50rem)),fit-content);
+        @include flex(center,center);
+        flex-direction: column;
+        padding: 10px;
+    }
 }

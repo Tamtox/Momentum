@@ -40,6 +40,7 @@ const Home:React.FC = () => {
     }
     return(
         <Container component="main" className={`home ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
+            Home
             {userData.emailConfirmationStatus === 'Pending' && 
             <Box className={`verification-form`} component="form" onSubmit={verifyAccount} noValidate >
                 <Typography className='verification-label'>{`Verification code was sent to ${userData.email}. Use it to verify your account. `}</Typography>

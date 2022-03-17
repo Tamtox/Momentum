@@ -12,13 +12,13 @@ const useTodoHooks = () => {
     const dispatch = useDispatch();
     const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
     // Load todo data
-    const loadTodoData = async () => {
+    const loadTodoData = async (newToken?:string) => {
         dispatch(authActions.setLoading(true))
         try {
             const todoList = await axios.request({
                 method:'GET',
                 url:`http://localhost:3001/todo/getTodos`,
-                headers:{Authorization: `Bearer ${token}`}
+                headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(todoActions.setToDoList(todoList.data))
         } catch (error) {

@@ -29,7 +29,7 @@ const Auth:React.FC = () => {
         authHooks.signInUp(emailInput,passwordInput,login,usernameInput)
     }
     return (
-        <Container component="main" className='auth page' sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
+        <Container component="main" className='auth page'>
             <Box className={`auth-card`}>
                 <Typography component="h1" variant="h5">{login?'Sign In':'Sign Up'}</Typography>
                 <Box className={`auth-form`} component="form" onSubmit={authFormSubmit} noValidate sx={{ mt: 1 }}>

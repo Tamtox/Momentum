@@ -1,16 +1,18 @@
 //Styles
 import './App.scss';
 //Dependencies
-import Cookies from 'js-cookie';
 import {useSelector} from 'react-redux';
-import React,{Suspense,useEffect} from 'react';
+import React,{Suspense} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import type {RootState} from './Store/Store';
 import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
 //Components
 import Navbar from './Components/UI/Navbar';
 import Loading from './Components/Misc/Loading';
-import useLoadUserData from './Hooks/useLoadData';
+import useAuthHooks from './Hooks/useAuthHooks';
+import useTodoHooks from './Hooks/useTodoHooks';
+import useHabitHooks from './Hooks/useHabitHooks';
+import useGoalHooks from './Hooks/userGoalHooks';
 
 const Home = React.lazy(()=> import('./Components/Misc/Home'));
 const Auth = React.lazy(()=> import('./Components/Auth/Auth'));
@@ -21,17 +23,22 @@ const Habits = React.lazy(()=> import('./Components/Habits/Habits'));
 const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
 
 const App:React.FC = () => {
+  // Preload data on app start
+  useAuthHooks();
+  useTodoHooks();
+  useHabitHooks();
+  useGoalHooks();
   const isLoggedIn:boolean = !!useSelector<RootState>(state=>state.authSlice.token);
   const verificationStatus = useSelector<RootState,string>(state=>state.authSlice.user.emailConfirmationStatus);
-  const token = Cookies.get('token');
   const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-  useLoadUserData();
   // MUI Styles Ovveride
   const theme =  createTheme({
     components: {
-      MuiInputBase: {
+      MuiContainer: {
         styleOverrides: {
           root:{
+            paddingLeft:'5px',
+            paddingRight:'5px',
           }
         }
       },
@@ -45,7 +52,7 @@ const App:React.FC = () => {
       MuiCard: {
         styleOverrides: {
           root:{
-            boxShadow: "0px 2px 3px gray",
+            boxShadow: "0px 1px 2px black",
             lineHeight: "1",
           }
         }
@@ -89,7 +96,7 @@ const App:React.FC = () => {
   })
   return (
     <ThemeProvider theme={theme}>
-      <Box id='app' className={`App ${isDarkMode?"bg-dark":"bg-light"}`} sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
+      <Box className={`app`} sx={{color:'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
         <CssBaseline/>
         <Navbar />
         <Suspense fallback={<Loading height='100vh'/>}>

@@ -12,9 +12,13 @@ import { useSelector } from 'react-redux';
 const Profile:React.FC = () => {
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
+    const userData = useSelector<RootState,{email:string,name:string}>(state=>state.authSlice.user)
     return (
-        <Container className={`profile ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Typography></Typography>
+        <Container className={`profile ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
+            <Card className={`profile-card`}>
+                <Typography component="h6" variant="h6">{`Email : ${userData.email}`}</Typography>
+                <Typography component="h6" variant="h6">{`Username : ${userData.name}`}</Typography>
+            </Card>
         </Container>
     )
 }

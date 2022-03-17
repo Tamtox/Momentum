@@ -82,7 +82,7 @@ const Journal:React.FC = () => {
         }
     }, [journalEntry.journalEntry])
     return (
-        <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} sx={{color: 'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
+        <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
             {loading?
             <Loading height='100%'/>:
             <Box component="form" className="journal-form" onSubmit={updateJournalEntry} >

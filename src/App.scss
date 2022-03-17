@@ -16,16 +16,7 @@
     background: rgb(74, 0, 224);
     transition: background 0.3s;
 }
-.item{
-    background: white;
-}
-.item-dark{
-    background: rgb(21, 34, 49);
-}
-.color-white{
-    color: white;
-}
-#app {
+.app {
     text-align: center;
     @include flex;
     max-width: 100%;
@@ -38,17 +29,6 @@
         background: rgba(0, 0, 0, 0.7);
         z-index: 99;
         @include flex(center,center);
-    }
-    .border-radius{
-        border-radius: 4px;
-    }
-    .box-shadow{
-        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
-        transition: box-shadow 0.3s;
-    }
-    .box-shadow-dark{
-        box-shadow: 0px 0px 4px rgb(255, 255, 255);
-        transition: box-shadow 0.3s;
     }
     .button-fab{
         @include widthAndHeight(calc(min(100%, 150px)),calc(min(100%, 36px)));  
@@ -67,18 +47,6 @@
     }
     .focus:focus{
         transform: scale(1.005);
-    }
-    .hover-filter{
-        transition: 0.3s;
-    }
-    .hover-filter:hover{
-        filter:drop-shadow(2px 3px 1px rgba(0, 0, 0, 0.5));
-    }
-    .hover-filter-dark{
-        transition: 0.3s;
-    }
-    .hover-filter-dark:hover{
-        filter:drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.7));
     }
     .icon{
         font-size: 22px;
@@ -145,21 +113,8 @@
         transform: translateY(0);
         }
     }
-    .text-focus-in {
-        animation: text-focus-in 0.3s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
-    }
-    @keyframes text-focus-in {
-        0% {
-            filter: blur(6px);
-        opacity: 0;
-        }
-        100% {
-            filter: blur(0px);
-            opacity: 1;
-        }
-    }
     .scale-in {
-        animation: scale-in 0.8s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+        animation: scale-in 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     }
     @keyframes scale-in {
         0% {
@@ -179,19 +134,6 @@
             opacity: 0;
         }
         100% {
-            opacity: 1;
-        }
-    }
-    .slide-in-top {
-        animation: slide-in-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-    }
-    @keyframes slide-in-top {
-        0% {
-            transform: translateY(-100px);
-            opacity: 0;
-        }
-        100% {
-            transform: translateY(0);
             opacity: 1;
         }
     }

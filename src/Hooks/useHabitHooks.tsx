@@ -12,14 +12,14 @@ const useHabitHooks = () => {
     const dispatch = useDispatch();
     const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
     // Load habits data
-    const loadHabitsData = async (date:Date) => {
+    const loadHabitsData = async (date:Date,newToken?:string) => {
         dispatch(authActions.setLoading(true))
         try {
             const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
                 method:'POST',
                 url:`http://localhost:3001/habits/getHabits`,
                 data:{selectedDate:date.toString()},
-                headers:{Authorization: `Bearer ${token}`}
+                headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:date.toString()}))
         } catch (error) {
