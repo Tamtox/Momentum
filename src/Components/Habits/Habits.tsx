@@ -3,7 +3,7 @@ import './Habits.scss';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{ useState } from 'react';
-import { Container,TextField,Button,Box,Typography,Card } from '@mui/material';
+import { Container,TextField,Button,Box,Typography,Card,Tooltip } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { Icon } from '@iconify/react';
 //Components
@@ -32,7 +32,7 @@ const Habits:React.FC = () => {
     // Toggle new/detailed habit
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
     // Toggle Habit List / Habit Entries
-    const [habitListMode,setHabitListMode] = useState(true);
+    const [habitListMode,setHabitListMode] = useState(false);
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
         if(newDate === null) {
@@ -65,7 +65,7 @@ const Habits:React.FC = () => {
             <Box className={`habit habit-${habitListMode ? 'list' : 'entries'} scale-in`}>
                 {!habitListMode && 
                 <Card variant='elevation' className={`habit-item habit-entry-item`}>
-                    <Typography className={`habit-list-item-habit-title`}>Habit Title</Typography>
+                    <Typography className={`habit-list-item-habit-title`}>Habit</Typography>
                     <Box className={`habit-entries-weekdays`}>
                         {weekdaysList.map(weekday=>{
                             return <Typography className={`habit-entry-weekday`}>{weekday}</Typography>
@@ -77,8 +77,8 @@ const Habits:React.FC = () => {
                         return(
                         <Card variant='elevation' className={`habit-item habit-list-item`} key={habitListItem._id}>
                             <Box className='habit-list-item-icons'>
-                                <Icon onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}} className={`icon-interactive detailed-habit-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{habitHooks.deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} icon="clarity:remove-line" />
+                                <Tooltip enterDelay={500} {...{ 'title':`Edit`,'children':<Icon onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}} className={`icon-interactive detailed-habit-icon`} icon="feather:edit" />}}/>
+                                <Tooltip enterDelay={500} {...{ 'title':`Delete`,'children':<Icon onClick={()=>{habitHooks.deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} icon="clarity:remove-line" />}}/>
                             </Box>
                             <Typography className={`habit-list-item-habit-title`}>{habitListItem.habitTitle}</Typography>
                         </Card>)
@@ -91,7 +91,7 @@ const Habits:React.FC = () => {
                                     {habitListItem.habitEntries.map((habitEntry:any)=>{
                                         return (
                                             <Box key={habitEntry._id} className={`habit-entry-weekday habit-entry-weekday${habitEntry.weekday}`}>
-                                                <Icon className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}} icon={`akar-icons:${habitEntry.habitEntryStatus === 'Complete' ? 'check-' : ''}box`} />
+                                                <Tooltip enterDelay={500} {...{ 'title':`Status: ${habitEntry.habitEntryStatus}`,'children':<Icon className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}} icon={`akar-icons:${habitEntry.habitEntryStatus === 'Complete' ? 'check-' : ''}box`} />}}/>
                                             </Box>
                                         )
                                     })}

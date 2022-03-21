@@ -10,7 +10,7 @@ import {useSelector} from 'react-redux';
 import React,{useState,useRef} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
+import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card,Tooltip} from '@mui/material';
 
 // Sorting algorithm
 function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
@@ -89,16 +89,16 @@ const Todo:React.FC = () => {
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
                             <Box className='todo-item-icons'>
-                                <Icon onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`} icon={todoItem.todoStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
-                                <Icon onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`icon-interactive detailed-todo-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{todoHooks.deleteToDo(todoItem._id)}} className={`icon-interactive delete-todo-icon`} icon="clarity:remove-line" />
+                                <Tooltip enterDelay={500} {...{ 'title':`Status : ${todoItem.todoStatus}`,'children':<Icon onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`} icon={`akar-icons:circle${todoItem.todoStatus === 'Complete' ? '-check' : ''}`} />}}/>
+                                <Tooltip enterDelay={500} {...{ 'title':`Edit`,'children':<Icon onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`icon-interactive detailed-todo-icon`} icon="feather:edit" />}}/>
+                                <Tooltip enterDelay={500} {...{ 'title':`Delete`,'children':<Icon onClick={()=>{todoHooks.deleteToDo(todoItem._id)}} className={`icon-interactive delete-todo-icon`} icon="clarity:remove-line" />}}/>
                             </Box>
                             <Typography className={`todo-item-title`}>{todoItem.todoTitle}</Typography>
                         </Card>
                     )
                 })}
             </Box>}
-            {toggleNewTodo && <AddNewTodo detailedTodo={detailedItem} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />}
+            {toggleNewTodo && <AddNewTodo detailedTodo={detailedItem} toggleNewTodo={toggleNewTodo} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />}
         </Container>
     )
 }

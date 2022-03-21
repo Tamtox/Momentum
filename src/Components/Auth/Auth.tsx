@@ -19,7 +19,7 @@ const Auth:React.FC = () => {
         event.preventDefault();
         // Check if necessary inputs are filled 
         const [emailInput,usernameInput,passwordInput] = [emailRef!.current!.value,userNameRef.current?.value,passwordRef!.current!.value];
-        // Check if passwors match
+        // Check if passwords match
         if(!login) {
             if(passwordInput !== repeatRef?.current?.value) {
                 alert('Passwords do not match!')

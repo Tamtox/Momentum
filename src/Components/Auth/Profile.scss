@@ -6,8 +6,27 @@
     align-items: center ;
     .profile-card{
         @include widthAndHeight(calc(min(100%, 50rem)),fit-content);
-        @include flex(center,center);
+        @include flex;
         flex-direction: column;
         padding: 10px;
+        gap: 2.2rem;
+        .profile-card-item{
+            @include widthAndHeight(calc(min(100%, 40rem)),3rem);   
+            @include flex;
+        }
+        .profile-buttons{
+            @include flex(space-around,center);
+            flex-wrap: wrap;
+        }
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .profile{
+        .profile-card{
+            .profile-buttons{
+                height: 7rem;
+            }
+        }
     }
 }

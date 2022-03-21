@@ -24,10 +24,12 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: calc(min(100%,100vw));
-        height: calc(min(100%,100vh));
+        width: calc(min(100vw));
+        height: calc(min(100vh));
         background: rgba(0, 0, 0, 0.7);
         z-index: 99;
+        padding-right: 5px;
+        padding-left: 5px;
         @include flex(center,center);
     }
     .button-fab{
@@ -41,12 +43,6 @@
     }
     .display-none{
         display: none;
-    }
-    .focus{
-        transition: transform 0.3s;
-    }
-    .focus:focus{
-        transform: scale(1.005);
     }
     .icon{
         font-size: 22px;
@@ -127,7 +123,7 @@
         }
     } 
     .opacity-transition{
-        animation: opacity-transition 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+        animation: opacity-transition 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     }
     @keyframes opacity-transition {
         0% {
@@ -140,7 +136,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-    #app {
+    .app {
         .page-full{
             width: 100rem;
             margin-left: 0;

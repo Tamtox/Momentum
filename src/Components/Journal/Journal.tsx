@@ -91,7 +91,7 @@ const Journal:React.FC = () => {
                 renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date`}  {...props} />}
                 value={selectedDate} onChange={newDate=>{selectJournalEntryByDate(newDate);}}
                 />
-                <TextField inputRef={journalRef} className={`focus journal-entry input`} defaultValue={journalEntry.journalEntry} placeholder="Write down what's on you mind" fullWidth multiline required autoFocus />
+                <TextField inputRef={journalRef} className={`focus journal-entry input`} defaultValue={journalEntry.journalEntry} placeholder="Write down what is on you mind." fullWidth multiline required autoFocus />
                 <Button type="submit" variant="outlined" className={`journal-button button`}>{entryExists?'Save':'New Entry'}</Button>
             </Box>}
         </Container>

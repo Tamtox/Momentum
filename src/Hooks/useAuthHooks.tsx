@@ -42,17 +42,59 @@ const useAuthHooks = () => {
                 url:`http://localhost:3001/users/${isLogin?'login':'signup'}`,
                 data:{email,password,name,creationDate:new Date().toString()},
             })
-            console.log(authResponse.data)
             dispatch(authActions.login(authResponse.data))
             newToken = authResponse.data.token
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        if(isLogin) {
+        if(isLogin && newToken) {
             todoHooks.loadTodoData(newToken);
             goalHooks.loadGoalData(newToken);
             habitHooks.loadHabitsData(new Date(),newToken);
             getUserData(newToken);
+        }
+        dispatch(authActions.setLoading(false))
+    }
+    const changePassword = async (currentPass:string,newPass:string) => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const passChangeResponse = await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/users/changePassword`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{currentPass,newPass}
+            })
+            dispatch(authActions.login(passChangeResponse.data))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))
+    }
+    const sendVerificationLetter = async (email:string) => {
+        dispatch(authActions.setLoading(true))
+        try {
+            await axios.request({
+                method:'POST',
+                url:`http://localhost:3001/users/sendVerificationLetter`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{email}
+            })
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))
+    }
+    const deleteAccount = async () => {
+        dispatch(authActions.setLoading(true))
+        try {
+            await axios.request({
+                method:'DELETE',
+                url:`http://localhost:3001/users/delete`,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(authActions.logout())
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))
     }
@@ -63,7 +105,7 @@ const useAuthHooks = () => {
             dispatch(authActions.logout())
         }
     }, [])
-    return {getUserData,signInUp}
+    return {getUserData,signInUp,changePassword,sendVerificationLetter,deleteAccount}
 }
 
 export default useAuthHooks

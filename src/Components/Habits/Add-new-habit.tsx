@@ -117,7 +117,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
                 <TextField label='Habit Title' inputRef={newHabitTitleRef} className="add-new-habit-title" multiline required />
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
-                        <Tooltip enterDelay={500} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
+                        <Tooltip enterDelay={300} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
                     </FormLabel>
                     <FormGroup className="weekdays-selector-checkboxes">
                         <FormControlLabel className={`weekdays-selector-checkbox`} {...{'checked':checkBoxes[1]}} control={<Checkbox onClick={()=>setCheckboxes({...checkBoxes,1:!checkBoxes[1]})}/>} label="Mon" />

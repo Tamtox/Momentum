@@ -39,13 +39,11 @@ const authSlice = createSlice({
             state.user.name = action.payload.name;
             state.user.emailConfirmationStatus = action.payload.emailConfirmationStatus;
             Cookies.set('token',action.payload.token,{expires:7,sameSite:"Strict",secure:true,path:'/'});
-            Cookies.set('userId',action.payload.userId,{expires:7,sameSite:"Strict",secure:true,path:'/'});
         },
         logout(state) {
             state.token = undefined;
             state.user = {email:'',name:'',emailConfirmationStatus:''}
             Cookies.remove('token');
-            Cookies.remove('userId');
             Cookies.remove('darkMode');
         },
         setUsetData(state,action) {

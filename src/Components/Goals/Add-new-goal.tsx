@@ -125,7 +125,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
                 {(habitMode || props.detailedGoal?.habitId) && <TextField inputRef={newHabitTitleRef} className={`add-new-goal-habit-title focus input`} label='Habit Title' defaultValue={detailedHabit?.habitTitle || ''} multiline required />}
                 {(habitMode || props.detailedGoal?.habitId) && <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
-                        <Tooltip enterDelay={500} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
+                        <Tooltip enterDelay={300} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
                     </FormLabel>
                     <FormGroup className="weekdays-selector-checkboxes">
                         <FormControlLabel className={`weekdays-selector-checkbox`} {...{'checked':checkBoxes[1]}} control={<Checkbox onClick={()=>setCheckboxes({...checkBoxes,1:!checkBoxes[1]})}/>} label="Mon" />

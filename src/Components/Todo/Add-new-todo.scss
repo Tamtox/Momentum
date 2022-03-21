@@ -1,7 +1,7 @@
 @import '../../Misc/mixins';
 
 .add-new-todo-form{
-    @include widthAndHeight(calc(min(98%,45rem)),fit-content); 
+    @include widthAndHeight(calc(min(100%,45rem)),fit-content); 
     @include flex;
     flex-direction: column;
     border-radius: 5px;

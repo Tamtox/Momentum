@@ -10,7 +10,7 @@ import {useSelector} from 'react-redux';
 import React,{useState,useRef} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
+import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card,Tooltip} from '@mui/material';
 
 // Sorting algorithm
 function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
@@ -88,9 +88,9 @@ const Goals:React.FC = () => {
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
                             <Box className='goal-item-icons'>
-                                <Icon onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} icon={goalItem.goalStatus === 'Pending'?"akar-icons:circle":"akar-icons:circle-check"} />
-                                <Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} icon="feather:edit" />
-                                <Icon onClick={()=>{goalHooks.deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} icon="clarity:remove-line" />
+                                <Tooltip enterDelay={500} {...{ 'title':`Status: ${goalItem.goalStatus}`,'children':<Icon onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} icon={`akar-icons:circle${goalItem.goalStatus === 'Complete' ? '-check' : ''}`} />}}/>
+                                <Tooltip enterDelay={500} {...{ 'title':`Edit`,'children':<Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} icon="feather:edit" />}}/>
+                                <Tooltip enterDelay={500} {...{ 'title':`Delete`,'children':<Icon onClick={()=>{goalHooks.deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} icon="clarity:remove-line" />}}/>
                             </Box>
                             <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
                         </Card>

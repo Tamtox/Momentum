@@ -33,7 +33,7 @@ const App:React.FC = () => {
   const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
   // MUI Styles Ovveride
   const theme =  createTheme({
-    components: {
+    components: { 
       MuiContainer: {
         styleOverrides: {
           root:{
@@ -101,9 +101,9 @@ const App:React.FC = () => {
         <Navbar />
         <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
-              <Route path='/' element={<Home/>} />
+              <Route path='/' element={isLoggedIn ? <Home/> : <Auth/>} />
               <Route path='/auth' element={isLoggedIn ? <Home/> : <Auth/>} />
-              <Route path='/profile' element={isLoggedIn ? (verificationStatus === "Complete" ? <Profile/> : <Home/>) : <Auth/>} />
+              <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
               <Route path='/todo' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Home/>) : <Auth />} />
               <Route path='/journal' element={isLoggedIn ? (verificationStatus === "Complete" ? <Journal/> : <Home/>) : <Auth/>} />
               <Route path='/habits' element={isLoggedIn ? (verificationStatus === "Complete" ? <Habits/> : <Home/>) : <Auth/>} />
