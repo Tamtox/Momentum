@@ -1,16 +1,13 @@
 // Dependencies
-import { useEffect } from "react";
 import Cookies from "js-cookie";
-import {useSelector,useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { authActions,goalActions,habitsActions } from "../Store/Store";
-import { RootState } from "../Store/Store";
 
 const useGoalHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
-    const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
      // Load goal data
     const loadGoalData = async (newToken?:string) => {
         dispatch(authActions.setLoading(true))
@@ -62,14 +59,7 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-    }   
-    useEffect(() => {
-        if (token) {
-            goalList.length<1 && loadGoalData();
-        } else { 
-            dispatch(authActions.logout())
-        }
-    }, [])
+    }
     return {loadGoalData,changeGoalStatus,deleteGoal}
 }
 

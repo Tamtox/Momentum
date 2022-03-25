@@ -2,17 +2,23 @@
 import './Habits.scss';
 //Dependencies
 import {useSelector} from 'react-redux';
-import React,{ useState } from 'react';
-import { Container,TextField,Button,Box,Typography,Card,Tooltip } from '@mui/material';
+import React,{ useState,useEffect } from 'react';
+import {Container,TextField,Button,Box,Typography,Card} from '@mui/material';
 import { DatePicker } from '@mui/lab';
-import { Icon } from '@iconify/react';
+import Cookies from 'js-cookie';
+import {HiSwitchVertical} from 'react-icons/hi';
+import {FiEdit} from 'react-icons/fi';
+import {IoCheckmarkCircleOutline,IoCloseCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 //Components
 import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
 import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
+import useAuthHooks from '../../Hooks/useAuthHooks';
 
 const Habits:React.FC = () => {
+    const token = Cookies.get('token');
+    const AuthHooks = useAuthHooks();
     const habitHooks = useHabitHooks();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
@@ -47,6 +53,13 @@ const Habits:React.FC = () => {
         }
         setSelectedDate(newDate);
     }
+    useEffect(() => {
+        if (token) {
+            habitList.length<1 && habitHooks.loadHabitsData(new Date());
+        } else { 
+            AuthHooks.logout();
+        }
+    }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Box className={`habit-controls${isDarkMode?'-dark':''}`}>
@@ -57,7 +70,7 @@ const Habits:React.FC = () => {
                 />
                 <Card variant='elevation' className={`habit-list-label`} onClick={()=>{setHabitListMode(!habitListMode)}}>
                     {habitListMode? "Habit List" : `Week : ${new Date(selectedDateWeekStart).toLocaleDateString()} - ${new Date(selectedDateWeekStart+86400000*6).toLocaleDateString()}`}
-                    <Icon className='habit-list-label-icon' icon="heroicons-outline:switch-vertical" />
+                    <HiSwitchVertical className='habit-list-label-icon' />
                 </Card>
                 <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
             </Box>
@@ -77,8 +90,8 @@ const Habits:React.FC = () => {
                         return(
                         <Card variant='elevation' className={`habit-item habit-list-item`} key={habitListItem._id}>
                             <Box className='habit-list-item-icons'>
-                                <Tooltip enterDelay={500} {...{ 'title':`Edit`,'children':<Icon onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}} className={`icon-interactive detailed-habit-icon`} icon="feather:edit" />}}/>
-                                <Tooltip enterDelay={500} {...{ 'title':`Delete`,'children':<Icon onClick={()=>{habitHooks.deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} icon="clarity:remove-line" />}}/>
+                                <FiEdit onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}} className={`icon-interactive detailed-habit-icon`} />
+                                <IoCloseCircleOutline onClick={()=>{habitHooks.deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} />
                             </Box>
                             <Typography className={`habit-list-item-habit-title`}>{habitListItem.habitTitle}</Typography>
                         </Card>)
@@ -91,7 +104,7 @@ const Habits:React.FC = () => {
                                     {habitListItem.habitEntries.map((habitEntry:any)=>{
                                         return (
                                             <Box key={habitEntry._id} className={`habit-entry-weekday habit-entry-weekday${habitEntry.weekday}`}>
-                                                <Tooltip enterDelay={500} {...{ 'title':`Status: ${habitEntry.habitEntryStatus}`,'children':<Icon className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}} icon={`akar-icons:${habitEntry.habitEntryStatus === 'Complete' ? 'check-' : ''}box`} />}}/>
+                                                {habitEntry.habitEntryStatus === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/> : <IoEllipseOutline className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/>}
                                             </Box>
                                         )
                                     })}

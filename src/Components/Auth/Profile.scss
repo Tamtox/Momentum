@@ -1,32 +1,20 @@
 @import '../../Misc/mixins';
 
 .profile{
-    display: flex ;
-    justify-content: center ;
-    align-items: center ;
+    @include flex;
     .profile-card{
-        @include widthAndHeight(calc(min(100%, 50rem)),fit-content);
+        @include widthAndHeight(calc(min(100%, 40rem)),fit-content);
         @include flex;
         flex-direction: column;
-        padding: 10px;
-        gap: 2.2rem;
+        padding: 15px;
+        gap: 1rem;
         .profile-card-item{
-            @include widthAndHeight(calc(min(100%, 40rem)),3rem);   
+            @include widthAndHeight(calc(min(100%, 40rem)),3.5rem);   
             @include flex;
         }
         .profile-buttons{
             @include flex(space-around,center);
             flex-wrap: wrap;
-        }
-    }
-}
-
-@media only screen and (max-width: 400px) {
-    .profile{
-        .profile-card{
-            .profile-buttons{
-                height: 7rem;
-            }
         }
     }
 }

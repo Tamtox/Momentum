@@ -1,16 +1,13 @@
 // Dependencies
-import { useEffect } from "react";
 import Cookies from "js-cookie";
-import {useSelector,useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { goalActions,habitsActions,authActions } from "../Store/Store";
-import { RootState } from "../Store/Store";
 
 const useHabitHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
-    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
     // Load habits data
     const loadHabitsData = async (date:Date,newToken?:string) => {
         dispatch(authActions.setLoading(true))
@@ -64,13 +61,6 @@ const useHabitHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
     }
-    useEffect(() => {
-        if (token) {
-            habitList.length<1 && loadHabitsData(new Date());
-        } else { 
-            dispatch(authActions.logout())
-        }
-    }, [])
     return {loadHabitsData,deleteHabit,changeHabitStatus}
 }
 

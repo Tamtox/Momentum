@@ -4,6 +4,7 @@ import './Profile.scss';
 import React,{useRef,useState} from 'react';
 import type {RootState} from '../../Store/Store';
 import useAuthHooks from '../../Hooks/useAuthHooks';
+import Loading from '../Misc/Loading';
 //Dependencies
 import { Container,TextField,Button,Box,Typography,Card} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -15,7 +16,7 @@ const Profile:React.FC = () => {
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-    const userData = useSelector<RootState,{email:string,name:string}>(state=>state.authSlice.user);
+    const userData = useSelector<RootState,{email:string,name:string,emailConfirmationStatus:string}>(state=>state.authSlice.user);
     // Change password control
     const [currentPassRef,newPassRef,repeatPassRef] = [useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null)];
     const [changePassMode,setChangePassMode] = useState(false);
@@ -26,15 +27,18 @@ const Profile:React.FC = () => {
             alert('Passwords do not match!')
             return
         }
+        if(newPass.length < 6) {
+            return alert('New password is too short');
+        }
         authHooks.changePassword(currentPass,newPass);
         setChangePassMode(false)
     }
     let passwordChangeForm = changePassMode ? (
-        <Box className={`password-change-form profile-card scale-in`} component="form" onSubmit={changePasswordFormHandler} noValidate sx={{ mt: 1 }}>
+        <Box className={`password-change-form profile-card scale-in`} component="form" onSubmit={changePasswordFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">Change Password</Typography>
-            <TextField className={`scale-in`} size="medium" inputRef={currentPassRef} required fullWidth label="Old Password" type="password" autoComplete="current-password" />
-            <TextField className={`scale-in`} size="medium" inputRef={newPassRef} required fullWidth label="New Password" type="password" />
-            <TextField className={`scale-in`} size="medium" inputRef={repeatPassRef} required fullWidth label="Repeat New Password" type="password"/>
+            <TextField className={`scale-in profile-card-item`} size="medium" inputRef={currentPassRef} required fullWidth label="Old Password" type="password" autoComplete="current-password" />
+            <TextField className={`scale-in profile-card-item`} size="medium" inputRef={newPassRef} required fullWidth label="New Password" type="password" />
+            <TextField className={`scale-in profile-card-item`} size="medium" inputRef={repeatPassRef} required fullWidth label="Repeat New Password" type="password"/>
             <Box className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{setChangePassMode(false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
@@ -51,9 +55,9 @@ const Profile:React.FC = () => {
         setVerificationLetterMode(false)
     }
     let sendVerificationLetterForm = verificationLetterMode ? (
-        <Box className={`send-verification-letter-form profile-card scale-in`} component="form" onSubmit={sendVerificationFormHandler} noValidate sx={{ mt: 1 }}>
+        <Box className={`send-verification-letter-form profile-card scale-in`} component="form" onSubmit={sendVerificationFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">Resend Verification Code</Typography>
-            <TextField className={`scale-in`} size="medium" defaultValue={userData.email} inputRef={emailAddressRef} required fullWidth label="Email" type="email" autoComplete="email" />
+            <TextField className={`scale-in profile-card-item`} size="medium" defaultValue={userData.email} inputRef={emailAddressRef} required fullWidth label="Email" type="email" autoComplete="email" />
             <Box className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{setVerificationLetterMode(false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
@@ -63,38 +67,35 @@ const Profile:React.FC = () => {
     // Delete account
     const userEmailRef = useRef<HTMLInputElement>(null);
     const [deleteAccountMode,setDeleteAccountMode] = useState(false);
-    const deleteAccpuntFormHandler = async (event:React.FormEvent) => {
+    const deleteAccountFormHandler = async (event:React.FormEvent) => {
         event.preventDefault();
         const userEmail = userEmailRef.current!.value;
         if(userEmail !== userData.email) {
-            alert('Email does not match.')
-            return
+            return alert('Email does not match.')
         }
         authHooks.deleteAccount();
         setDeleteAccountMode(false)
     }
     let deleteAccountForm = deleteAccountMode ? (
-        <Box className={`delete-account-form profile-card scale-in`} component="form" onSubmit={deleteAccpuntFormHandler} noValidate sx={{ mt: 1 }}>
+        <Box className={`delete-account-form profile-card scale-in`} component="form" onSubmit={deleteAccountFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">Delete Account</Typography>
-            <TextField className={`scale-in`} size="medium" inputRef={userEmailRef} required     fullWidth label="Enter your email" type="email" autoComplete="email" />
+            <TextField className={`scale-in profile-card-item`} size="medium" inputRef={userEmailRef} required fullWidth label="Enter your email" type="email" />
             <Box className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{setDeleteAccountMode(false)}} className={`button`}>Back</Button>
-                {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
+                {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" color='error' className={`button`}>Delete</Button>}
             </Box>
         </Box>
     ) : null
     return (
         <Container className={`profile ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
-            {passwordChangeForm || sendVerificationLetterForm || deleteAccountForm || 
+            {loading ? <Loading height='100%'/> : (passwordChangeForm || sendVerificationLetterForm || deleteAccountForm || 
             <Card className={`profile-card scale-in`}>
                 <Typography className={`username profile-card-item`} component="h5" variant="h5">{`${userData.name}`}</Typography>
                 <Typography className={`profile-card-item`} component="h6" variant="h6">{`Email : ${userData.email}`}</Typography>
-                <Box className={`profile-buttons profile-card-item`}>
-                    <Button variant="outlined" onClick={()=>{setChangePassMode(true)}} className={`change-password`} >Change Password</Button>
-                    <Button variant="outlined" onClick={()=>{setVerificationLetterMode(true)}} className={`send-verification-letter`} >Send Letter</Button>
-                    <Button variant="outlined" color='error' onClick={()=>{setDeleteAccountMode(true)}} className={`delete-account`} >Delete Account</Button>
-                </Box>
-            </Card>}
+                <Button variant="outlined" onClick={()=>{setChangePassMode(true)}} className={`change-password profile-card-item`} >Change Password</Button>
+                {userData.emailConfirmationStatus === 'Pending' && <Button variant="outlined" onClick={()=>{setVerificationLetterMode(true)}} className={`send-verification-letter profile-card-item`} >Resend Verification Letter</Button>}
+                <Button variant="outlined" color='error' onClick={()=>{setDeleteAccountMode(true)}} className={`delete-account profile-card-item`} >Delete Account</Button>
+            </Card>)}
         </Container>
     )
 }

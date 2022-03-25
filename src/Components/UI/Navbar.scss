@@ -12,6 +12,7 @@
     max-width: 100%;
     .toggle-sidebar{
         color: white;
+        font-size: 28px;
     }
     .navbar-title{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
@@ -35,17 +36,31 @@
                 @include widthAndHeight(calc(min(100%,23px)),calc(min(100%,23px)));
                 border-radius: 50%;
                 display: inline-block;
+                color: gray;
                 position: absolute;
                 transition: transform .3s ease, background 0.3s;
             }
+            .toggle-dark-mode-moon{
+                color: rgb(255, 255, 175);
+                font-size: 20px;
+            }
+            .toggle-dark-mode-sun{
+                color: rgb(255, 149, 56);
+                font-size: 20px;
+            }
             .dark{
-                transform: translateX(13px);
+                transform: translateX(14px);
                 background: rgb(21, 34, 49);
             }
             .light{
-                transform: translateX(-13px);
+                transform: translateX(-14px);
                 background: rgb(74, 0, 224);
             }
+        }
+        .toggle-dark-mode-dark{
+            @extend .toggle-dark-mode;
+            background-color: black;
+            box-shadow: 0 0 4px white;
         }
         .sign-buttons{
             @include widthAndHeight(calc(min(100%, 120px)),calc(min(100%, 30px)));

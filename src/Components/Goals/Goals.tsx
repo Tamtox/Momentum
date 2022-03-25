@@ -5,12 +5,15 @@ import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
 import AddNewGoal from './Add-new-goal';
 import useGoalHooks from '../../Hooks/userGoalHooks';
+import useAuthHooks from '../../Hooks/useAuthHooks';
 // Dependencies
+import Cookies from 'js-cookie';
 import {useSelector} from 'react-redux';
-import React,{useState,useRef} from 'react';
+import React,{useState,useRef,useEffect} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
-import { Icon } from '@iconify/react';
-import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card,Tooltip} from '@mui/material';
+import {FiEdit} from 'react-icons/fi';
+import {IoCheckmarkCircleOutline,IoCloseCircleOutline,IoEllipseOutline} from 'react-icons/io5';
+import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
 
 // Sorting algorithm
 function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
@@ -30,6 +33,8 @@ function sortList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 }
 
 const Goals:React.FC = () => {
+    const token = Cookies.get('token');
+    const AuthHooks = useAuthHooks();
     const goalHooks = useGoalHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
@@ -64,7 +69,14 @@ const Goals:React.FC = () => {
     // Toggle new/detailed goal
     const [toggleNewGoal,setToggleNewGoal] = useState(false);
     // Set detailed id
-    const [detailedItem,setDetailedItem] = useState()
+    const [detailedItem,setDetailedItem] = useState();
+    useEffect(() => {
+        if (token) {
+            goalList.length<1 && goalHooks.loadGoalData();
+        } else { 
+            AuthHooks.logout();
+        }
+    }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Box className={`goal-controls${isDarkMode?'-dark':''}`}>
@@ -88,9 +100,9 @@ const Goals:React.FC = () => {
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
                             <Box className='goal-item-icons'>
-                                <Tooltip enterDelay={500} {...{ 'title':`Status: ${goalItem.goalStatus}`,'children':<Icon onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} icon={`akar-icons:circle${goalItem.goalStatus === 'Complete' ? '-check' : ''}`} />}}/>
-                                <Tooltip enterDelay={500} {...{ 'title':`Edit`,'children':<Icon onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} icon="feather:edit" />}}/>
-                                <Tooltip enterDelay={500} {...{ 'title':`Delete`,'children':<Icon onClick={()=>{goalHooks.deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} icon="clarity:remove-line" />}}/>
+                                {goalItem.goalStatus === 'Complete' ? <IoCheckmarkCircleOutline onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} /> : <IoEllipseOutline onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} />}
+                                <FiEdit onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} />
+                                <IoCloseCircleOutline onClick={()=>{goalHooks.deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} />
                             </Box>
                             <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
                         </Card>

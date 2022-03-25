@@ -2,17 +2,17 @@
 import './App.scss';
 //Dependencies
 import {useSelector} from 'react-redux';
-import React,{Suspense} from 'react';
+import React,{Suspense,useEffect} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import type {RootState} from './Store/Store';
+import {RootState} from './Store/Store';
 import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { authActions } from './Store/Store';
 //Components
 import Navbar from './Components/UI/Navbar';
 import Loading from './Components/Misc/Loading';
-import useAuthHooks from './Hooks/useAuthHooks';
-import useTodoHooks from './Hooks/useTodoHooks';
-import useHabitHooks from './Hooks/useHabitHooks';
-import useGoalHooks from './Hooks/userGoalHooks';
+import useMiscHooks from './Hooks/useMiscHooks';
 
 const Home = React.lazy(()=> import('./Components/Misc/Home'));
 const Auth = React.lazy(()=> import('./Components/Auth/Auth'));
@@ -23,11 +23,9 @@ const Habits = React.lazy(()=> import('./Components/Habits/Habits'));
 const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
 
 const App:React.FC = () => {
-  // Preload data on app start
-  useAuthHooks();
-  useTodoHooks();
-  useHabitHooks();
-  useGoalHooks();
+  const miscHooks = useMiscHooks();
+  const token = Cookies.get('token');
+  const dispatch = useDispatch();
   const isLoggedIn:boolean = !!useSelector<RootState>(state=>state.authSlice.token);
   const verificationStatus = useSelector<RootState,string>(state=>state.authSlice.user.emailConfirmationStatus);
   const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
@@ -94,6 +92,13 @@ const App:React.FC = () => {
       // }
     }
   })
+  useEffect(()=>{
+    if (token) {
+      miscHooks.preloadData();
+    } else { 
+        dispatch(authActions.logout())
+    }
+  },[])
   return (
     <ThemeProvider theme={theme}>
       <Box className={`app`} sx={{color:'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>

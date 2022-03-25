@@ -1,22 +1,21 @@
 // Dependencies
-import { useEffect } from "react";
 import Cookies from "js-cookie";
-import {useSelector,useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 // Components
-import { authActions } from "../Store/Store";
-import { RootState } from "../Store/Store";
+import { authActions,todoActions,journalActions,habitsActions,goalActions } from "../Store/Store";
 import useTodoHooks from "./useTodoHooks";
 import useHabitHooks from "./useHabitHooks";
 import useGoalHooks from "./userGoalHooks";
 
 const useAuthHooks = () => {
     const token = Cookies.get('token');
+    const navigate = useNavigate();
     const todoHooks = useTodoHooks();
     const goalHooks = useGoalHooks();
     const habitHooks = useHabitHooks();
     const dispatch = useDispatch();
-    const userData = useSelector<RootState,{email:string,name:string,emailConfirmationStatus:string,}>(state=>state.authSlice.user);
     // Load user data
     const getUserData = async (newToken?:string) => {
         dispatch(authActions.setLoading(true))
@@ -55,6 +54,34 @@ const useAuthHooks = () => {
         }
         dispatch(authActions.setLoading(false))
     }
+    // Logout
+    const logout = async() => {
+        dispatch(authActions.setLoading(true))
+        navigate('/auth');
+        dispatch(todoActions.clearToDoList());
+        dispatch(journalActions.clearEntry());
+        dispatch(habitsActions.clearHabitData());
+        dispatch(goalActions.clearGoalData());
+        dispatch(authActions.logout());
+        dispatch(authActions.setLoading(false))
+    }
+    // Verify account
+    const verifyAccount = async (verificationCode:string) => {
+        dispatch(authActions.setLoading(true))
+        try {
+            await axios.request({
+                method:'POST',
+                url:`http://localhost:3001/users/verify`,
+                data:{verificationCode},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(authActions.verifyAccount('Complete'));
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))
+    }
+    // Change password
     const changePassword = async (currentPass:string,newPass:string) => {
         dispatch(authActions.setLoading(true))
         try {
@@ -70,6 +97,23 @@ const useAuthHooks = () => {
         }
         dispatch(authActions.setLoading(false))
     }
+    // Reset password
+    const resetPassword = async (email:string) => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const passChangeResponse = await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/users/resetPassword`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{email}
+            })
+            alert(passChangeResponse.data);
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))
+    }
+    // Send verification letter
     const sendVerificationLetter = async (email:string) => {
         dispatch(authActions.setLoading(true))
         try {
@@ -84,6 +128,7 @@ const useAuthHooks = () => {
         }
         dispatch(authActions.setLoading(false))
     }
+    // Delete account
     const deleteAccount = async () => {
         dispatch(authActions.setLoading(true))
         try {
@@ -98,14 +143,7 @@ const useAuthHooks = () => {
         }
         dispatch(authActions.setLoading(false))
     }
-    useEffect(() => {
-        if (token) {
-            !userData.email && getUserData();
-        } else { 
-            dispatch(authActions.logout())
-        }
-    }, [])
-    return {getUserData,signInUp,changePassword,sendVerificationLetter,deleteAccount}
+    return {getUserData,signInUp,logout,verifyAccount,changePassword,resetPassword,sendVerificationLetter,deleteAccount}
 }
 
 export default useAuthHooks

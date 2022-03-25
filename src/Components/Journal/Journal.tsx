@@ -9,8 +9,9 @@ import {useSelector,useDispatch} from 'react-redux';
 import React,{ useRef,useState,useEffect} from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { Container,TextField,Button,Box} from '@mui/material';
+import { Container,TextField,Button,Box,Typography} from '@mui/material';
 import { DatePicker} from '@mui/lab';
+import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 
 const Journal:React.FC = () => {
     const token = Cookies.get('token');
@@ -83,16 +84,25 @@ const Journal:React.FC = () => {
     }, [journalEntry.journalEntry])
     return (
         <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
-            {loading?
-            <Loading height='100%'/>:
+            {loading ?<Loading height='100%'/>:
             <Box component="form" className="journal-form" onSubmit={updateJournalEntry} >
-                <DatePicker 
-                inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
-                renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date`}  {...props} />}
-                value={selectedDate} onChange={newDate=>{selectJournalEntryByDate(newDate);}}
-                />
+                <Box className={`journal-date`}>
+                    <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(selectedDate.getTime() - 86400000))}}>
+                        <CgArrowLeft className='journal-date-icon icon-interactive nav-icon' />
+                        <Typography className='journal-date-button-text'>Previous Day</Typography>
+                    </Button>
+                    <DatePicker 
+                    inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
+                    renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date-picker`}  {...props} />}
+                    value={selectedDate} onChange={newDate=>{selectJournalEntryByDate(newDate)}}
+                    />
+                    <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(selectedDate.getTime() + 86400000))}}>
+                        <Typography className='journal-date-button-text'>Next Day</Typography>
+                        <CgArrowRight className='journal-date-icon icon-interactive nav-icon' />
+                    </Button>
+                </Box>
                 <TextField inputRef={journalRef} className={`focus journal-entry input`} defaultValue={journalEntry.journalEntry} placeholder="Write down what is on you mind." fullWidth multiline required autoFocus />
-                <Button type="submit" variant="outlined" className={`journal-button button`}>{entryExists?'Save':'New Entry'}</Button>
+                <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry.journalEntry ?'Save':'New Entry'}</Button>
             </Box>}
         </Container>
     )

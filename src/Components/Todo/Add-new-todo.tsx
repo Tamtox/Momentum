@@ -7,7 +7,7 @@ import {useDispatch } from 'react-redux';
 import React,{useRef,useState} from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { TextField,Button,Box,Card,Dialog,DialogContent,Typography} from '@mui/material';
+import { TextField,Button,Box,Card} from '@mui/material';
 import { DateTimePicker } from '@mui/lab';
 
 const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}|undefined,toggleNewTodo:boolean,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {

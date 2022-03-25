@@ -78,17 +78,17 @@
         width: 100%;
         max-width: 100%;
         margin-left: 0 ;
-        padding-top: 6vh;
+        padding: 6vh 10px 0 10px;
         transition: 0.3s;
     }
     .page-full{
         @extend .page;
-        width: calc(100%-3.5rem);
+        width: calc(100% - 3.5rem);
         margin-left: 3.5rem ;
     }
     .page-compact{
         @extend .page;
-        width: calc(100%-15rem);
+        width: calc(100% - 15rem);
         margin-left: 15rem ;
     }
     .select{

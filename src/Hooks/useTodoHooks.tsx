@@ -1,16 +1,13 @@
 // Dependencies
-import { useEffect } from "react";
 import Cookies from "js-cookie";
-import {useSelector,useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { todoActions,authActions } from "../Store/Store";
-import { RootState } from "../Store/Store";
 
 const useTodoHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
-    const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
     // Load todo data
     const loadTodoData = async (newToken?:string) => {
         dispatch(authActions.setLoading(true))
@@ -54,13 +51,6 @@ const useTodoHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    useEffect(() => {
-        if (token) {
-            todoList.length<1 && loadTodoData();
-        } else { 
-            dispatch(authActions.logout())
-        }
-    }, [])
     return {loadTodoData,changeTodoStatus,deleteToDo}
 }
 
