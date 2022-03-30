@@ -1,51 +1,69 @@
 //Styles
 import './Auth.scss';
 //Dependencies
-import React,{ useRef,useState,} from 'react';
+import React,{useState,} from 'react';
 import {useSelector} from 'react-redux';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 //Components
-import { RootState} from '../../Store/Store';
+import { authActions, RootState} from '../../Store/Store';
 import { Container,TextField,Button,Box,Typography} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 const Auth:React.FC = () => {
     const authHooks = useAuthHooks();
-    // Toggle sign in/sign up
-    const [login, setLogin] = useState(true);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
-    const [emailRef,userNameRef,passwordRef,repeatRef] = [useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null),useRef<HTMLInputElement>(null)];
+    // Toggle sign in/sign up
+    const [authInputs,setAuthInputs] = useState({
+        email:'',
+        username:'',
+        password:'',
+        passwordRepeat:'',
+        isLogin:true,
+        passwordResetMode:false,
+        passwordResetEmail:''
+    })
+    const authInputsHandler = (e:any,input:string) => {
+        const inputs = ['email','username','password','passwordRepeat','passwordResetEmail'];
+        if(inputs.includes(input)) {
+            setAuthInputs((prevState)=>({
+                ...prevState,
+                [input]:e.target.value
+            }))
+        } else {
+            setAuthInputs((prevState)=>({
+                ...prevState,
+                [input]:!authInputs[input === 'isLogin' ? 'isLogin' : 'passwordResetMode']
+            }))
+        }
+    }
     const authFormSubmit = async (event:React.FormEvent) => {
         event.preventDefault();
-        // Check if necessary inputs are filled 
-        const [emailInput,usernameInput,passwordInput] = [emailRef!.current!.value,userNameRef.current?.value,passwordRef!.current!.value];
         // Check if passwords match
-        if(!login) {
-            if(passwordInput !== repeatRef?.current?.value) {
+        if(!authInputs.isLogin) {
+            if(authInputs.password !== authInputs.passwordRepeat) {
                 alert('Passwords do not match!')
                 return
             }
         } 
-        authHooks.signInUp(emailInput,passwordInput,login,usernameInput)
+        authHooks.signInUp(authInputs.email,authInputs.password,authInputs.isLogin,authInputs.username)
     }
     // Reset password
-    const passResetEmailRef = useRef<HTMLInputElement>(null);
-    const [passResetMode,setPassResetMode] = useState(false);
     const passResetHandler = async (event:React.FormEvent) => {
         event.preventDefault();
-        const passResetEmail = passResetEmailRef.current!.value;
-        authHooks.resetPassword(passResetEmail);
-        setPassResetMode(false);
+        authHooks.resetPassword(authInputs.passwordResetEmail);
+        setAuthInputs((prevState)=>({
+            ...prevState,passwordResetMode:false
+        }));
     }
-    let passResetForm = passResetMode ? (
+    let passResetForm = authInputs.passwordResetMode ? (
         <Box className={`auth-card`}>
             <Typography className='scale-in' component="h5" variant="h5">Reset password</Typography>
             <Box className={`auth-form scale-in`} component="form" onSubmit={passResetHandler}>
                 <Box className={`auth-inputs`}>
-                    <TextField className={`auth-input scale-in`} inputRef={passResetEmailRef} required fullWidth label="Enter your email" type="email" autoComplete="email" />
+                    <TextField className={`auth-input`} value={authInputs.passwordResetEmail} onChange={(event)=>{authInputsHandler(event,'passwordResetEmail')}} required fullWidth label="Enter your email" type="email" autoComplete="email" />
                 </Box>
                 <Box className={`auth-buttons`}>
-                    <Button onClick={()=>{setPassResetMode(false)}} variant="outlined" className={`button auth-button`}>Back</Button>
+                    <Button onClick={(event)=>{authInputsHandler(event,'passwordResetMode')}} variant="outlined" className={`button auth-button`}>Back</Button>
                     {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>Reset</Button>}
                 </Box>
             </Box>
@@ -54,20 +72,20 @@ const Auth:React.FC = () => {
     return (
         <Container component="main" className='auth page'>
             {passResetForm || <Box className={`auth-card scale-in`}>
-                <Typography component="h5" variant="h5">{login?'Sign In':'Sign Up'}</Typography>
+                <Typography component="h5" variant="h5">{authInputs.isLogin?'Sign In':'Sign Up'}</Typography>
                 <Box className={`auth-form`} component="form" onSubmit={authFormSubmit}>
                     <Box className={`auth-inputs scale-in`}>
-                        <TextField className={`auth-input scale-in`} inputRef={emailRef} required fullWidth label="Email Address" type="email" autoComplete="email" />
-                        {!login && <TextField className={`auth-input scale-in`} inputRef={userNameRef} required fullWidth label="Username" type="text"/>}
-                        <TextField className={`auth-input scale-in`} inputRef={passwordRef} required fullWidth label="Password" type="password" autoComplete="current-password" />
-                        {!login && <TextField className={`auth-input scale-in`} inputRef={repeatRef} required fullWidth label="Repeat Password" type="password" autoComplete="current-password" />}
+                        <TextField className={`auth-input`} value={authInputs.email} onChange={(event)=>{authInputsHandler(event,'email')}} required fullWidth label="Email Address" type="email" autoComplete="email" />
+                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.username} onChange={(event)=>{authInputsHandler(event,'username')}} required fullWidth label="Username" type="text"/>}
+                        <TextField className={`auth-input`} value={authInputs.password} onChange={(event)=>{authInputsHandler(event,'password')}} required fullWidth label="Password" type="password" autoComplete="current-password" />
+                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.passwordRepeat} onChange={(event)=>{authInputsHandler(event,'passwordRepeat')}} required fullWidth label="Repeat Password" type="password" autoComplete="current-password" />}
                     </Box>
                     <Box className={`auth-buttons`}>
-                        <Button onClick={()=>{setPassResetMode(true)}} variant="outlined" className={`button auth-button`} sx={{width:'fit-content'}}>Reset Password</Button>
-                        {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>{login?'Sign In':'Sign Up'}</Button>}
+                        <Button onClick={(event)=>{authInputsHandler(event,'passwordResetMode')}} variant="outlined" className={`button auth-button`} sx={{width:'fit-content'}}>Reset Password</Button>
+                        {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>{authInputs.isLogin?'Sign In':'Sign Up'}</Button>}
                     </Box>
                 </Box>
-                <Typography className={`auth-switch`} component="h6" variant="h6" onClick={()=>setLogin(!login)}>{login?"Don't have an account ?":"Use existing account"}</Typography>
+                <Typography className={`auth-switch`} component="h6" variant="h6" onClick={(event:any)=>{authInputsHandler(event,'isLogin')}}>{authInputs.isLogin?"Don't have an account ?":"Use existing account"}</Typography>
             </Box>}
         </Container>
     )

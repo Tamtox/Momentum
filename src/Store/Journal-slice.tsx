@@ -25,7 +25,7 @@ const journalSlice = createSlice({
             state.journalEntry = action.payload
         },
         clearEntry(state) {
-            state.date = ""
+            state.date = null
             state.journalEntry = ""
             state._id = ""
         }

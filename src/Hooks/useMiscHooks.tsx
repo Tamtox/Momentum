@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { authActions,goalActions,habitsActions,todoActions } from "../Store/Store";
+import { authActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
 
 const useMiscHooks = () => {
     const token = Cookies.get('token');
@@ -40,6 +40,19 @@ const useMiscHooks = () => {
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(todoActions.setToDoList(todoList.data))
+            //Preload Journal Data
+            const journalEntryResponse:{data:any[]} = await axios.request({
+                method:'POST',
+                url:`http://localhost:3001/journal/getJournalEntry`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{selectedDate:new Date().toString()}
+            })
+            if(journalEntryResponse.data.length>0) {
+                dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
+            } 
+            if (journalEntryResponse.data.length === 0) {
+                dispatch(journalActions.setEntry({date:'',entry:'',id:''}))
+            }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

@@ -12,7 +12,7 @@
     max-width: 100%;
     .toggle-sidebar{
         color: white;
-        font-size: 28px;
+        font-size: 24px;
     }
     .navbar-title{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));

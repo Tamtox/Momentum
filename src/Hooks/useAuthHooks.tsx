@@ -8,6 +8,7 @@ import { authActions,todoActions,journalActions,habitsActions,goalActions } from
 import useTodoHooks from "./useTodoHooks";
 import useHabitHooks from "./useHabitHooks";
 import useGoalHooks from "./userGoalHooks";
+import useJournalHooks from "./useJournalHooks";
 
 const useAuthHooks = () => {
     const token = Cookies.get('token');
@@ -15,6 +16,7 @@ const useAuthHooks = () => {
     const todoHooks = useTodoHooks();
     const goalHooks = useGoalHooks();
     const habitHooks = useHabitHooks();
+    const journalHooks = useJournalHooks();
     const dispatch = useDispatch();
     // Load user data
     const getUserData = async (newToken?:string) => {
@@ -50,6 +52,7 @@ const useAuthHooks = () => {
             todoHooks.loadTodoData(newToken);
             goalHooks.loadGoalData(newToken);
             habitHooks.loadHabitsData(new Date(),newToken);
+            journalHooks.loadJournalData(new Date().toString(),newToken);
             getUserData(newToken);
         }
         dispatch(authActions.setLoading(false))
@@ -57,12 +60,12 @@ const useAuthHooks = () => {
     // Logout
     const logout = async() => {
         dispatch(authActions.setLoading(true))
-        navigate('/auth');
         dispatch(todoActions.clearToDoList());
         dispatch(journalActions.clearEntry());
         dispatch(habitsActions.clearHabitData());
         dispatch(goalActions.clearGoalData());
         dispatch(authActions.logout());
+        navigate('/auth');
         dispatch(authActions.setLoading(false))
     }
     // Verify account
@@ -141,6 +144,7 @@ const useAuthHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
+        logout()
         dispatch(authActions.setLoading(false))
     }
     return {getUserData,signInUp,logout,verifyAccount,changePassword,resetPassword,sendVerificationLetter,deleteAccount}

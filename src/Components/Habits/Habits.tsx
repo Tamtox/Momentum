@@ -5,20 +5,16 @@ import {useSelector} from 'react-redux';
 import React,{ useState,useEffect } from 'react';
 import {Container,TextField,Button,Box,Typography,Card} from '@mui/material';
 import { DatePicker } from '@mui/lab';
-import Cookies from 'js-cookie';
-import {HiSwitchVertical} from 'react-icons/hi';
 import {FiEdit} from 'react-icons/fi';
-import {IoCheckmarkCircleOutline,IoCloseCircleOutline,IoEllipseOutline} from 'react-icons/io5';
+import {IoCheckboxOutline,IoCloseCircleOutline,IoSquareOutline} from 'react-icons/io5';
 //Components
 import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
 import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
-import useAuthHooks from '../../Hooks/useAuthHooks';
+
 
 const Habits:React.FC = () => {
-    const token = Cookies.get('token');
-    const AuthHooks = useAuthHooks();
     const habitHooks = useHabitHooks();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
@@ -32,13 +28,12 @@ const Habits:React.FC = () => {
     const [selectedDate, setSelectedDate] = useState(new Date(datepickerDate));
     const selectedDateWeekStart = selectedDate.getTime() + 86400000 * (selectedDate.getDay()? 1 - selectedDate.getDay() : -6);
     // Weekday list for labels 
-    const weekdaysList = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    interface WeekdayList {[key:string|number]:string}
+    const weekdaysList:WeekdayList = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
     // Set detailed item
     const [detailedHabit,setDetailedItem] = useState();
     // Toggle new/detailed habit
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
-    // Toggle Habit List / Habit Entries
-    const [habitListMode,setHabitListMode] = useState(false);
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
         if(newDate === null) {
@@ -54,11 +49,7 @@ const Habits:React.FC = () => {
         setSelectedDate(newDate);
     }
     useEffect(() => {
-        if (token) {
-            habitList.length<1 && habitHooks.loadHabitsData(new Date());
-        } else { 
-            AuthHooks.logout();
-        }
+        habitList.length<1 && habitHooks.loadHabitsData(new Date());
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
@@ -68,51 +59,35 @@ const Habits:React.FC = () => {
                 renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date`}  {...props} />}
                 value={selectedDate} onChange={newDate=>{loadSelectedDateData(newDate);}}
                 />
-                <Card variant='elevation' className={`habit-list-label`} onClick={()=>{setHabitListMode(!habitListMode)}}>
-                    {habitListMode? "Habit List" : `Week : ${new Date(selectedDateWeekStart).toLocaleDateString()} - ${new Date(selectedDateWeekStart+86400000*6).toLocaleDateString()}`}
-                    <HiSwitchVertical className='habit-list-label-icon' />
+                <Card variant='elevation' className={`habit-list-label`}>
+                    {`Week : ${new Date(selectedDateWeekStart).toLocaleDateString()} - ${new Date(selectedDateWeekStart+86400000*6).toLocaleDateString()}`}
                 </Card>
                 <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
             </Box>
             {loading ? <Loading height='80vh'/> :
-            <Box className={`habit habit-${habitListMode ? 'list' : 'entries'} scale-in`}>
-                {!habitListMode && 
-                <Card variant='elevation' className={`habit-item habit-entry-item`}>
-                    <Typography className={`habit-list-item-habit-title`}>Habit</Typography>
-                    <Box className={`habit-entries-weekdays`}>
-                        {weekdaysList.map(weekday=>{
-                            return <Typography className={`habit-entry-weekday`}>{weekday}</Typography>
-                        })}
-                    </Box>
-                </Card>}
+            <Box className={`habit-list scale-in`}>
                 {habitList.map((habitListItem:any)=>{
-                    if(habitListMode) {
-                        return(
-                        <Card variant='elevation' className={`habit-item habit-list-item`} key={habitListItem._id}>
+                    return(
+                        <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
                             <Box className='habit-list-item-icons'>
                                 <FiEdit onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}} className={`icon-interactive detailed-habit-icon`} />
                                 <IoCloseCircleOutline onClick={()=>{habitHooks.deleteHabit(habitListItem._id,habitListItem.goalId)}} className={`icon-interactive delete-habit-icon`} />
                             </Box>
-                            <Typography className={`habit-list-item-habit-title`}>{habitListItem.habitTitle}</Typography>
-                        </Card>)
-                    } else {
-                        if(habitListItem.habitEntries.length>0) {
-                            return (
-                                <Card variant='elevation' className={`habit-item habit-entry-item`} key={habitListItem._id}>
-                                    <Typography className={`habit-list-item-habit-title`}>{habitListItem.habitTitle}</Typography>
-                                    <Box className={`habit-entries-weekdays`}>
-                                    {habitListItem.habitEntries.map((habitEntry:any)=>{
-                                        return (
-                                            <Box key={habitEntry._id} className={`habit-entry-weekday habit-entry-weekday${habitEntry.weekday}`}>
-                                                {habitEntry.habitEntryStatus === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/> : <IoEllipseOutline className={`icon-interactive habit-entry-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/>}
-                                            </Box>
-                                        )
-                                    })}
-                                    </Box>
-                                </Card>
-                            )
-                        } else {return null}
-                    }
+                            <Typography className={`habit-list-item-title`}>{habitListItem.habitTitle}</Typography>
+                            <Box className={`habit-weekdays`}>
+                                {habitListItem.habitEntries.map((habitEntry:any)=>{
+                                    return (
+                                        <Box key={habitEntry._id} className={`habit-weekday`}>
+                                            <Typography className={`habit-weekday-label`}>{weekdaysList[habitEntry.weekday as keyof WeekdayList]}</Typography>
+                                            {habitEntry.habitEntryStatus === 'Complete' ? 
+                                            <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/> : 
+                                            <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/>}
+                                        </Box>
+                                    )
+                                })}
+                            </Box>
+                        </Card>
+                    )
                 })}
             </Box>
             } 

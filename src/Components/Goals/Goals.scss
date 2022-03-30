@@ -2,7 +2,7 @@
 
 .goals{
     .goal-controls{
-        @include widthAndHeight(calc(min(100%, 70rem)),10vh);
+        @include widthAndHeight(calc(min(100%, 70vw)),10vh);
         position: -webkit-sticky;
         position: sticky;
         top: 6vh;
@@ -24,7 +24,7 @@
         height: 90%;
     }
     .goal-list{
-        @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+        @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
         @include flex;
         flex-wrap: wrap;
         padding: 1rem 0 7vh 0;
@@ -47,7 +47,7 @@
                 padding: 0 1rem 0 1rem;
                 .detailed-goal-icon{
                     color: rgb(70, 116, 255);
-                    font-size: 24px;
+                    font-size: 25px;
                 }
                 .delete-goal-icon{
                     font-size: 28px;

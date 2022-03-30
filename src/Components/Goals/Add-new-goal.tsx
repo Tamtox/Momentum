@@ -1,7 +1,7 @@
 // Styles
 import './Add-new-goal.scss';
 // Components
-import { goalActions,habitsActions,RootState } from '../../Store/Store';
+import { authActions,goalActions,habitsActions,RootState } from '../../Store/Store';
 //Dependencies
 import {useDispatch,useSelector} from 'react-redux';
 import React,{useRef,useState} from 'react';
@@ -44,6 +44,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
     // Submit or update goal 
     const updateGoal = async (event:React.FormEvent) => {
         event.preventDefault();
+        dispatch(authActions.setLoading(true))
         const [goalTitle,habitTitle] = [newGoalTitleRef.current!.value,newHabitTitleRef.current?.value];
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
         const newGoal:{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string | undefined} = {
@@ -74,7 +75,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
                 const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
                     method:props.detailedGoal?.habitId ? 'PATCH' : 'POST',
                     url:`http://localhost:3001/habits/${props.detailedGoal?.habitId ? 'updateHabit' : 'addNewHabit'}`,
-                    data:newHabit,
+                    data:{...newHabit,currentDate:new Date()},
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 // Update goal and habit ids
@@ -93,7 +94,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
                 newGoalResponse.data.habitId = newHabitResponse.data.newHabit._id
                 newHabitResponse.data.newHabit.goalId = newGoalResponse.data._id
                 newHabitResponse.data.newHabit.goalTargetDate = newGoalResponse.data.goalTargetDate
-                detailedHabit ? dispatch(habitsActions.updateHabit(newHabit)) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
+                detailedHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
                 props.detailedGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
             } else {
                 props.detailedGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
@@ -104,6 +105,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
         // Reset detailed item and return to goal list
         props.setDetailedItem();
         props.returnToGoals();
+        dispatch(authActions.setLoading(false))
     }
     return(
         <Box className={`add-new-goal-backdrop backdrop opacity-transition`}>

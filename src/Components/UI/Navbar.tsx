@@ -8,16 +8,17 @@ import { useSelector,useDispatch,} from 'react-redux';
 import type {RootState} from '../../Store/Store';
 import {Box,Typography,Fab} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {CgArrowRightO,CgProfile,CgMenu,CgHomeAlt} from 'react-icons/cg';
+import {CgArrowRightO,CgProfile,CgHomeAlt} from 'react-icons/cg';
 import {BsFillJournalBookmarkFill,BsCalendar2Check} from 'react-icons/bs';
 import {MdSchedule} from 'react-icons/md';
-import {FaSun,FaMoon} from 'react-icons/fa';
+import {FaSun,FaMoon,FaBars} from 'react-icons/fa';
 import {FiTarget,FiLogIn,FiLogOut} from 'react-icons/fi';
 //Components
 import { authActions} from '../../Store/Store';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 
 const  Navbar:React.FC = () => {
+    const isLoggedIn = !!useSelector<RootState>(state=>state.authSlice.token);
     const authHooks = useAuthHooks();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const  Navbar:React.FC = () => {
     const toggleDarkMode = () => {
         dispatch(authActions.setDarkMode())
     }
-    const isLoggedIn = !!useSelector<RootState>(state=>state.authSlice.token);
+    // Sidebar
     let sidebar = (
         <Box className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`}>
             <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
@@ -70,7 +71,7 @@ const  Navbar:React.FC = () => {
     },[compact])
     return (
         <Box component="header" className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
-            {isLoggedIn && <CgMenu className='icon-interactive toggle-sidebar nav-icon' onClick={()=>{dispatch(authActions.toggleSidebarVisibility(null))}} />}
+            {isLoggedIn && <FaBars className='icon-interactive toggle-sidebar nav-icon' onClick={()=>{dispatch(authActions.toggleSidebarVisibility(null))}} />}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
             <Box className={`navbar-utility`}>
                 <Box className={`toggle-dark-mode${isDarkMode?'-dark':''}`} onClick={toggleDarkMode}>

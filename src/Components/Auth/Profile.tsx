@@ -36,7 +36,7 @@ const Profile:React.FC = () => {
     let passwordChangeForm = changePassMode ? (
         <Box className={`password-change-form profile-card scale-in`} component="form" onSubmit={changePasswordFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">Change Password</Typography>
-            <TextField className={`scale-in profile-card-item`} size="medium" inputRef={currentPassRef} required fullWidth label="Old Password" type="password" autoComplete="current-password" />
+            <TextField className={`scale-in profile-card-item`} size="medium" inputRef={currentPassRef} required fullWidth label="Old Password" type="password" />
             <TextField className={`scale-in profile-card-item`} size="medium" inputRef={newPassRef} required fullWidth label="New Password" type="password" />
             <TextField className={`scale-in profile-card-item`} size="medium" inputRef={repeatPassRef} required fullWidth label="Repeat New Password" type="password"/>
             <Box className={`profile-buttons profile-card-item`}>

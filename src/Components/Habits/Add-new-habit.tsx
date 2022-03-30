@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import {useDispatch,useSelector} from 'react-redux';
 import React,{ useRef,useState } from 'react';
-import { goalActions, habitsActions,RootState } from "../../Store/Store";
+import { authActions,goalActions, habitsActions,RootState } from "../../Store/Store";
 import { TextField,Button,Box,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/lab';
 
@@ -43,6 +43,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
     // Add new habit
     const updateHabit = async (event:React.FormEvent) => {
         event.preventDefault();
+        dispatch(authActions.setLoading(true))
         const [goalTitle,habitTitle] = [newGoalTitleRef.current?.value,newHabitTitleRef.current!.value];
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
         const newHabit:{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{[key:number]:boolean},goalId:string | null, goalTargetDate:string|null, _id:string | null,} = {
@@ -66,7 +67,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
             const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
                 method:props.detailedHabit ? 'PATCH' : 'POST',
                 url:`http://localhost:3001/habits/${props.detailedHabit ? 'updateHabit' : 'addNewHabit'}`,
-                data:newHabit,
+                data:{...newHabit,currentDate:new Date()},
                 headers:{Authorization: `Bearer ${token}`}
             })
             if(props.detailedHabit?.goalId || goalMode) {
@@ -93,7 +94,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
                 newHabitResponse.data.newHabit.goalId = newGoalResponse.data._id
                 newHabitResponse.data.newHabit.goalTargetDate = newGoalResponse.data.goalTargetDate
                 detailedGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
-                props.detailedHabit ? dispatch(habitsActions.updateHabit(newHabit)) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
+                props.detailedHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
             }
             props.detailedHabit ? dispatch(habitsActions.updateHabit(newHabit)) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
         } catch (error) {
@@ -102,6 +103,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
         // Reset detailed item and return to habits
         props.setDetailedItem();
         props.returnToHabits();
+        dispatch(authActions.setLoading(false))
     }
     return (
         <Box className={`opacity-transition add-new-habit-backdrop backdrop`}>
@@ -114,7 +116,7 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
                     renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
                     value={selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
                 />
-                <TextField label='Habit Title' inputRef={newHabitTitleRef} className="add-new-habit-title" multiline required />
+                <TextField label='Habit Title' inputRef={newHabitTitleRef} defaultValue={props.detailedHabit?.habitTitle} className="add-new-habit-title" multiline required />
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
                         <Tooltip enterDelay={300} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
