@@ -24,8 +24,7 @@ const Profile:React.FC = () => {
         event.preventDefault();
         const [currentPass,newPass,repeatNewPass] = [currentPassRef.current!.value,newPassRef.current!.value,repeatPassRef.current!.value];
         if(newPass.toLowerCase() !== repeatNewPass.toLowerCase()) {
-            alert('Passwords do not match!')
-            return
+            return alert('Passwords do not match!')
         }
         if(newPass.length < 6) {
             return alert('New password is too short');

@@ -37,6 +37,20 @@ const useTodoHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
+    // Update or add todo
+    const updateTodo = async (newTodo:{},update:boolean) => {
+        try {
+            const newTodoResponse = await axios.request({
+                method:update ? 'PATCH' : 'POST',
+                url:`http://localhost:3001/todo/${update ? 'updateTodo' : 'addNewTodo'}`,
+                data:newTodo,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            update ? dispatch(todoActions.updateToDo(newTodo)) : dispatch(todoActions.addToDo(newTodoResponse.data))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
+    }
     // Delete Todo
     const deleteToDo = async (_id:string) => {
         try {
@@ -51,7 +65,7 @@ const useTodoHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    return {loadTodoData,changeTodoStatus,deleteToDo}
+    return {loadTodoData,changeTodoStatus,updateTodo,deleteToDo}
 }
 
 export default useTodoHooks
