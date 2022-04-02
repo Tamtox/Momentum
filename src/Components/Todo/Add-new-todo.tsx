@@ -10,8 +10,8 @@ import { DateTimePicker } from '@mui/lab';
 const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}|undefined,toggleNewTodo:boolean,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
     const todoHooks = useTodoHooks();
     const [todoInputs,setTodoInputs] = useState({
-        todoTitle:'',
-        todoDescription:'',
+        todoTitle:props.detailedTodo?.todoTitle || '',
+        todoDescription:props.detailedTodo?.todoDescription || '',
         datePickerUsed:false,
         selectedDate:new Date(props.detailedTodo?.todoTargetDate || new Date())
     })

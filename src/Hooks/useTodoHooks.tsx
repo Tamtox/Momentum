@@ -39,6 +39,7 @@ const useTodoHooks = () => {
     }
     // Update or add todo
     const updateTodo = async (newTodo:{},update:boolean) => {
+        dispatch(authActions.setLoading(true))   
         try {
             const newTodoResponse = await axios.request({
                 method:update ? 'PATCH' : 'POST',
@@ -50,6 +51,7 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
+        dispatch(authActions.setLoading(false))   
     }
     // Delete Todo
     const deleteToDo = async (_id:string) => {

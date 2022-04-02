@@ -24,6 +24,52 @@ const useHabitHooks = () => {
         }
         dispatch(authActions.setLoading(false))   
     }
+    // Update or add habit 
+    const updateHabit = async (newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null},updateHabit:boolean,newGoal:{_id:string|undefined,goalTargetDate:string|null}|null,updateGoal:boolean) =>{
+        dispatch(authActions.setLoading(true))   
+        try {
+            const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
+                method:updateHabit ? 'PATCH' : 'POST',
+                url:`http://localhost:3001/habits/${updateHabit ? 'updateHabit' : 'addNewHabit'}`,
+                data:{...newHabit,currentDate:new Date().toString()},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            if(newGoal) {
+                const newGoalResponse = await axios.request({
+                    method:newHabit.goalId ? 'PATCH' : 'POST',
+                    url:`http://localhost:3001/goals/${newHabit.goalId ?  'updateGoal' : 'addNewGoal'}`,
+                    data:newGoal,
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                // Update goal and habit ids
+                const habitId = updateHabit ? newHabit._id : newHabitResponse.data.newHabit._id
+                const goalId = updateGoal ? newGoal._id : newGoalResponse.data._id
+                const goalTargetDate = updateGoal ? newGoal.goalTargetDate : newGoalResponse.data.goalTargetDate
+                if(!newHabit.goalId) {
+                    await axios.request({
+                        method:'PATCH',
+                        url:`http://localhost:3001/goals/updateGoal`,
+                        data:{_id:goalId,habitId},
+                        headers:{Authorization: `Bearer ${token}`}
+                    })
+                    await axios.request({
+                        method:'PATCH',
+                        url:`http://localhost:3001/habits/updateHabit`,
+                        data:{_id:habitId,goalId,goalTargetDate},
+                        headers:{Authorization: `Bearer ${token}`}
+                    })
+                    newGoalResponse.data.habitId = habitId
+                    updateHabit ? newHabit.goalId = goalId :  newHabitResponse.data.newHabit.goalId = goalId
+                    updateHabit ? newHabit.goalTargetDate = goalTargetDate  : newHabitResponse.data.newHabit.goalTargetDate = goalTargetDate
+                }
+                updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
+            }
+            updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
+        dispatch(authActions.setLoading(false))   
+    }
     // Delete habit
     const deleteHabit = async (habitId:string,pairedGoalId?:string) => {
         try {
@@ -61,7 +107,7 @@ const useHabitHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
     }
-    return {loadHabitsData,deleteHabit,changeHabitStatus}
+    return {loadHabitsData,deleteHabit,updateHabit,changeHabitStatus}
 }
 
 export default useHabitHooks
