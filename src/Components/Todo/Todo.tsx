@@ -9,17 +9,16 @@ import useTodoHooks from '../../Hooks/useTodoHooks';
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
-import {FiEdit} from 'react-icons/fi';
-import {IoCheckmarkCircleOutline,IoCloseCircleOutline,IoEllipseOutline} from 'react-icons/io5';
-import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card,OutlinedInput} from '@mui/material';
+import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
+import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
 
-// Sorting algorithm
 const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.todoCreationDate).getTime() - new Date(itemB.todoCreationDate).getTime()) };
         if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.todoCreationDate).getTime() - new Date(itemA.todoCreationDate).getTime()) };
         if (sortQuery === 'statusPend') { list = list.filter(item=>item.todoStatus === 'Pending') };
         if (sortQuery === 'statusComp') { list = list.filter(item=>item.todoStatus === 'Complete') };
+        if (sortQuery === 'isArchived') { list = list.filter(item=>item.isArchived === true) };
     }
     if(searchQuery) {
         list = list.filter(item=>item.todoTitle.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -27,10 +26,10 @@ const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) =>
     return list
 }
 
-
 const Todo:React.FC = () => {
     const todoHooks = useTodoHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
+    const archiveLoaded = useSelector<RootState,boolean>(state=>state.todoSlice.archiveLoaded);
     const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -46,6 +45,9 @@ const Todo:React.FC = () => {
     }
     const [queries,setNewQueries] = useState({sortQuery:searchQuery || '',searchQuery:searchQuery || ''}) ;
     const sortQueryHandler = (e:any) => {
+        if(e.target.value === 'isArchived') {
+            !archiveLoaded && todoHooks.loadArchivedTodoData();
+        }
         setNewQueries((prevState)=>({
             ...prevState,
             sortQuery:e.target.value
@@ -66,6 +68,7 @@ const Todo:React.FC = () => {
     const [detailedItem,setDetailedItem] = useState();
     useEffect(() => {
         todoList.length<1 && todoHooks.loadTodoData();
+        sortQuery === 'isArchived' && !archiveLoaded && todoHooks.loadArchivedTodoData()
     }, [])
     return (
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
@@ -78,6 +81,7 @@ const Todo:React.FC = () => {
                         <MenuItem value="dateDesc">Creation Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>
                         <MenuItem value="statusComp">Status Complete</MenuItem>
+                        <MenuItem value="isArchived">Archived Items</MenuItem>
                     </Select>
                 </FormControl>
                 <TextField className={`search-todo`} sx={{width:"calc(min(100%, 33rem))"}} variant='outlined' value={queries.searchQuery} onChange={searchQueryHandler}  size='small' label="Search"/>
@@ -89,12 +93,12 @@ const Todo:React.FC = () => {
                 {filteredList.map((todoItem)=>{
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
-                            <Box className='todo-item-icons'>
-                                {todoItem.todoStatus === 'Complete' ? <IoCheckmarkCircleOutline onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`} /> : <IoEllipseOutline onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}} className={`icon-interactive change-todo-status-icon ${todoItem.todoStatus}`}/>}
-                                <FiEdit onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}} className={`icon-interactive detailed-todo-icon`}/>
-                                <IoCloseCircleOutline onClick={()=>{todoHooks.deleteToDo(todoItem._id)}} className={`icon-interactive delete-todo-icon`}/>
+                            <Box className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}}>
+                                {todoItem.todoStatus === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive ${todoItem.todoStatus}`} /> : <IoEllipseOutline className={`icon-interactive ${todoItem.todoStatus}`}/>}
                             </Box>
-                            <Typography className={`todo-item-title`}>{todoItem.todoTitle}</Typography>
+                            <Box  className={`todo-item-title`} onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}}>
+                                <Typography className='todo-item-title-text'>{todoItem.todoTitle}</Typography>
+                            </Box>
                         </Card>
                     )
                 })}

@@ -6,6 +6,7 @@ import useTodoHooks from '../../Hooks/useTodoHooks';
 import React,{useState} from 'react';
 import { TextField,Button,Box,Card} from '@mui/material';
 import { DateTimePicker } from '@mui/lab';
+import {BsTrash} from 'react-icons/bs';
 
 const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}|undefined,toggleNewTodo:boolean,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
     const todoHooks = useTodoHooks();
@@ -48,11 +49,14 @@ const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string
     return(
         <Box className={`backdrop opacity-transition`}>
             <Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
-                <DateTimePicker 
-                inputFormat="dd/MM/yyyy HH:mm" label="Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                value={todoInputs.selectedDate} onChange={newDate=>{datePick(newDate);}}
-                />
+                <Box className={`add-new-todo-controls`}>
+                    <DateTimePicker 
+                    inputFormat="dd/MM/yyyy HH:mm" label="Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                    renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                    value={todoInputs.selectedDate} onChange={newDate=>{datePick(newDate);}}
+                    />
+                    {props.detailedTodo && <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(props.detailedTodo!._id);props.setDetailedItem();props.returnToTodo()}}/>}
+                </Box>
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
                 <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
                 <Box className={`add-new-todo-buttons`}>

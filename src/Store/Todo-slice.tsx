@@ -7,12 +7,15 @@ interface TodoSchema {
         todoCreationDate:string,
         todoTargetDate:string | null,
         todoStatus:string,
+        isArchived:boolean,
         _id:string
-    }[]
+    }[],
+    archiveLoaded:boolean
 }
 
 const initialTodoState:TodoSchema = {
-    todoList:[]
+    todoList:[],
+    archiveLoaded:false
 }
 const todoSlice = createSlice({
     name:'todo',
@@ -36,6 +39,12 @@ const todoSlice = createSlice({
         },
         setToDoList(state,action) {
             state.todoList = action.payload
+        },
+        setArchivedToDoList(state,action) {
+            state.todoList = state.todoList.concat(action.payload)
+            if(action.payload.length > 0) {
+                state.archiveLoaded = true
+            }
         },
         updateToDo(state,action) {
             state.todoList = state.todoList.map(item=>{

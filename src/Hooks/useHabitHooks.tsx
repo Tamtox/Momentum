@@ -25,7 +25,7 @@ const useHabitHooks = () => {
         dispatch(authActions.setLoading(false))   
     }
     // Update or add habit 
-    const updateHabit = async (newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null},updateHabit:boolean,newGoal:{_id:string|undefined,goalTargetDate:string|null}|null,updateGoal:boolean) =>{
+    const updateHabit = async (newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null},updateHabit:boolean,newGoal:{_id:string|undefined,goalTargetDate:string|null,habitId:string|null}|null,updateGoal:boolean) =>{
         dispatch(authActions.setLoading(true))   
         try {
             const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
@@ -58,7 +58,7 @@ const useHabitHooks = () => {
                         data:{_id:habitId,goalId,goalTargetDate},
                         headers:{Authorization: `Bearer ${token}`}
                     })
-                    newGoalResponse.data.habitId = habitId
+                    updateGoal ? newGoal.habitId = habitId : newGoalResponse.data.habitId = habitId
                     updateHabit ? newHabit.goalId = goalId :  newHabitResponse.data.newHabit.goalId = goalId
                     updateHabit ? newHabit.goalTargetDate = goalTargetDate  : newHabitResponse.data.newHabit.goalTargetDate = goalTargetDate
                 }
@@ -71,7 +71,7 @@ const useHabitHooks = () => {
         dispatch(authActions.setLoading(false))   
     }
     // Delete habit
-    const deleteHabit = async (habitId:string,pairedGoalId?:string) => {
+    const deleteHabit = async (habitId:string,pairedGoalId:string|null) => {
         try {
             await axios.request({
                 method:'DELETE',

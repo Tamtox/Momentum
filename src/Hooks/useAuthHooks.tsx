@@ -37,6 +37,7 @@ const useAuthHooks = () => {
     const signInUp = async (email:string,password:string,isLogin:boolean,name?:string) => {
         dispatch(authActions.setLoading(true))
         let newToken:string = '';
+        let message
         try {
             const authResponse:{data:{token:string}} = await axios.request({
                 method:'POST',
@@ -46,7 +47,11 @@ const useAuthHooks = () => {
             dispatch(authActions.login(authResponse.data))
             newToken = authResponse.data.token
         } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+            if(axios.isAxiosError(error)) {
+                message = error.response?.data || error.message
+            } else { 
+                console.log(error) ;
+            }
         }
         if(isLogin && newToken) {
             todoHooks.loadTodoData(newToken);
@@ -56,6 +61,7 @@ const useAuthHooks = () => {
             getUserData(newToken);
         }
         dispatch(authActions.setLoading(false))
+        return message
     }
     // Logout
     const logout = async() => {
@@ -71,22 +77,30 @@ const useAuthHooks = () => {
     // Verify account
     const verifyAccount = async (verificationCode:string) => {
         dispatch(authActions.setLoading(true))
+        let message
         try {
-            await axios.request({
+            const verificationResponse = await axios.request({
                 method:'POST',
                 url:`http://localhost:3001/users/verify`,
                 data:{verificationCode},
                 headers:{Authorization: `Bearer ${token}`}
             })
+            message = verificationResponse.data.message
             dispatch(authActions.verifyAccount('Complete'));
         } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+            if(axios.isAxiosError(error)) {
+                message = error.response?.data || error.message
+            } else { 
+                console.log(error) ;
+            }
         }
         dispatch(authActions.setLoading(false))
+        return message
     }
     // Change password
     const changePassword = async (currentPass:string,newPass:string) => {
         dispatch(authActions.setLoading(true))
+        let message 
         try {
             const passChangeResponse = await axios.request({
                 method:'PATCH',
@@ -95,14 +109,21 @@ const useAuthHooks = () => {
                 data:{currentPass,newPass}
             })
             dispatch(authActions.login(passChangeResponse.data))
+            message = passChangeResponse.data.message
         } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+            if(axios.isAxiosError(error)) {
+                message = error.response?.data || error.message
+            } else { 
+                console.log(error) ;
+            }
         }
         dispatch(authActions.setLoading(false))
+        return message
     }
     // Reset password
     const resetPassword = async (email:string) => {
         dispatch(authActions.setLoading(true))
+        let message
         try {
             const passChangeResponse = await axios.request({
                 method:'PATCH',
@@ -110,26 +131,38 @@ const useAuthHooks = () => {
                 headers:{Authorization: `Bearer ${token}`},
                 data:{email}
             })
-            alert(passChangeResponse.data);
+            message = passChangeResponse.data.message;
         } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+            if(axios.isAxiosError(error)) {
+                message = error.response?.data || error.message
+            } else { 
+                console.log(error) ;
+            }
         }
-        dispatch(authActions.setLoading(false))
+        dispatch(authActions.setLoading(false));
+        return message
     }
     // Send verification letter
     const sendVerificationLetter = async (email:string) => {
         dispatch(authActions.setLoading(true))
+        let message
         try {
-            await axios.request({
+            const sendVerificationResponse = await axios.request({
                 method:'POST',
                 url:`http://localhost:3001/users/sendVerificationLetter`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{email}
             })
+            message = sendVerificationResponse.data.message
         } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+            if(axios.isAxiosError(error)) {
+                message = error.response?.data || error.message
+            } else { 
+                console.log(error) ;
+            }
         }
         dispatch(authActions.setLoading(false))
+        return message
     }
     // Delete account
     const deleteAccount = async () => {

@@ -9,7 +9,7 @@
 
 // Color mode
 .nav-dark{
-    background: rgb(19, 30, 44);
+    background: rgb(14, 22, 32);
     transition: background 0.3s;
 }
 .nav-light{
@@ -53,8 +53,7 @@
         transition: 0.2s;
     }
     .icon-interactive:hover{
-        transform: scale(1.15);
-        filter:drop-shadow(1px 2px 1px gray);
+        transform: scale(1.1);
     }
     .input{
         font-size: 16px;

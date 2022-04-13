@@ -23,6 +23,21 @@ const useGoalHooks = () => {
         }
         dispatch(authActions.setLoading(false))   
     }
+     // Load archived goal data
+    const loadArchivedGoalData = async (newToken?:string) => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const goalListResponse = await axios.request({
+                method:'GET',
+                url:`http://localhost:3001/goals/getArchivedGoals`,
+                headers:{Authorization: `Bearer ${newToken || token}`}
+            })
+            dispatch(goalActions.setArchivedGoalList(goalListResponse.data))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))   
+    }
     // Toggle Goal status
     const changeGoalStatus = async (_id:string,goalStatus:string) => {
         try {
@@ -71,8 +86,7 @@ const useGoalHooks = () => {
                         data:{_id:habitId,goalId,goalTargetDate},
                         headers:{Authorization: `Bearer ${token}`}
                     })
-                    console.log(newHabitResponse)
-                    newGoalResponse.data.habitId = habitId
+                    updateGoal ? newGoal.habitId = habitId : newGoalResponse.data.habitId = habitId
                     updateHabit ? newHabit.goalId = goalId :  newHabitResponse.data.newHabit.goalId = goalId
                     updateHabit ? newHabit.goalTargetDate = goalTargetDate  : newHabitResponse.data.newHabit.goalTargetDate = goalTargetDate
                     updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
@@ -85,7 +99,7 @@ const useGoalHooks = () => {
         dispatch(authActions.setLoading(false))   
     }
     // Delete Goal
-    const deleteGoal = async (_id:string,pairedHabitId?:string) => {
+    const deleteGoal = async (_id:string,pairedHabitId:string|null) => {
         try {
             await axios.request({
                 method:'DELETE',
@@ -107,7 +121,7 @@ const useGoalHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    return {loadGoalData,changeGoalStatus,updateGoal,deleteGoal}
+    return {loadGoalData,loadArchivedGoalData,changeGoalStatus,updateGoal,deleteGoal}
 }
 
 export default useGoalHooks

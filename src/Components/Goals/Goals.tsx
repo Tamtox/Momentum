@@ -9,17 +9,16 @@ import useGoalHooks from '../../Hooks/userGoalHooks';
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
-import {FiEdit} from 'react-icons/fi';
-import {IoCheckmarkCircleOutline,IoCloseCircleOutline,IoEllipseOutline} from 'react-icons/io5';
+import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
 
-// Sorting algorithm
 function filterList(list:any[],sortQuery:string|null,searchQuery:string|null) {
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.goalCreationDate).getTime() - new Date(itemB.goalCreationDate).getTime()) };
         if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.goalCreationDate).getTime() - new Date(itemA.goalCreationDate).getTime()) };
         if (sortQuery === 'statusPend') { list = list.filter(item=>item.goalStatus === 'Pending') };
         if (sortQuery === 'statusComp') { list = list.filter(item=>item.goalStatus === 'Complete') };
+        if (sortQuery === 'isArchived') { list = list.filter(item=>item.isArchived === true) };
     }
     if(searchQuery) {
         list = list.filter(item=>item.goalTitle.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -30,6 +29,7 @@ function filterList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 const Goals:React.FC = () => {
     const goalHooks = useGoalHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
+    const archiveLoaded = useSelector<RootState,boolean>(state=>state.goalSlice.archiveLoaded);
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -45,6 +45,9 @@ const Goals:React.FC = () => {
     }
     const [queries,setNewQueries] = useState({sortQuery:searchQuery || '',searchQuery:searchQuery || ''}) ;
     const sortQueryHandler = (e:any) => {
+        if(e.target.value === 'isArchived') {
+            !archiveLoaded && goalHooks.loadArchivedGoalData();
+        }
         setNewQueries((prevState)=>({
             ...prevState,
             sortQuery:e.target.value
@@ -65,6 +68,7 @@ const Goals:React.FC = () => {
     const [detailedItem,setDetailedItem] = useState();
     useEffect(() => {
         goalList.length<1 && goalHooks.loadGoalData();
+        sortQuery === 'isArchived' && !archiveLoaded && goalHooks.loadArchivedGoalData();
     }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
@@ -77,6 +81,7 @@ const Goals:React.FC = () => {
                         <MenuItem value="dateDesc">Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>
                         <MenuItem value="statusComp">Status Complete</MenuItem>
+                        <MenuItem value="isArchived">Archived Items</MenuItem>
                     </Select>
                 </FormControl>
                 <TextField  className={`search-goals`} sx={{width:"calc(min(100%, 33rem))"}} value={queries.searchQuery} onChange={searchQueryHandler} fullWidth size='small' label="Search"/>
@@ -88,12 +93,12 @@ const Goals:React.FC = () => {
                 {filteredList.map((goalItem)=>{
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
-                            <Box className='goal-item-icons'>
-                                {goalItem.goalStatus === 'Complete' ? <IoCheckmarkCircleOutline onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} /> : <IoEllipseOutline onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}} className={`icon-interactive change-goal-status-icon ${goalItem.goalStatus}`} />}
-                                <FiEdit onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}} className={`icon-interactive detailed-goal-icon`} />
-                                <IoCloseCircleOutline onClick={()=>{goalHooks.deleteGoal(goalItem._id,goalItem.habitId)}} className={`icon-interactive delete-goal-icon`} />
+                            <Box className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}}>
+                                {goalItem.goalStatus === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.goalStatus}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.goalStatus}`} />}
                             </Box>
-                            <Typography className={`goal-item-title`}>{goalItem.goalTitle}</Typography>
+                            <Box className={`goal-item-title`} onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}}>
+                                <Typography className={`goal-item-title-text`}>{goalItem.goalTitle}</Typography>
+                            </Box>
                         </Card>
                     )
                 })}

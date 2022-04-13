@@ -25,9 +25,7 @@ const Journal:React.FC = () => {
     }
      // Select Journal Entry of different Date
     const selectJournalEntryByDate = (newDate:Date|null) => {
-        if(newDate === null) {
-            newDate = new Date()
-        }
+        newDate = newDate || new Date ()
         setSelectedDate(newDate);
         journalHooks.loadJournalData(newDate.toString());
     }

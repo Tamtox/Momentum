@@ -2,7 +2,7 @@
 
 .todo{
     .todo-controls{
-        @include widthAndHeight(calc(min(100%, 70vw)),10vh);
+        @include widthAndHeight(calc(min(70rem, 100%)),10vh);
         position: -webkit-sticky;
         position: sticky;
         top: 6vh;
@@ -24,43 +24,58 @@
         height: 90%;
     }
     .todo-list{
-        @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
-        @include flex;
-        flex-wrap: wrap;
+        @include widthAndHeight(calc(minmax(70vw, 100%)),calc(min(100%, 100%)));
+        display: grid;
+        grid-template-columns: repeat(auto-fit,min(33rem, 100%));
+        grid-auto-rows: 3.5rem;
+        justify-content: center;
         padding: 1rem 0 7vh 0;
         gap: 1rem ;
         margin: auto;
         .todo-item{
-            @include widthAndHeight(calc(30rem),calc(4rem));
-            @include grid(100%, 1fr 3fr);
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+            @include grid(100%,20% 80%);
+            justify-items: center;
+            align-items: center;
             .todo-item-title{
-                align-self: center;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-align: center;
-                padding: 2px 1rem 0 0rem ;
+                @include widthAndHeight(100%,100%);
+                @include flex;
+                padding: 2px 0 0 0.5rem ;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                .todo-item-title-text{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                    padding: 2px 0 0 0;
+                    transition: font-size 0.3s;
+                }
             }
-            .todo-item-icons{
-                @include flex(center,center);
-                gap: 1rem;
-                padding: 0 1rem 0 1rem;
-                .detailed-todo-icon{
-                    color: rgb(70, 116, 255);
-                    font-size: 25px;
-                }
-                .delete-todo-icon{
-                    font-size: 28px;
-                    color: red;
-                }
-                .change-todo-status-icon{
-                    font-size: 28px;
-                }
+            .todo-item-title:hover{
+                background-color: rgba(128, 128, 128, 0.25);
+            }
+            .change-todo-status{
+                @include widthAndHeight(100%,100%);
+                @include flex;
+                cursor: pointer;
+                transition: background-color 0.3s;
                 .Pending{
+                    font-size: 30px;
                     color: rgb(255, 175, 28);
                 }
                 .Complete{
+                    font-size: 30px;
                     color: rgb(1, 194, 1);
+                }
+            }
+            .change-todo-status:hover{
+                background-color: rgba(128, 128, 128, 0.25);
+                .Pending{
+                    font-size: 33px;
+                }
+                .Complete{
+                    font-size: 33px;
                 }
             }
         }
@@ -70,7 +85,7 @@
 @media only screen and (max-width: 769px) {
     .todo{
         .todo-controls{
-            @include widthAndHeight(calc(min(100%, 70rem)),20vh);
+            @include widthAndHeight(calc(min(100%, 70rem)),15vh);
             @include grid(1fr 1fr,1fr 1fr);
             .search-todo{
                 grid-area: 1 / 1 / span 1 / span 2;

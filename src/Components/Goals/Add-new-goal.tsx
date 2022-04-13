@@ -8,6 +8,7 @@ import {useSelector} from 'react-redux';
 import React,{useState} from 'react';
 import { TextField,Button,Box,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/lab';
+import {BsTrash} from 'react-icons/bs';
 
 const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {
     const goalHooks = useGoalHooks();
@@ -85,22 +86,25 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
     return(
         <Box className={`add-new-goal-backdrop backdrop opacity-transition`}>
             <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
-                {!!props.detailedGoal?.habitId || 
-                <FormGroup>
-                    <FormControlLabel control={<Switch onChange={habitModeHandler} />} label="Add Paired Habit" />
-                </FormGroup>}
-                <DatePicker 
-                    inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                    value={goalInputs.selectedDate} onChange={newDate=>{goalDatePick(newDate);}}
-                />
+                <Box className={`add-new-goal-controls`}>
+                    {!!props.detailedGoal?.habitId || <FormGroup className='add-new-goal-switch'>
+                        <FormControlLabel control={<Switch onChange={habitModeHandler} />} label="Add Paired Habit" />
+                    </FormGroup>}
+                    {props.detailedGoal && <BsTrash className={`icon-interactive delete-goal`} onClick={()=>{goalHooks.deleteGoal(props.detailedGoal!._id,props.detailedGoal!.habitId);props.setDetailedItem();props.returnToGoals()}}/>}
+                </Box>
+                <Box className='add-new-goal-datetime'>
+                    <DatePicker 
+                        inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
+                        renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                        value={goalInputs.selectedDate} onChange={newDate=>{goalDatePick(newDate);}}
+                    />
+                    {(goalInputs.habitMode || props.detailedGoal?.habitId) && <TimePicker 
+                        inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                        renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                        value={goalInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
+                    />}
+                </Box>
                 <TextField value={goalInputs.goalTitle} onChange={(e)=>{goalInputsHandler(e,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
-                {(goalInputs.habitMode || props.detailedGoal?.habitId) && 
-                <TimePicker 
-                    inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                    value={goalInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
-                />}
                 {(goalInputs.habitMode || props.detailedGoal?.habitId) && 
                 <TextField value={goalInputs.habitTitle} onChange={(e)=>{goalInputsHandler(e,'habitTitle')}} className={`add-new-goal-habit-title focus input`} label='Habit Title' multiline required />}
                 {(goalInputs.habitMode || props.detailedGoal?.habitId) && 

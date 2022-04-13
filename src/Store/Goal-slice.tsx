@@ -7,12 +7,15 @@ interface GoalSchema {
         goalTargetDate:string | null,
         goalStatus:string,
         habitId:string | null,
+        isArchived:boolean,
         _id:string
     }[],
+    archiveLoaded:boolean
 }
 
 const initialGoalState:GoalSchema = {
     goalList: [],
+    archiveLoaded:false
 }
 
 const goalSlice = createSlice({
@@ -53,6 +56,12 @@ const goalSlice = createSlice({
         },
         setGoalList(state,action) {
             state.goalList = action.payload
+        },
+        setArchivedGoalList(state,action) {
+            state.goalList = state.goalList.concat(action.payload)
+            if(action.payload.length > 0) {
+                state.archiveLoaded = true
+            }
         },
         clearGoalData(state) {
             state.goalList = []

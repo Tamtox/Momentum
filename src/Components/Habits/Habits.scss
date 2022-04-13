@@ -2,7 +2,7 @@
 
 .habits{
     .habit-controls{
-        @include widthAndHeight(calc(min(100%, 70rem)),8vh);
+        @include widthAndHeight(calc(min(70rem, 100%)),10vh);
         @include grid(1fr,1fr 2fr 1fr);
         justify-items: center;
         align-items: center;
@@ -17,7 +17,7 @@
             @include widthAndHeight(calc(min(100%, 20rem)),calc(min(100%, 2.6rem)));
             @include flex;
             gap: 0.5rem;
-            border-radius: 10px;
+            border-radius: 5px;
             transition: transform 0.3s, box-shadow 0.3s;
         }
     }
@@ -25,58 +25,80 @@
         @extend .habit-controls;
         background: #121212;
     }
-    .habit-list{
-        @include widthAndHeight(calc(min(100%, 70rem)),calc(min(100%, 100%)));
+    .habit-week-range{
+        @include widthAndHeight(calc(min(70rem, 100%)),7vh);
         @include flex;
-        flex-wrap: wrap;
+        gap: 1rem;
+        margin: auto;
+        position: -webkit-sticky;
+        position: sticky;
+        background: white;
+    }
+    .habit-week-range-dark{
+        @extend .habit-week-range;
+        background: #121212;
+    }
+    .habit-list{
+        @include widthAndHeight(calc(minmax(70rem, 100%)),calc(min(100%, 100%)));
+        display: grid;
+        grid-template-columns: repeat(auto-fit,min(33rem, 100%));
+        grid-auto-rows: 8rem;
+        justify-content: center;
         padding: 1rem 0 7vh 0;
         gap: 1rem ;
         margin: auto;
         .habit-list-item{
-            @include widthAndHeight(calc(30rem),calc(8rem));
-            @include grid(1fr 1fr, 1fr 3fr);
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+            @include grid(1fr 1fr, 100%);
             align-items: center;
             .habit-list-item-title{
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-align: center;
+                @include widthAndHeight(100%,100%);
+                @include flex;
+                padding: 2px 0 0 0.5rem ;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                .habit-list-item-title-text{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                    padding: 2px 0 0 0;
+                    transition: font-size 0.3s;
+                }
             }
-            .habit-list-item-icons{
-                @include flex(center,center);
-                gap: 1rem;
-                padding: 0 1rem 0 1rem;
-                .detailed-habit-icon{
-                    color: rgb(70, 116, 255);
-                    font-size: 25px;
-                }
-                .delete-habit-icon{
-                    color: red;
-                    font-size: 28px;
-                }
+            .habit-list-item-title:hover{
+                background-color: rgba(128, 128, 128, 0.25);
             }
             .habit-weekdays{
                 @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
-                @include flex(center,center);
-                padding: 0 1rem 0 1rem;
-                grid-area: 2 / 1 / span 1 / span 2;
+                @include grid(100%, repeat(7,1fr));
                 border-top: 1px dotted gray ;
-                gap: 7%;
-                .habit-weekday-label{
-                    font-size: 0.9rem;
-                }
                 .habit-weekday{
                     @include flex(center,center);
                     flex-direction: column;
                     gap: 0.3rem;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                    .habit-weekday-label{
+                        font-size: 0.9rem;
+                    }
                     .habit-weekday-icon{
-                        font-size: 28px;
+                        font-size: 30px;
                     }
                     .Pending{
                         color: rgb(255, 175, 28);
                     }
                     .Complete{
                         color: rgb(1, 194, 1);
+                    }
+                }
+                .habit-weekday:hover{
+                    background-color: rgba(128, 128, 128, 0.25);
+                    .habit-weekday-label{
+                        font-size: 0.95rem;
+                    }
+                    .habit-weekday-icon{
+                        font-size: 33px;
                     }
                 }
             }
@@ -87,13 +109,13 @@
 @media only screen and (max-width: 769px) {
     .habits{
         .habit-controls{
-            @include widthAndHeight(calc(min(98%, 70rem)),20vh);
+            @include widthAndHeight(calc(min(98%, 70rem)),15vh);
             @include grid(1fr 1fr,1fr 1fr);
-            .habit-list-label{
-                grid-area: 2 / 1 / span 1 / span 2;
+            .search-habits{
+                grid-area: 1 / 1 / span 1 / span 2;
                 order: 0;
             }
-            .habit-date-picker{
+            .sort-habits{
                 order: 1;
             }
             .add-new-habit{

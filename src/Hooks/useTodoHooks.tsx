@@ -23,6 +23,21 @@ const useTodoHooks = () => {
         }
         dispatch(authActions.setLoading(false))   
     }
+    // Load archived todo data
+    const loadArchivedTodoData = async () => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const todoList = await axios.request({
+                method:'GET',
+                url:`http://localhost:3001/todo/getArchivedTodos`,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(todoActions.setArchivedToDoList(todoList.data))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))   
+    }
     // Toggle Todo status
     const changeTodoStatus = async (_id:string,todoStatus:string) => {
         try {
@@ -67,7 +82,7 @@ const useTodoHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    return {loadTodoData,changeTodoStatus,updateTodo,deleteToDo}
+    return {loadTodoData,loadArchivedTodoData,changeTodoStatus,updateTodo,deleteToDo}
 }
 
 export default useTodoHooks

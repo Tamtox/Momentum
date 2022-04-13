@@ -3,7 +3,7 @@ import './App.scss';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{Suspense,useEffect} from 'react';
-import {Route, Routes ,Navigate} from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom';
 import {RootState} from './Store/Store';
 import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
 import Cookies from 'js-cookie';
@@ -109,14 +109,14 @@ const App:React.FC = () => {
               <Route path='/' element={isLoggedIn ? <Home/> : <Auth/>} />
               <Route path='/auth' element={isLoggedIn ? <Home/> : <Auth/>} />
               <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
-              <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
+              {/* <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
               <Route path='/journal' element={isLoggedIn ? <Journal/> : <Auth/>} />
               <Route path='/habits' element={isLoggedIn ? <Habits/> : <Auth/>} />
-              <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} />
-              {/* <Route path='/todo' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Home/>) : <Auth />} />
-              <Route path='/journal' element={isLoggedIn ? (verificationStatus === "Complete" ? <Journal/> : <Home/>) : <Auth/>} />
-              <Route path='/habits' element={isLoggedIn ? (verificationStatus === "Complete" ? <Habits/> : <Home/>) : <Auth/>} />
-              <Route path='/goals' element={isLoggedIn ? (verificationStatus === "Complete" ? <Goals/> : <Home/>) : <Auth/>} /> */}
+              <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} /> */}
+              <Route path='/todo' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth />} />
+              <Route path='/journal' element={isLoggedIn ? (verificationStatus === "Complete" ? <Journal/> : <Profile/>) : <Auth/>} />
+              <Route path='/habits' element={isLoggedIn ? (verificationStatus === "Complete" ? <Habits/> : <Profile/>) : <Auth/>} />
+              <Route path='/goals' element={isLoggedIn ? (verificationStatus === "Complete" ? <Goals/> : <Profile/>) : <Auth/>} />
             </Routes>
         </Suspense>
       </Box>

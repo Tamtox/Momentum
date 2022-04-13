@@ -7,6 +7,20 @@
     border-radius: 5px;
     padding: 1rem;
     gap: 1.5rem;
+    .add-new-todo-controls{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+        @include grid(100%,1fr 8fr 1fr);
+        justify-items: center;
+        align-items: center;
+        .add-new-todo-date{
+            grid-area: 1 / 2 / span 1 / span 1;
+        }
+        .delete-todo{
+            grid-area: 1 / 3 / span 1 / span 1;
+            font-size: 28px;
+            color: red;
+        }
+    }
     .add-new-todo-title{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
     }
