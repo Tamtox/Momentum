@@ -24,6 +24,21 @@ const useHabitHooks = () => {
         }
         dispatch(authActions.setLoading(false))   
     }
+    // Load habits archive
+    const loadArchivedHabitsData = async () => {
+        dispatch(authActions.setLoading(true))
+        try {
+            const habitsResponse:{data:{archivedHabitList:[]}} = await axios.request({
+                method:'POST',
+                url:`http://localhost:3001/habits/getArchivedHabits`,
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(habitsActions.setArchiveHabits(habitsResponse.data.archivedHabitList))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))   
+    }
     // Update or add habit 
     const updateHabit = async (newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null},updateHabit:boolean,newGoal:{_id:string|undefined,goalTargetDate:string|null,habitId:string|null}|null,updateGoal:boolean) =>{
         dispatch(authActions.setLoading(true))   
@@ -93,7 +108,7 @@ const useHabitHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
     }
-    // Change habit status
+    // Change habit entry status
     const changeHabitStatus = async (habitId:string,habitEntryId:string,habitEntryStatus:string) => {
         try {
             await axios.request({
@@ -107,7 +122,23 @@ const useHabitHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
     }
-    return {loadHabitsData,deleteHabit,updateHabit,changeHabitStatus}
+    // Change habit archive status 
+    const toggleHabitArchiveStatus = async (habitItem:{_id:string,isArchived:boolean}) =>{
+        const isArchived = habitItem.isArchived ? false : true
+        try {
+            const habitsResponse:{data:{habitEntries:any[]}} = await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/habits/updateHabitArchiveStatus`,
+                data:{...habitItem,isArchived:isArchived,currentDate:new Date().toString()},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            console.log(habitsResponse.data)
+            isArchived ? dispatch(habitsActions.toggleArchiveStatus({...habitItem,isArchived:true})) : dispatch(habitsActions.toggleArchiveStatus({habitItem:{...habitItem,isArchived:false},habitEntries:habitsResponse.data.habitEntries}))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+    }
+    return {loadHabitsData,loadArchivedHabitsData,deleteHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus}
 }
 
 export default useHabitHooks

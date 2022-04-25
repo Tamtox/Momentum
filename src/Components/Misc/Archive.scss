@@ -1,0 +1,69 @@
+@import '../../Misc/mixins';
+
+.archive{
+    .archive-controls{
+        @include widthAndHeight(calc(min(70rem, 100%)),10vh);
+        position: -webkit-sticky;
+        position: sticky;
+        top: 6vh;
+        z-index: 49;
+        @include grid(100%,1fr 2fr 1fr);
+        justify-items: center;
+        align-items: center;
+        margin: auto;
+        background: white;
+    }
+    .archive-controls-dark{
+        @extend .archive-controls;
+        background: #121212;
+    }
+    .loading{
+        height: 90%;
+    }
+    .archive-list{
+        @include widthAndHeight(calc(minmax(70vw, 100%)),calc(min(100%, 100%)));
+        display: grid;
+        grid-template-columns: repeat(auto-fit,min(33rem, 100%));
+        grid-auto-rows: 3.5rem;
+        justify-content: center;
+        padding: 1rem 0 7vh 0;
+        gap: 1rem ;
+        margin: auto;
+        .archive-item{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+            @include grid(100%,30% 70%);
+            justify-items: center;
+            align-items: center;
+            .archive-item-title{
+                @include widthAndHeight(100%,100%);
+                @include flex;
+                padding: 2px 0 0 0.5rem ;
+                transition: background-color 0.3s;
+                .archive-item-title-text{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                    padding: 2px 0 0 0;
+                    transition: font-size 0.3s;
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: 769px) {
+    .archive{
+        .archive-controls{
+            @include widthAndHeight(calc(min(100%, 70rem)),15vh);
+            @include grid(1fr 1fr,1fr 1fr);
+            .search-archive{
+                grid-area: 1 / 1 / span 1 / span 2;
+                order: 0;
+            }
+            .sort-archive{
+                order: 1;
+            }
+        }
+    }
+}

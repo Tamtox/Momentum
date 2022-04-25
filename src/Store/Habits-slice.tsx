@@ -22,11 +22,37 @@ interface HabitsSchema {
         }[],
         _id:string,
     }[],
+    habitListLoaded:boolean,
+    archivedHabitList: {
+        habitTitle:string,
+        habitTime:string | null,
+        habitCreationDate:string, /* Date format : Date.toString() */
+        habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},
+        goalId:string | null,
+        goalTargetDate:string | null,
+        isArchived:boolean,
+        habitEntries: {
+            weekStart:string,  /* Date format : "day/month/year" */
+            weekEnd:string, /* Date format : "day/month/year" */
+            habitId:string,
+            year:string, /* Date format : .getFullYear() */
+            month:string, /* Date format : .getMonth() + 1 */
+            date:string, /* Date format : .getDate() */
+            weekday:string,
+            habitEntryStatus:string
+            _id:string,
+        }[],
+        _id:string,
+    }[],
+    archivedHabitListLoaded:boolean,
     datepickerDate: string;
 }
 
 const initialHabitsState:HabitsSchema = {
     habitList:[],
+    habitListLoaded:false,
+    archivedHabitList:[],
+    archivedHabitListLoaded:false,
     // habitEntries:[],
     datepickerDate: new Date().toString()
 };
@@ -75,6 +101,21 @@ const habitsSlice = createSlice({
                 return item
             })
         },
+        toggleArchiveStatus(state,action) {
+            if(action.payload.isArchived) {
+                state.habitList = state.habitList.filter(item=>{
+                    return item._id !== action.payload._id
+                })
+                state.archivedHabitList = state.archivedHabitList.concat({...action.payload})
+            } else {
+                const habitItem = action.payload.habitItem;
+                habitItem.habitEntries = action.payload.habitEntries
+                state.archivedHabitList = state.archivedHabitList.filter(item=>{
+                    return item._id !== habitItem._id
+                })
+                state.habitList = state.habitList.concat(habitItem)
+            }
+        },
         setHabits(state,action) {
             state.habitList = action.payload.habitList.map((habitListItem:any)=>{
                 if(!habitListItem.habitEntries) {
@@ -87,13 +128,20 @@ const habitsSlice = createSlice({
                 })
                 return habitListItem
             })
+            state.habitListLoaded = true
             state.datepickerDate = action.payload.date
+        },
+        setArchiveHabits(state,action) {
+            state.archivedHabitList = action.payload
+            state.archivedHabitListLoaded = true
         },
         clearHabitData(state) {
             state.habitList = [];
+            state.habitListLoaded = false;
+            state.archivedHabitList = [];
+            state.archivedHabitListLoaded = false;
         }
     }
 });
-
 
 export default habitsSlice

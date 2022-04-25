@@ -34,6 +34,7 @@ const Habits:React.FC = () => {
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const datepickerDate = new Date(useSelector<RootState,string>(state=>state.habitsSlice.datepickerDate));
     const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
+    const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
     // Sorting by query params
     const [navigate,location] = [useNavigate(),useLocation()];
     const queryParams = new URLSearchParams(location.search);
@@ -71,8 +72,6 @@ const Habits:React.FC = () => {
     const [detailedHabit,setDetailedItem] = useState();
     // Toggle new/detailed habit
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
-    // Toggle deletion prompt
-    const [toggleDeleteHabit,setToggleDeleteHabit] = useState(false);
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
         newDate = newDate || new Date ();
@@ -90,7 +89,7 @@ const Habits:React.FC = () => {
         setSelectedDateWeekEnd(new Date(newWeekEnd));
     }
     useEffect(() => {
-        habitList.length<1 && habitHooks.loadHabitsData(new Date());
+        habitListLoaded || habitHooks.loadHabitsData(new Date());
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>

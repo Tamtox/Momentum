@@ -8,9 +8,9 @@ import {useSelector} from 'react-redux';
 import React,{ useState } from 'react';
 import { TextField,Button,Box,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/lab';
-import {BsTrash} from 'react-icons/bs';
+import {BsTrash,BsArchive} from 'react-icons/bs';
 
-const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalTargetDate:string|null,goalId:string|null,_id:string}|undefined,setDetailedItem:()=>{},returnToHabits:()=>{}}> = (props) => {
+const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},isArchived:boolean,goalTargetDate:string|null,goalId:string|null,_id:string}|undefined,setDetailedItem:()=>{},returnToHabits:()=>{}}> = (props) => {
     const habitHooks = useHabitHooks();
     // Get paired goal if one exists
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
@@ -87,10 +87,15 @@ const AddNewHabit:React.FC<{detailedHabit:{ habitTitle:string,habitTime:string,h
         <Box className={`opacity-transition add-new-habit-backdrop backdrop`}>
             <Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
                 <Box className={`add-new-habit-controls`}>
+                    { props.detailedHabit && <Tooltip title="Archive Item">
+                        <div className='archive-habit'><BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitHooks.toggleHabitArchiveStatus(props.detailedHabit!);props.setDetailedItem();props.returnToHabits()}}/></div>
+                    </Tooltip> }
                     {!!props.detailedHabit?.goalId || <FormGroup className={`add-new-habit-switch`}>
                         <FormControlLabel control={<Switch onChange={goalModeHandler} />} label="Add paired goal" />
                     </FormGroup>}
-                    { props.detailedHabit && <BsTrash className={`icon-interactive delete-habit`} onClick={()=>{habitHooks.deleteHabit(props.detailedHabit!._id,props.detailedHabit!.goalId);props.setDetailedItem();props.returnToHabits()}}/>}
+                    { props.detailedHabit && <Tooltip title="Delete Item">
+                        <div className='delete-habit'><BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(props.detailedHabit!._id,props.detailedHabit!.goalId);props.setDetailedItem();props.returnToHabits()}}/></div>
+                    </Tooltip> }
                 </Box>
                 <Box className='add-new-habit-datetime'>
                     {(habitInputs.goalMode || props.detailedHabit?.goalId) && <DatePicker 

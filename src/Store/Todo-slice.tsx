@@ -10,12 +10,24 @@ interface TodoSchema {
         isArchived:boolean,
         _id:string
     }[],
-    archiveLoaded:boolean
+    todoListLoaded:boolean,
+    archivedTodoList:{
+        todoTitle:string,
+        todoDescription:string,
+        todoCreationDate:string,
+        todoTargetDate:string | null,
+        todoStatus:string,
+        isArchived:boolean,
+        _id:string
+    }[],
+    archivedTodoListLoaded:boolean,
 }
 
 const initialTodoState:TodoSchema = {
     todoList:[],
-    archiveLoaded:false
+    archivedTodoList:[],
+    todoListLoaded : false,
+    archivedTodoListLoaded : false,
 }
 const todoSlice = createSlice({
     name:'todo',
@@ -39,12 +51,11 @@ const todoSlice = createSlice({
         },
         setToDoList(state,action) {
             state.todoList = action.payload
+            state.todoListLoaded = true
         },
         setArchivedToDoList(state,action) {
-            state.todoList = state.todoList.concat(action.payload)
-            if(action.payload.length > 0) {
-                state.archiveLoaded = true
-            }
+            state.archivedTodoList = action.payload
+            state.archivedTodoListLoaded = true
         },
         updateToDo(state,action) {
             state.todoList = state.todoList.map(item=>{
@@ -54,8 +65,24 @@ const todoSlice = createSlice({
                 return item
             })
         },
+        toggleArchiveStatus(state,action) {
+            if(action.payload.isArchived) {
+                state.todoList = state.todoList.filter(item=>{
+                    return item._id !== action.payload._id
+                })
+                state.archivedTodoList = state.archivedTodoList.concat({...action.payload})
+            } else {
+                state.archivedTodoList = state.archivedTodoList.filter(item=>{
+                    return item._id !== action.payload._id
+                })
+                state.todoList = state.todoList.concat({...action.payload})
+            }
+        },
         clearToDoList(state) {
-            state.todoList = []
+            state.todoList = [];
+            state.todoListLoaded = false;
+            state.archivedTodoList = [];
+            state.archivedTodoListLoaded = false;
         }
     }
 });

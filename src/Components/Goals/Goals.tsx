@@ -18,7 +18,6 @@ function filterList(list:any[],sortQuery:string|null,searchQuery:string|null) {
         if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.goalCreationDate).getTime() - new Date(itemA.goalCreationDate).getTime()) };
         if (sortQuery === 'statusPend') { list = list.filter(item=>item.goalStatus === 'Pending') };
         if (sortQuery === 'statusComp') { list = list.filter(item=>item.goalStatus === 'Complete') };
-        if (sortQuery === 'isArchived') { list = list.filter(item=>item.isArchived === true) };
     }
     if(searchQuery) {
         list = list.filter(item=>item.goalTitle.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -29,8 +28,8 @@ function filterList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 const Goals:React.FC = () => {
     const goalHooks = useGoalHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-    const archiveLoaded = useSelector<RootState,boolean>(state=>state.goalSlice.archiveLoaded);
     const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
+    const goalListLoaded = useSelector<RootState,boolean>(state=>state.goalSlice.goalListLoaded);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
@@ -45,9 +44,6 @@ const Goals:React.FC = () => {
     }
     const [queries,setNewQueries] = useState({sortQuery:searchQuery || '',searchQuery:searchQuery || ''}) ;
     const sortQueryHandler = (e:any) => {
-        if(e.target.value === 'isArchived') {
-            !archiveLoaded && goalHooks.loadArchivedGoalData();
-        }
         setNewQueries((prevState)=>({
             ...prevState,
             sortQuery:e.target.value
@@ -67,8 +63,7 @@ const Goals:React.FC = () => {
     // Set detailed id
     const [detailedItem,setDetailedItem] = useState();
     useEffect(() => {
-        goalList.length<1 && goalHooks.loadGoalData();
-        sortQuery === 'isArchived' && !archiveLoaded && goalHooks.loadArchivedGoalData();
+        goalListLoaded || goalHooks.loadGoalData();
     }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
@@ -81,7 +76,6 @@ const Goals:React.FC = () => {
                         <MenuItem value="dateDesc">Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>
                         <MenuItem value="statusComp">Status Complete</MenuItem>
-                        <MenuItem value="isArchived">Archived Items</MenuItem>
                     </Select>
                 </FormControl>
                 <TextField  className={`search-goals`} sx={{width:"calc(min(100%, 33rem))"}} value={queries.searchQuery} onChange={searchQueryHandler} fullWidth size='small' label="Search"/>

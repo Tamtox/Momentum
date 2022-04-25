@@ -54,7 +54,6 @@ const useTodoHooks = () => {
     }
     // Update or add todo
     const updateTodo = async (newTodo:{},update:boolean) => {
-        dispatch(authActions.setLoading(true))   
         try {
             const newTodoResponse = await axios.request({
                 method:update ? 'PATCH' : 'POST',
@@ -66,7 +65,21 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+    }
+    // Toggle archive status
+    const toggleTodoArchiveStatus = async (todoItem:{_id:string,isArchived:boolean}) => {
+        const isArchived = todoItem.isArchived ? false : true
+        try {
+            await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/todo/updateTodo`,
+                headers:{Authorization: `Bearer ${token}`},
+                data:{_id:todoItem._id,isArchived}
+            })
+            dispatch(todoActions.toggleArchiveStatus({...todoItem,isArchived:isArchived}))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
     }
     // Delete Todo
     const deleteToDo = async (_id:string) => {
@@ -82,7 +95,7 @@ const useTodoHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    return {loadTodoData,loadArchivedTodoData,changeTodoStatus,updateTodo,deleteToDo}
+    return {loadTodoData,loadArchivedTodoData,changeTodoStatus,updateTodo,toggleTodoArchiveStatus,deleteToDo}
 }
 
 export default useTodoHooks

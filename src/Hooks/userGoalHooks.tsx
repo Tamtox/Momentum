@@ -53,7 +53,7 @@ const useGoalHooks = () => {
         }   
     }
     // Update or add goal
-    const updateGoal = async(newGoal:{habitId:string|null,_id:string|undefined,goalTargetDate:string|null},updateGoal:boolean,newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null}|null,updateHabit:boolean) => {
+    const updateGoal = async (newGoal:{habitId:string|null,_id:string|undefined,goalTargetDate:string|null},updateGoal:boolean,newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null}|null,updateHabit:boolean) => {
         dispatch(authActions.setLoading(true))   
         try {
             const newGoalResponse = await axios.request({
@@ -98,6 +98,21 @@ const useGoalHooks = () => {
         }   
         dispatch(authActions.setLoading(false))   
     }
+    // Toggle archive status
+    const toggleGoalArchiveStatus = async (goalItem:{_id:string,isArchived:boolean}) => {
+        const isArchived = goalItem.isArchived ? false : true
+        try {
+            await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/goals/updateGoal`,
+                data:{_id:goalItem._id,isArchived},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(goalActions.toggleArchiveStatus({...goalItem,isArchived:isArchived})) ;
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
+    }
     // Delete Goal
     const deleteGoal = async (_id:string,pairedHabitId:string|null) => {
         try {
@@ -121,7 +136,7 @@ const useGoalHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    return {loadGoalData,loadArchivedGoalData,changeGoalStatus,updateGoal,deleteGoal}
+    return {loadGoalData,loadArchivedGoalData,changeGoalStatus,updateGoal,toggleGoalArchiveStatus,deleteGoal}
 }
 
 export default useGoalHooks

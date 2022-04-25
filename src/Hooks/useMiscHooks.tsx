@@ -39,7 +39,6 @@ const useMiscHooks = () => {
                 url:`http://localhost:3001/todo/getTodos`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            console.log(todoList.data)
             dispatch(todoActions.setToDoList(todoList.data))
             //Preload Journal Data
             const journalEntryResponse:{data:any[]} = await axios.request({

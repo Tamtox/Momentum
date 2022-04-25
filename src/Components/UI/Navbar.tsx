@@ -9,7 +9,7 @@ import type {RootState} from '../../Store/Store';
 import {Box,Typography,Fab} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {CgArrowRightO,CgProfile,CgHomeAlt} from 'react-icons/cg';
-import {BsFillJournalBookmarkFill,BsCalendar2Check} from 'react-icons/bs';
+import {BsFillJournalBookmarkFill,BsCalendar2Check,BsArchive} from 'react-icons/bs';
 import {MdSchedule} from 'react-icons/md';
 import {FaSun,FaMoon,FaBars} from 'react-icons/fa';
 import {FiTarget,FiLogIn,FiLogOut} from 'react-icons/fi';
@@ -36,10 +36,10 @@ const  Navbar:React.FC = () => {
             <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
                 <CgArrowRightO className={`nav-icon toggle-sidebar-arrow${sidebarFull?'-full':'-compact'}`} />
             </Box>
-            <NavLink to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
+            {/* <NavLink to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
                 <CgHomeAlt className='nav-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Home</Typography>
-            </NavLink>
+            </NavLink> */}
             <NavLink to="/profile" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-profile`}>
                 <CgProfile className='nav-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Profile</Typography>
@@ -59,6 +59,10 @@ const  Navbar:React.FC = () => {
             <NavLink to="/goals" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-goals`}>
                 <FiTarget className='nav-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Goals</Typography>
+            </NavLink>
+            <NavLink to="/archive" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-archive`}>
+                <BsArchive className='nav-icon' />
+                <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Archive</Typography>
             </NavLink>
         </Box>
     )
