@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { authActions,goalActions,habitsActions } from "../Store/Store";
+import type {HabitInterface,GoalInterface} from '../Misc/Interfaces';
 
 const useGoalHooks = () => {
     const token = Cookies.get('token');
@@ -53,7 +54,7 @@ const useGoalHooks = () => {
         }   
     }
     // Update or add goal
-    const updateGoal = async (newGoal:{habitId:string|null,_id:string|undefined,goalTargetDate:string|null},updateGoal:boolean,newHabit:{goalId:string|null,_id:string|null,goalTargetDate:string|null}|null,updateHabit:boolean) => {
+    const updateGoal = async (newGoal:GoalInterface,updateGoal:boolean,newHabit:HabitInterface|null,updateHabit:boolean) => {
         dispatch(authActions.setLoading(true))   
         try {
             const newGoalResponse = await axios.request({
@@ -99,7 +100,8 @@ const useGoalHooks = () => {
         dispatch(authActions.setLoading(false))   
     }
     // Toggle archive status
-    const toggleGoalArchiveStatus = async (goalItem:{_id:string,isArchived:boolean}) => {
+    const toggleGoalArchiveStatus = async (goalItem:GoalInterface) => {
+        dispatch(authActions.setLoading(true))   
         const isArchived = goalItem.isArchived ? false : true
         try {
             await axios.request({
@@ -112,9 +114,11 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
+        dispatch(authActions.setLoading(false))   
     }
     // Delete Goal
     const deleteGoal = async (_id:string,pairedHabitId:string|null) => {
+        dispatch(authActions.setLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
@@ -135,6 +139,7 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
+        dispatch(authActions.setLoading(false))   
     }
     return {loadGoalData,loadArchivedGoalData,changeGoalStatus,updateGoal,toggleGoalArchiveStatus,deleteGoal}
 }

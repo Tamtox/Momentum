@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { todoActions,authActions } from "../Store/Store";
+import type {TodoInterface} from '../Misc/Interfaces';
 
 const useTodoHooks = () => {
     const token = Cookies.get('token');
@@ -67,7 +68,8 @@ const useTodoHooks = () => {
         }   
     }
     // Toggle archive status
-    const toggleTodoArchiveStatus = async (todoItem:{_id:string,isArchived:boolean}) => {
+    const toggleTodoArchiveStatus = async (todoItem:TodoInterface) => {
+        dispatch(authActions.setLoading(true))   
         const isArchived = todoItem.isArchived ? false : true
         try {
             await axios.request({
@@ -80,9 +82,11 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
+        dispatch(authActions.setLoading(false))   
     }
     // Delete Todo
     const deleteToDo = async (_id:string) => {
+        dispatch(authActions.setLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
@@ -94,6 +98,7 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
+        dispatch(authActions.setLoading(false))   
     }
     return {loadTodoData,loadArchivedTodoData,changeTodoStatus,updateTodo,toggleTodoArchiveStatus,deleteToDo}
 }

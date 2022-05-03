@@ -12,6 +12,7 @@ import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
 import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
+import type {HabitInterface} from '../../Misc/Interfaces';
 
 const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
@@ -33,7 +34,7 @@ const Habits:React.FC = () => {
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const datepickerDate = new Date(useSelector<RootState,string>(state=>state.habitsSlice.datepickerDate));
-    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
+    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
     // Sorting by query params
     const [navigate,location] = [useNavigate(),useLocation()];
@@ -97,7 +98,7 @@ const Habits:React.FC = () => {
                 <FormControl className='sort-habits select' size='small' >
                     <InputLabel id="habits-sort-label">Sort</InputLabel>
                     <Select labelId="habits-sort-label" value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
-                        <MenuItem value="">Default</MenuItem>
+                        <MenuItem value="">All Habits</MenuItem>
                         <MenuItem value="dateAsc">Creation Date Ascending</MenuItem>
                         <MenuItem value="dateDesc">Creation Date Descending</MenuItem>
                         <MenuItem value="noEntries">Habits without entries</MenuItem>

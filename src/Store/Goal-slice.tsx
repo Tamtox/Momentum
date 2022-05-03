@@ -1,25 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type {GoalInterface} from '../Misc/Interfaces';
 
 interface GoalSchema {
-    goalList: {
-        goalTitle:string,
-        goalCreationDate:string,
-        goalTargetDate:string | null,
-        goalStatus:string,
-        habitId:string | null,
-        isArchived:boolean,
-        _id:string
-    }[],
+    goalList: GoalInterface[],
     goalListLoaded:boolean,
-    archivedGoalList: {
-        goalTitle:string,
-        goalCreationDate:string,
-        goalTargetDate:string | null,
-        goalStatus:string,
-        habitId:string | null,
-        isArchived:boolean,
-        _id:string
-    }[],
+    archivedGoalList: GoalInterface[],
     archivedGoalListLoaded:boolean,
 }
 

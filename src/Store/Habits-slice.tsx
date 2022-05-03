@@ -1,49 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type {HabitInterface,} from '../Misc/Interfaces';
 
 interface HabitsSchema {
-    habitList: {
-        habitTitle:string,
-        habitTime:string | null,
-        habitCreationDate:string, /* Date format : Date.toString() */
-        habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},
-        goalId:string | null,
-        goalTargetDate:string | null,
-        isArchived:boolean,
-        habitEntries: {
-            weekStart:string,  /* Date format : "day/month/year" */
-            weekEnd:string, /* Date format : "day/month/year" */
-            habitId:string,
-            year:string, /* Date format : .getFullYear() */
-            month:string, /* Date format : .getMonth() + 1 */
-            date:string, /* Date format : .getDate() */
-            weekday:string,
-            habitEntryStatus:string
-            _id:string,
-        }[],
-        _id:string,
-    }[],
+    habitList: HabitInterface[],
     habitListLoaded:boolean,
-    archivedHabitList: {
-        habitTitle:string,
-        habitTime:string | null,
-        habitCreationDate:string, /* Date format : Date.toString() */
-        habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},
-        goalId:string | null,
-        goalTargetDate:string | null,
-        isArchived:boolean,
-        habitEntries: {
-            weekStart:string,  /* Date format : "day/month/year" */
-            weekEnd:string, /* Date format : "day/month/year" */
-            habitId:string,
-            year:string, /* Date format : .getFullYear() */
-            month:string, /* Date format : .getMonth() + 1 */
-            date:string, /* Date format : .getDate() */
-            weekday:string,
-            habitEntryStatus:string
-            _id:string,
-        }[],
-        _id:string,
-    }[],
+    archivedHabitList: HabitInterface[],
     archivedHabitListLoaded:boolean,
     datepickerDate: string;
 }

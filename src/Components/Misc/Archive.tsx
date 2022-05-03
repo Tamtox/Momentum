@@ -6,6 +6,7 @@ import {RootState} from '../../Store/Store';
 import useTodoHooks from '../../Hooks/useTodoHooks';
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import useGoalHooks from '../../Hooks/userGoalHooks';
+import type { TodoInterface,GoalInterface,HabitInterface } from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
@@ -30,9 +31,9 @@ const Archive:React.FC = () => {
     const habitHooks = useHabitHooks();
     const goalHooks = useGoalHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-    const todoArchive = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.archivedTodoList);
-    const habitArchive = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.archivedHabitList)
-    const goalArchive = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.archivedGoalList)
+    const todoArchive = useSelector<RootState,TodoInterface[]>(state=>state.todoSlice.archivedTodoList);
+    const habitArchive = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.archivedHabitList)
+    const goalArchive = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.archivedGoalList)
     const todoArchiveLoaded = useSelector<RootState,boolean>(state=>state.todoSlice.archivedTodoListLoaded);
     const habitArchiveLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.archivedHabitListLoaded)
     const goalArchiveLoaded = useSelector<RootState,boolean>(state=>state.goalSlice.archivedGoalListLoaded)
@@ -71,10 +72,22 @@ const Archive:React.FC = () => {
     if(archiveMode === 'goal') {unfilteredList = [...goalArchive]}
     const filteredList = filterList(unfilteredList,sortQuery,searchQuery);
     // Restore from archive
-    const restoreItem = (item:{_id:string,isArchived:boolean}) => {
+    const restoreItem = (item:any) => {
         archiveMode === 'todo' &&  todoHooks.toggleTodoArchiveStatus(item);
-        archiveMode === 'goal' &&  goalHooks.toggleGoalArchiveStatus(item);
-        archiveMode === 'habit' &&  habitHooks.toggleHabitArchiveStatus(item);
+        if( archiveMode === 'goal') {
+            if(item.habitId) {
+                const habitItem:HabitInterface = habitArchive.filter((habitItem)=>habitItem.goalId === item._id)[0];
+                habitHooks.toggleHabitArchiveStatus(habitItem);
+            }
+            goalHooks.toggleGoalArchiveStatus(item);
+        }
+        if(archiveMode === 'habit') {
+            if(item.goalId) {
+                const goalItem:GoalInterface = goalArchive.filter((goalItem)=>goalItem.habitId === item._id)[0];
+                goalHooks.toggleGoalArchiveStatus(goalItem);
+            }
+            habitHooks.toggleHabitArchiveStatus(item);
+        }
     }
     useEffect(() => {
         (archiveMode === 'todo' && todoArchiveLoaded) || todoHooks.loadArchivedTodoData();

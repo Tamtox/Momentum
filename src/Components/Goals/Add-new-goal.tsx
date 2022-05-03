@@ -3,6 +3,8 @@ import './Add-new-goal.scss';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
+import useHabitHooks from '../../Hooks/useHabitHooks';
+import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState} from 'react';
@@ -10,10 +12,11 @@ import { TextField,Button,Box,Card,FormGroup,Switch,FormControlLabel,FormControl
 import { DatePicker,TimePicker } from '@mui/lab';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
-const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,isArchived:boolean,habitId:string|null,_id:string}|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {
+const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {
     const goalHooks = useGoalHooks();
+    const habitHooks = useHabitHooks();
     // Get paired habit if one exists
-    const habitList = useSelector<RootState,{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{0:boolean,1:boolean,2:boolean,3:boolean,4:boolean,5:boolean,6:boolean},goalId:string|null,goalTargetDate:string|null,_id:string}[]>(state=>state.habitsSlice.habitList);
+    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.filter((item)=>item.goalId === props.detailedGoal?._id)[0];
     const [goalInputs,setGoalInputs] = useState({
         goalTitle:props.detailedGoal?.goalTitle || '',
@@ -60,22 +63,25 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
     const updateGoal = async (event:React.FormEvent) => {
         event.preventDefault();
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
-        const newGoal:{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string | undefined} = {
+        const newGoal:GoalInterface = {
             goalTitle:goalInputs.goalTitle,
             goalCreationDate:props.detailedGoal?.goalCreationDate || new Date().toString(),
             goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toString() : (props.detailedGoal?.goalTargetDate || null),
             goalStatus:props.detailedGoal?.goalStatus || 'Pending',
+            isArchived:props.detailedGoal?.isArchived || false,
             habitId:props.detailedGoal?.habitId  || null ,
-            _id: props.detailedGoal?._id
+            _id: props.detailedGoal?._id || ''
         }
-        const newHabit:{habitTitle:string,habitTime:string|null,habitCreationDate:string,habitWeekdays:{[key:number]:boolean},goalId:string | null, goalTargetDate:string|null, _id:string | null,} = {
+        const newHabit:HabitInterface = {
             habitTitle: goalInputs.habitTitle || '' ,
             habitTime: goalInputs.timePickerUsed ? `${new Date(goalInputs.selectedTime).getHours()}:${new Date(goalInputs.selectedTime).getMinutes() ? new Date(goalInputs.selectedTime).getMinutes() : '00'}` : (detailedHabit?.habitTime || null),
             habitCreationDate:detailedHabit?.habitCreationDate || new Date().toString(),
             habitWeekdays:activeDays,
+            habitEntries:detailedHabit?.habitEntries || [],
+            isArchived:detailedHabit?.isArchived || false,
             goalId:detailedHabit?.goalId || null, 
             goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toString() : (detailedHabit?.goalTargetDate || null) ,
-            _id:detailedHabit?._id || null
+            _id:detailedHabit?._id || ''
         }
         const newHabitArgument = (detailedHabit || goalInputs.habitMode) ? newHabit : null
         goalHooks.updateGoal(newGoal,!!props.detailedGoal,newHabitArgument,!!detailedHabit)
@@ -88,7 +94,7 @@ const AddNewGoal:React.FC<{detailedGoal:{goalTitle:string,goalCreationDate:strin
             <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
                 <Box className={`add-new-goal-controls`}>
                     {props.detailedGoal && <Tooltip title="Archive Item">
-                        <div className='archive-goal'>{props.detailedGoal && <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(props.detailedGoal!);props.setDetailedItem();props.returnToGoals()}}/>}</div>
+                        <div className='archive-goal'>{props.detailedGoal && <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(props.detailedGoal!);detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit!);props.setDetailedItem();props.returnToGoals()}}/>}</div>
                     </Tooltip>}
                     {!!props.detailedGoal?.habitId || <FormGroup className='add-new-goal-switch'>
                         <FormControlLabel control={<Switch onChange={habitModeHandler} />} label="Add Paired Habit" />

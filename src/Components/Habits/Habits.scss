@@ -71,7 +71,9 @@
             }
             .habit-weekdays{
                 @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
-                @include grid(100%, repeat(7,1fr));
+                display: grid;
+                grid-template-columns: repeat(auto-fit,min(calc(100%/7), 100%));
+                justify-content: center;
                 border-top: 1px dotted gray ;
                 .habit-weekday{
                     @include flex(center,center);

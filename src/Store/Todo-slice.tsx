@@ -1,25 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type {TodoInterface} from '../Misc/Interfaces';
 
 interface TodoSchema {
-    todoList:{
-        todoTitle:string,
-        todoDescription:string,
-        todoCreationDate:string,
-        todoTargetDate:string | null,
-        todoStatus:string,
-        isArchived:boolean,
-        _id:string
-    }[],
+    todoList:TodoInterface[],
     todoListLoaded:boolean,
-    archivedTodoList:{
-        todoTitle:string,
-        todoDescription:string,
-        todoCreationDate:string,
-        todoTargetDate:string | null,
-        todoStatus:string,
-        isArchived:boolean,
-        _id:string
-    }[],
+    archivedTodoList:TodoInterface[],
     archivedTodoListLoaded:boolean,
 }
 

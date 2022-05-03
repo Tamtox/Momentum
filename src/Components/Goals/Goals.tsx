@@ -5,6 +5,7 @@ import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
 import AddNewGoal from './Add-new-goal';
 import useGoalHooks from '../../Hooks/userGoalHooks';
+import type {GoalInterface} from '../../Misc/Interfaces';
 // Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
@@ -28,7 +29,7 @@ function filterList(list:any[],sortQuery:string|null,searchQuery:string|null) {
 const Goals:React.FC = () => {
     const goalHooks = useGoalHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-    const goalList = useSelector<RootState,{goalTitle:string,goalCreationDate:string,goalTargetDate:string|null,goalStatus:string,habitId:string|null,_id:string}[]>(state=>state.goalSlice.goalList);
+    const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const goalListLoaded = useSelector<RootState,boolean>(state=>state.goalSlice.goalListLoaded);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -71,7 +72,7 @@ const Goals:React.FC = () => {
                 <FormControl className='sort-goals select' size='small'>
                     <InputLabel id="goal-sort-label">Sort</InputLabel>
                     <Select labelId="goal-sort-label"  value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
-                        <MenuItem value="">Default</MenuItem>
+                        <MenuItem value="">All Goals</MenuItem>
                         <MenuItem value="dateAsc">Date Ascending</MenuItem>
                         <MenuItem value="dateDesc">Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>

@@ -5,6 +5,7 @@ import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
 import AddNewTodo from './Add-new-todo';
 import useTodoHooks from '../../Hooks/useTodoHooks';
+import type {TodoInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
@@ -28,7 +29,7 @@ const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) =>
 const Todo:React.FC = () => {
     const todoHooks = useTodoHooks();
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-    const todoList = useSelector<RootState,{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,todoStatus:string,_id:string}[]>(state=>state.todoSlice.todoList);
+    const todoList = useSelector<RootState,TodoInterface[]>(state=>state.todoSlice.todoList);
     const todoListLoaded = useSelector<RootState,boolean>(state=>state.todoSlice.todoListLoaded);
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -71,7 +72,7 @@ const Todo:React.FC = () => {
                 <FormControl className='sort-todo select' size='small' >
                     <InputLabel id="todo-sort-label">Sort</InputLabel>
                     <Select labelId="todo-sort-label" value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
-                        <MenuItem value="">Default</MenuItem>
+                        <MenuItem value="">All Todos</MenuItem>
                         <MenuItem value="dateAsc">Creation Date Ascending</MenuItem>
                         <MenuItem value="dateDesc">Creation Date Descending</MenuItem>
                         <MenuItem value="statusPend">Status Pending</MenuItem>
