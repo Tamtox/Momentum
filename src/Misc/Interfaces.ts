@@ -4,6 +4,7 @@ interface TodoInterface {
     todoCreationDate:string,
     todoTargetDate:string | null,
     todoStatus:string,
+    dateCompleted:string,
     isArchived:boolean,
     _id:string
 }
@@ -13,6 +14,7 @@ interface GoalInterface {
     goalCreationDate:string,
     goalTargetDate:string | null,
     goalStatus:string,
+    dateCompleted:string,
     habitId:string | null,
     isArchived:boolean,
     _id:string
@@ -26,7 +28,8 @@ interface HabitEntryInterface {
     month:string, /* Date format : .getMonth() + 1 */
     date:string, /* Date format : .getDate() */
     weekday:string,
-    habitEntryStatus:string
+    habitEntryStatus:string,
+    dateCompleted:string,
     _id:string,
 }
 
@@ -42,9 +45,5 @@ interface HabitInterface {
     _id:string,
 }
 
-
-interface HabitWithEntriesInterface extends HabitInterface {
-    habitEntries:HabitEntryInterface[]
-}
 
 export type {TodoInterface,GoalInterface,HabitEntryInterface,HabitInterface}

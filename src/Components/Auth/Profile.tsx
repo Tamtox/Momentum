@@ -6,7 +6,7 @@ import type {RootState} from '../../Store/Store';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 import Loading from '../Misc/Loading';
 //Dependencies
-import { Container,TextField,Button,Box,Typography,Card} from '@mui/material';
+import { Container,TextField,Button,Typography,Card} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useSelector } from 'react-redux';
 
@@ -63,16 +63,16 @@ const Profile:React.FC = () => {
         profileInputsHandler('',['currentPass','newPass','repeatNewPass'])
     }
     let passwordChangeForm = profileInputs.changePassMode ? (
-        <Box className={`password-change-form profile-card scale-in`} component="form" onSubmit={changePasswordFormHandler}>
+        <form className={`password-change-form profile-card scale-in`} onSubmit={changePasswordFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">{profileInputs.changePassLabel}</Typography>
             <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.currentPass} onChange={(e)=>{profileInputsHandler(e,['currentPass'])}} required fullWidth label="Old Password" type="password" />
             <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.newPass} onChange={(e)=>{profileInputsHandler(e,['newPass'])}} required fullWidth label="New Password" type="password" />
             <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.repeatNewPass} onChange={(e)=>{profileInputsHandler(e,['repeatNewPass'])}} required fullWidth label="Repeat New Password" type="password"/>
-            <Box className={`profile-buttons profile-card-item`}>
+            <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('changePassMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
-            </Box>
-        </Box>
+            </div>
+        </form>
     ) : null
     // Account verification
     const verifyAccountHandler = async (event:React.FormEvent) => {
@@ -82,14 +82,14 @@ const Profile:React.FC = () => {
         modeChangeHandler(verificationResponse,)
     }
     let verificationForm = profileInputs.verificationMode ? (
-        <Box className={`verification-form profile-card scale-in`} component="form" onSubmit={verifyAccountHandler} >
+        <form className={`verification-form profile-card scale-in`} onSubmit={verifyAccountHandler} >
             <Typography  className='verification-label profile-card-item' component="h6" variant="h6">{profileInputs.verificationLabel}</Typography>
             <TextField className={`verification-input scale-in profile-card-item`} value={profileInputs.verificationCode} onChange={(e)=>{profileInputsHandler(e,['verificationCode'])}} required fullWidth label="Verification Code" type="text" />
-            <Box className={`profile-buttons profile-card-item`}>
+            <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('verificationMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Verify</Button>}
-            </Box>
-        </Box>
+            </div>
+        </form>
     ) : null
     // Resend verification code
     const sendVerificationFormHandler = async (event:React.FormEvent) => {
@@ -99,14 +99,14 @@ const Profile:React.FC = () => {
         profileInputsHandler(sendVerificationResponse,['verificationLabel']);
     }
     let sendVerificationLetterForm = profileInputs.resendLetterMode ? (
-        <Box className={`send-verification-letter-form profile-card scale-in`} component="form" onSubmit={sendVerificationFormHandler}>
+        <form className={`send-verification-letter-form profile-card scale-in`} onSubmit={sendVerificationFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">{profileInputs.resendLetterLabel}</Typography>
             <TextField className={`scale-in profile-card-item`} size="medium" defaultValue={userData.email} value={profileInputs.email} onChange={(e)=>{profileInputsHandler(e,['email'])}} required fullWidth label="Email" type="email" autoComplete="email" />
-            <Box className={`profile-buttons profile-card-item`}>
+            <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('resendLetterMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
-            </Box>
-        </Box>
+            </div>
+        </form>
     ) : null
     // Delete account
     const deleteAccountFormHandler = async (event:React.FormEvent) => {
@@ -118,14 +118,14 @@ const Profile:React.FC = () => {
         authHooks.deleteAccount();
     }
     let deleteAccountForm = profileInputs.deleteAccountMode ? (
-        <Box className={`delete-account-form profile-card scale-in`} component="form" onSubmit={deleteAccountFormHandler}>
+        <form className={`delete-account-form profile-card scale-in`} onSubmit={deleteAccountFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">{profileInputs.deleteAccountLabel}</Typography>
             <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.email} onChange={(e)=>{profileInputsHandler(e,['email'])}} required fullWidth label="Enter your email" type="email" />
-            <Box className={`profile-buttons profile-card-item`}>
+            <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('deleteAccountMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" color='error' className={`button`}>Delete</Button>}
-            </Box>
-        </Box>
+            </div>
+        </form>
     ) : null
     return (
         <Container className={`profile ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >

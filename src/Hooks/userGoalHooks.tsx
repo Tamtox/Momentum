@@ -41,14 +41,15 @@ const useGoalHooks = () => {
     }
     // Toggle Goal status
     const changeGoalStatus = async (_id:string,goalStatus:string) => {
+        const dateCompleted = goalStatus==="Pending" ? new Date().toString() : '';
         try {
             await axios.request({
                 method:'PATCH',
                 url:`http://localhost:3001/goals/updateGoal`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id,goalStatus:goalStatus==="Pending"?"Complete":"Pending"}
+                data:{_id,goalStatus:goalStatus==="Pending"?"Complete":"Pending",dateCompleted}
             })
-            dispatch(goalActions.changeGoalStatus(_id))
+            dispatch(goalActions.changeGoalStatus({_id,dateCompleted}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   

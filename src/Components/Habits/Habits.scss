@@ -11,7 +11,13 @@
         position: sticky;
         background: white;
         .add-new-habit {
-            transform: translateY(2px)
+            transform: translateY(2px);
+        }
+        .search-habits{
+            transform: translateY(2px);
+            .clear-input{
+                font-size: 26px;
+            }
         }
         .habit-list-label{
             @include widthAndHeight(calc(min(100%, 20rem)),calc(min(100%, 2.6rem)));

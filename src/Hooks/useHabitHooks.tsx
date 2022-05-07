@@ -40,7 +40,7 @@ const useHabitHooks = () => {
         }
         dispatch(authActions.setLoading(false))   
     }
-   // Update or add habit 
+    // Update or add habit 
     const updateHabit = async (newHabit:HabitInterface,updateHabit:boolean,newGoal:GoalInterface|null,updateGoal:boolean) =>{
     dispatch(authActions.setLoading(true))   
     try {
@@ -113,14 +113,15 @@ const useHabitHooks = () => {
     }
     // Change habit entry status
     const changeHabitStatus = async (habitId:string,habitEntryId:string,habitEntryStatus:string) => {
+        const dateCompleted = habitEntryStatus==="Pending" ? new Date().toString() : '';
         try {
             await axios.request({
                 method:'PATCH',
                 url:`http://localhost:3001/habits/updateHabitEntryStatus`,
-                data:{_id:habitEntryId,habitEntryStatus:habitEntryStatus==="Pending"?"Complete":"Pending"},
+                data:{_id:habitEntryId,habitEntryStatus:habitEntryStatus==="Pending"?"Complete":"Pending",dateCompleted},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId}))
+            dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId,dateCompleted}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

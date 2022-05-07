@@ -10,8 +10,8 @@ import type {GoalInterface} from '../../Misc/Interfaces';
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
-import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
-import { Container,TextField,Button,Box,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
+import {IoCheckmarkCircleOutline,IoEllipseOutline,IoCloseCircleOutline} from 'react-icons/io5';
+import { Container,Button,Typography,FormControl,InputLabel,Select,MenuItem,Card,OutlinedInput,InputAdornment} from '@mui/material';
 
 function filterList(list:any[],sortQuery:string|null,searchQuery:string|null) {
     if(sortQuery) {
@@ -51,12 +51,12 @@ const Goals:React.FC = () => {
         }))
         setQueries(e.target.value,queries.searchQuery);
     }
-    const searchQueryHandler = (e:any) => {
+    const searchQueryHandler = (searchString:string) => {
         setNewQueries((prevState)=>({
             ...prevState,
-            searchQuery:e.target.value
+            searchQuery:searchString
         }))
-        setQueries(queries.sortQuery,e.target.value);
+        setQueries(queries.sortQuery,searchString);
     }
     const filteredList = filterList([...goalList],sortQuery,searchQuery);
     // Toggle new/detailed goal
@@ -68,7 +68,7 @@ const Goals:React.FC = () => {
     }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Box className={`goal-controls${isDarkMode?'-dark':''}`}>
+            <div className={`goal-controls${isDarkMode?'-dark':''} scale-in`}>
                 <FormControl className='sort-goals select' size='small'>
                     <InputLabel id="goal-sort-label">Sort</InputLabel>
                     <Select labelId="goal-sort-label"  value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
@@ -79,25 +79,28 @@ const Goals:React.FC = () => {
                         <MenuItem value="statusComp">Status Complete</MenuItem>
                     </Select>
                 </FormControl>
-                <TextField  className={`search-goals`} sx={{width:"calc(min(100%, 33rem))"}} value={queries.searchQuery} onChange={searchQueryHandler} fullWidth size='small' label="Search"/>
+                <FormControl className={`search-goals`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
+                    <InputLabel>Search</InputLabel>
+                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" endAdornment={<InputAdornment position="end"><IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive clear-input`}/></InputAdornment>}/>
+                </FormControl>
                 <Button variant="outlined"  className={`add-new-goal`} onClick={()=>{setToggleNewGoal(!toggleNewGoal)}}>New Goal</Button>
-            </Box>
+            </div>
             {loading?
             <Loading height='80vh'/>:
-            <Box className="goal-list">
+            <div className="goal-list">
                 {filteredList.map((goalItem)=>{
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
-                            <Box className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}}>
+                            <div className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}}>
                                 {goalItem.goalStatus === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.goalStatus}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.goalStatus}`} />}
-                            </Box>
-                            <Box className={`goal-item-title`} onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}}>
+                            </div>
+                            <div className={`goal-item-title`} onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}}>
                                 <Typography className={`goal-item-title-text`}>{goalItem.goalTitle}</Typography>
-                            </Box>
+                            </div>
                         </Card>
                     )
                 })}
-            </Box>}
+            </div>}
             {toggleNewGoal && <AddNewGoal detailedGoal={detailedItem} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToGoals={():any=>setToggleNewGoal(false)} />}
         </Container>
     )

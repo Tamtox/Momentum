@@ -4,11 +4,11 @@ import './Navbar.scss';
 import React, { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router';
-import { useSelector,useDispatch,} from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import type {RootState} from '../../Store/Store';
-import {Box,Typography,Fab} from '@mui/material';
+import {Typography,Fab} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {CgArrowRightO,CgProfile,CgHomeAlt} from 'react-icons/cg';
+import {CgArrowRightO,CgProfile} from 'react-icons/cg';
 import {BsFillJournalBookmarkFill,BsCalendar2Check,BsArchive} from 'react-icons/bs';
 import {MdSchedule} from 'react-icons/md';
 import {FaSun,FaMoon,FaBars} from 'react-icons/fa';
@@ -32,10 +32,10 @@ const  Navbar:React.FC = () => {
     }
     // Sidebar
     let sidebar = (
-        <Box className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`}>
-            <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
+        <div className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`}>
+            <div className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize())}}>
                 <CgArrowRightO className={`nav-icon toggle-sidebar-arrow${sidebarFull?'-full':'-compact'}`} />
-            </Box>
+            </div>
             {/* <NavLink to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
                 <CgHomeAlt className='nav-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Home</Typography>
@@ -64,7 +64,7 @@ const  Navbar:React.FC = () => {
                 <BsArchive className='nav-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Archive</Typography>
             </NavLink>
-        </Box>
+        </div>
     )
     // Sign In/Out Button Handler
     const signHandler = () => {
@@ -74,22 +74,22 @@ const  Navbar:React.FC = () => {
         compact? dispatch(authActions.toggleSidebarVisibility(false)) : dispatch(authActions.toggleSidebarVisibility(true))
     },[compact])
     return (
-        <Box component="header" className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
+        <header className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
             {isLoggedIn && <FaBars className='icon-interactive toggle-sidebar nav-icon' onClick={()=>{dispatch(authActions.toggleSidebarVisibility(null))}} />}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
-            <Box className={`navbar-utility`}>
-                <Box className={`toggle-dark-mode${isDarkMode?'-dark':''}`} onClick={toggleDarkMode}>
+            <div className={`navbar-utility`}>
+                <div className={`toggle-dark-mode${isDarkMode?'-dark':''}`} onClick={toggleDarkMode}>
                     <FaMoon className='icon toggle-dark-mode-moon'/>
-                    <Box className={`toggle-dark-mode-slider ${isDarkMode?"dark":"light"}`}></Box>
+                    <div className={`toggle-dark-mode-slider ${isDarkMode?"dark":"light"}`}></div>
                     <FaSun className='icon toggle-dark-mode-sun' />
-                </Box>
-                <Box className='sign-buttons'>
+                </div>
+                <div className='sign-buttons'>
                     <Fab onClick={signHandler} variant="extended" className={`button-fab sign-button`}>{isLoggedIn?'Sign Out':'Sign In'}</Fab>
                     {isLoggedIn ? <FiLogOut className='sign-icon icon-interactive icon' onClick={signHandler} /> : <FiLogIn className='sign-icon icon-interactive icon' onClick={signHandler} />}
-                </Box>
-            </Box>
+                </div>
+            </div>
             {isLoggedIn && sidebar}
-        </Box>
+        </header>
 )
 }
 

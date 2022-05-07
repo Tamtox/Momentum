@@ -3,9 +3,9 @@ import './Habits.scss';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{ useState,useEffect } from 'react';
-import {Container,TextField,Button,Box,Typography,Card,FormControl,InputLabel,Select,MenuItem} from '@mui/material';
+import {Container,TextField,Button,Typography,Card,FormControl,InputLabel,Select,MenuItem,OutlinedInput,InputAdornment} from '@mui/material';
 import { DatePicker } from '@mui/lab';
-import {IoCheckboxOutline,IoSquareOutline} from 'react-icons/io5';
+import {IoCheckboxOutline,IoSquareOutline,IoCloseCircleOutline} from 'react-icons/io5';
 import { useNavigate,useLocation } from 'react-router-dom';
 //Components
 import Loading from '../Misc/Loading';
@@ -53,12 +53,12 @@ const Habits:React.FC = () => {
         }))
         setQueries(e.target.value,queries.searchQuery);
     }
-    const searchQueryHandler = (e:any) => {
+    const searchQueryHandler = (searchString:string) => {
         setNewQueries((prevState)=>({
             ...prevState,
-            searchQuery:e.target.value
+            searchQuery:searchString
         }))
-        setQueries(queries.sortQuery,e.target.value);
+        setQueries(queries.sortQuery,searchString);
     }
     const filteredList = filterList([...habitList],sortQuery,searchQuery);
     // Date selection and max date for datepicker
@@ -94,7 +94,7 @@ const Habits:React.FC = () => {
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Box className={`habit-controls${isDarkMode?'-dark':''}`}>
+            <div className={`habit-controls${isDarkMode?'-dark':''} scale-in`}>
                 <FormControl className='sort-habits select' size='small' >
                     <InputLabel id="habits-sort-label">Sort</InputLabel>
                     <Select labelId="habits-sort-label" value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
@@ -105,10 +105,13 @@ const Habits:React.FC = () => {
                         <MenuItem value="hasEntries">Habits with entries</MenuItem>
                     </Select>
                 </FormControl>
-                <TextField className={`search-habits`} sx={{width:"calc(min(100%, 33rem))"}} variant='outlined' value={queries.searchQuery} onChange={searchQueryHandler}  size='small' label="Search"/>
+                <FormControl className={`search-habits`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
+                    <InputLabel>Search</InputLabel>
+                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" endAdornment={<InputAdornment position="end"><IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive clear-input`}/></InputAdornment>}/>
+                </FormControl>
                 <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
-            </Box>
-            <Box className={`habit-week-range${isDarkMode?'-dark':''}`}>
+            </div>
+            <div className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
                     renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
@@ -120,31 +123,31 @@ const Habits:React.FC = () => {
                     renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
                     value={selectedDateWeekEnd} onChange={newDate=>{loadSelectedDateData(newDate);}} disabled
                     />
-                </Box>
+                </div>
             {loading ? <Loading height='80vh'/> :
-            <Box className={`habit-list scale-in`}>
+            <div className={`habit-list scale-in`}>
                 {filteredList.map((habitListItem:any)=>{
                     return(
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
-                            <Box className={`habit-list-item-title`} onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}}> 
+                            <div className={`habit-list-item-title`} onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.habitTitle}</Typography>
-                            </Box>
-                            <Box className={`habit-weekdays`}>
+                            </div>
+                            <div className={`habit-weekdays`}>
                                 {habitListItem.habitEntries.map((habitEntry:any)=>{
                                     return (
-                                        <Box key={habitEntry._id} className={`habit-weekday`}>
+                                        <div key={habitEntry._id} className={`habit-weekday`}>
                                             <Typography className={`habit-weekday-label`}>{weekdaysList[habitEntry.weekday]}</Typography>
                                             {habitEntry.habitEntryStatus === 'Complete' ? 
                                             <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/> : 
                                             <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/>}
-                                        </Box>
+                                        </div>
                                     )
                                 })}
-                            </Box>
+                            </div>
                         </Card>
                     )
                 })}
-            </Box>
+            </div>
             } 
             {toggleNewHabit && <AddNewHabit detailedHabit={detailedHabit} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToHabits={():any=>setToggleNewHabit(false)} />}
         </Container>

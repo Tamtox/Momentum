@@ -8,7 +8,7 @@ import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState} from 'react';
-import { TextField,Button,Box,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/lab';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
@@ -68,6 +68,7 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
             goalCreationDate:props.detailedGoal?.goalCreationDate || new Date().toString(),
             goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toString() : (props.detailedGoal?.goalTargetDate || null),
             goalStatus:props.detailedGoal?.goalStatus || 'Pending',
+            dateCompleted:props.detailedGoal?.dateCompleted || '',
             isArchived:props.detailedGoal?.isArchived || false,
             habitId:props.detailedGoal?.habitId  || null ,
             _id: props.detailedGoal?._id || ''
@@ -90,20 +91,24 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
         props.returnToGoals();
     }
     return(
-        <Box className={`add-new-goal-backdrop backdrop opacity-transition`}>
+        <div className={`add-new-goal-backdrop backdrop opacity-transition`}>
             <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
-                <Box className={`add-new-goal-controls`}>
+                <div className={`add-new-goal-controls`}>
                     {props.detailedGoal && <Tooltip title="Archive Item">
-                        <div className='archive-goal'>{props.detailedGoal && <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(props.detailedGoal!);detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit!);props.setDetailedItem();props.returnToGoals()}}/>}</div>
+                        <div className='archive-goal'>
+                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(props.detailedGoal!);detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit!);props.setDetailedItem();props.returnToGoals()}}/>
+                        </div>
                     </Tooltip>}
-                    {!!props.detailedGoal?.habitId || <FormGroup className='add-new-goal-switch'>
+                    {props.detailedGoal?.habitId ? null : <FormGroup className='add-new-goal-switch'>
                         <FormControlLabel control={<Switch onChange={habitModeHandler} />} label="Add Paired Habit" />
                     </FormGroup>}
                     {props.detailedGoal && <Tooltip title="Delete Item">
-                        <div className='delete-goal'>{props.detailedGoal && <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(props.detailedGoal!._id,props.detailedGoal!.habitId);props.setDetailedItem();props.returnToGoals()}}/>}</div>
+                        <div className='delete-goal'>
+                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(props.detailedGoal!._id,props.detailedGoal!.habitId);props.setDetailedItem();props.returnToGoals()}}/>
+                        </div>
                     </Tooltip>}
-                </Box>
-                <Box className='add-new-goal-datetime'>
+                </div>
+                <div className='add-new-goal-datetime'>
                     <DatePicker 
                         inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                         renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
@@ -114,10 +119,9 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
                         renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                         value={goalInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
                     />}
-                </Box>
+                </div>
                 <TextField value={goalInputs.goalTitle} onChange={(e)=>{goalInputsHandler(e,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
-                {(goalInputs.habitMode || props.detailedGoal?.habitId) && 
-                <TextField value={goalInputs.habitTitle} onChange={(e)=>{goalInputsHandler(e,'habitTitle')}} className={`add-new-goal-habit-title focus input`} label='Habit Title' multiline required />}
+                {(goalInputs.habitMode || props.detailedGoal?.habitId) && <TextField value={goalInputs.habitTitle} onChange={(e)=>{goalInputsHandler(e,'habitTitle')}} className={`add-new-goal-habit-title focus input`} label='Habit Title' multiline required />}
                 {(goalInputs.habitMode || props.detailedGoal?.habitId) && 
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
@@ -129,12 +133,12 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
                         })}
                     </FormGroup>
                 </FormControl>}
-                <Box className={`add-new-goal-buttons`}>
+                <div className={`add-new-goal-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{props.setDetailedItem();props.returnToGoals()}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{props.detailedGoal ? 'Update' : 'Submit'}</Button>
-                </Box>
+                </div>
             </Card>
-        </Box>
+        </div>
     )
 }
 

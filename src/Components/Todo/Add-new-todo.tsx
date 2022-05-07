@@ -2,13 +2,14 @@
 import './Add-new-todo.scss';
 // Components
 import useTodoHooks from '../../Hooks/useTodoHooks';
+import type {TodoInterface} from '../../Misc/Interfaces';
 //Dependencies
 import React,{useState} from 'react';
-import { TextField,Button,Box,Card,Tooltip} from '@mui/material';
+import { TextField,Button,Card,Tooltip} from '@mui/material';
 import { DateTimePicker } from '@mui/lab';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
-const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string,todoCreationDate:string,todoTargetDate:string|null,isArchived:boolean,todoStatus:string,_id:string}|undefined,toggleNewTodo:boolean,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
+const AddNewTodo:React.FC<{detailedTodo:TodoInterface|undefined,toggleNewTodo:boolean,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
     const todoHooks = useTodoHooks();
     const [todoInputs,setTodoInputs] = useState({
         todoTitle:props.detailedTodo?.todoTitle || '',
@@ -47,11 +48,13 @@ const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string
         props.returnToTodo();
     }
     return(
-        <Box className={`backdrop opacity-transition`}>
+        <div className={`backdrop opacity-transition`}>
             <Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
-                <Box className={`add-new-todo-controls`}>
+                <div className={`add-new-todo-controls`}>
                     {props.detailedTodo && <Tooltip title="Archive Item">
-                        <div><BsArchive className={`icon-interactive archive-todo`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(props.detailedTodo!);props.setDetailedItem();props.returnToTodo()}}/></div>
+                        <div>
+                            <BsArchive className={`icon-interactive archive-todo`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(props.detailedTodo!);props.setDetailedItem();props.returnToTodo()}}/>
+                        </div>
                     </Tooltip>}
                     <DateTimePicker 
                     inputFormat="dd/MM/yyyy HH:mm" label="Target Date" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
@@ -59,17 +62,19 @@ const AddNewTodo:React.FC<{detailedTodo:{todoTitle:string,todoDescription:string
                     value={todoInputs.selectedDate} onChange={newDate=>{datePick(newDate);}}
                     />
                     {props.detailedTodo && <Tooltip title="Delete Item">
-                        <div><BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(props.detailedTodo!._id);props.setDetailedItem();props.returnToTodo()}}/></div>
+                        <div>
+                            <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(props.detailedTodo!._id);props.setDetailedItem();props.returnToTodo()}}/>
+                        </div>
                     </Tooltip>}
-                </Box>
+                </div>
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
                 <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
-                <Box className={`add-new-todo-buttons`}>
+                <div className={`add-new-todo-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{props.setDetailedItem();props.returnToTodo()}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{props.detailedTodo?'Update':'Submit'}</Button>
-                </Box>
+                </div>
             </Card>
-        </Box>
+        </div>
     )
 }
 

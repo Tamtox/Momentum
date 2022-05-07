@@ -8,7 +8,7 @@ import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{ useState } from 'react';
-import { TextField,Button,Box,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
+import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/lab';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
@@ -18,6 +18,7 @@ const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedIt
     // Get paired goal if one exists
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const detailedGoal = goalList.filter((item)=>item.habitId === props.detailedHabit?._id)[0];
+    // Habit inputs and handlers
     const [habitInputs,setHabitInputs] = useState({
         habitTitle:props.detailedHabit?.habitTitle || '',
         goalTitle:detailedGoal?.goalTitle || '',
@@ -79,6 +80,7 @@ const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedIt
             goalCreationDate:detailedGoal?.goalCreationDate || new Date().toString(),
             goalTargetDate:habitInputs.datePickerUsed ? habitInputs.selectedDate.toString() : (detailedGoal?.goalTargetDate || null),
             goalStatus:detailedGoal?.goalStatus || 'Pending',
+            dateCompleted: detailedGoal?.dateCompleted || '',
             isArchived: detailedGoal?.isArchived || false,
             habitId:detailedGoal?.habitId  || null ,
             _id: detailedGoal?._id || ''
@@ -90,20 +92,24 @@ const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedIt
         props.returnToHabits();
     }
     return (
-        <Box className={`opacity-transition add-new-habit-backdrop backdrop`}>
+        <div className={`opacity-transition add-new-habit-backdrop backdrop`}>
             <Card component="form" onSubmit={addOrUpdateHabit} className={`add-new-habit-form scale-in`}>
-                <Box className={`add-new-habit-controls`}>
-                    { props.detailedHabit && <Tooltip title="Archive Item">
-                        <div className='archive-habit'><BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitHooks.toggleHabitArchiveStatus(props.detailedHabit!);detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal!);props.setDetailedItem();props.returnToHabits()}}/></div>
+                <div className={`add-new-habit-controls`}>
+                    {props.detailedHabit && <Tooltip title="Archive Item">
+                        <div className='archive-habit'>
+                            <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitHooks.toggleHabitArchiveStatus(props.detailedHabit!);detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal!);props.setDetailedItem();props.returnToHabits()}}/>
+                        </div>
                     </Tooltip> }
-                    {!!props.detailedHabit?.goalId || <FormGroup className={`add-new-habit-switch`}>
+                    {props.detailedHabit?.goalId ? null : <FormGroup className={`add-new-habit-switch`}>
                         <FormControlLabel control={<Switch onChange={goalModeHandler} />} label="Add paired goal" />
                     </FormGroup>}
-                    { props.detailedHabit && <Tooltip title="Delete Item">
-                        <div className='delete-habit'><BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(props.detailedHabit!._id,props.detailedHabit!.goalId);props.setDetailedItem();props.returnToHabits()}}/></div>
+                    {props.detailedHabit && <Tooltip title="Delete Item">
+                        <div className='delete-habit'>
+                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(props.detailedHabit!._id,props.detailedHabit!.goalId);props.setDetailedItem();props.returnToHabits()}}/>
+                        </div>
                     </Tooltip> }
-                </Box>
-                <Box className='add-new-habit-datetime'>
+                </div>
+                <div className='add-new-habit-datetime'>
                     {(habitInputs.goalMode || props.detailedHabit?.goalId) && <DatePicker 
                         inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                         renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
@@ -114,7 +120,7 @@ const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedIt
                         renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
                         value={habitInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
                     />
-                </Box>
+                </div>
                 <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
                 {(habitInputs.goalMode || props.detailedHabit?.goalId) && <TextField value={habitInputs.goalTitle} onChange={(event)=>{habitInputsHandler(event,'goalTitle')}} label='Goal Title'  className="add-new-habit-goal-title" multiline required />}
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
@@ -127,12 +133,12 @@ const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedIt
                         })}
                     </FormGroup>
                 </FormControl>
-                <Box className="add-new-habit-buttons">
+                <div className="add-new-habit-buttons">
                     <Button variant="outlined" type='button' className='button' onClick={()=>{props.setDetailedItem();props.returnToHabits()}}>Back</Button>
                     <Button variant="outlined" type='submit' className='button' >Submit</Button>
-                </Box>
+                </div>
             </Card>
-        </Box>
+        </div>
     )
 }
 

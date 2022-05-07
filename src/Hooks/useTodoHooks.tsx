@@ -41,14 +41,15 @@ const useTodoHooks = () => {
     }
     // Toggle Todo status
     const changeTodoStatus = async (_id:string,todoStatus:string) => {
+        const dateCompleted = todoStatus==="Pending" ? new Date().toString() : '';
         try {
             await axios.request({
                 method:'PATCH',
                 url:`http://localhost:3001/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id,todoStatus:todoStatus==="Pending"?"Complete":"Pending"}
+                data:{_id,todoStatus:todoStatus==="Pending" ? "Complete" : "Pending",dateCompleted}
             })
-            dispatch(todoActions.changeToDoStatus(_id))
+            dispatch(todoActions.changeToDoStatus({_id,dateCompleted}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   

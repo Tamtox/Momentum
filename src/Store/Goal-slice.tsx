@@ -29,8 +29,9 @@ const goalSlice = createSlice({
         },
         changeGoalStatus(state,action) {
             state.goalList = state.goalList.map(item=>{
-                if(item._id === action.payload) {
+                if(item._id === action.payload._id) {
                     item.goalStatus = item.goalStatus === 'Pending'?'Complete':'Pending'
+                    item.dateCompleted = action.payload.dateCompleted
                 }
                 return item
             })

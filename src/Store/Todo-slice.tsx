@@ -28,8 +28,9 @@ const todoSlice = createSlice({
         },
         changeToDoStatus(state,action) {
             state.todoList = state.todoList.map(item=>{
-                if(item._id === action.payload) {
-                    item.todoStatus = item.todoStatus === 'Pending'?'Complete':'Pending'
+                if(item._id === action.payload._id) {
+                    item.todoStatus = item.todoStatus === 'Pending'?'Complete':'Pending';
+                    item.dateCompleted = action.payload.dateCompleted
                 }
                 return item
             })

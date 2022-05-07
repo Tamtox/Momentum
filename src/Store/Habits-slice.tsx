@@ -37,6 +37,7 @@ const habitsSlice = createSlice({
                     habitListItem.habitEntries.map(habitEntry=>{
                         if(habitEntry._id === action.payload.habitEntryId) {
                             habitEntry.habitEntryStatus = habitEntry.habitEntryStatus === 'Pending'?'Complete':'Pending'
+                            habitEntry.dateCompleted = action.payload.dateCompleted
                         }
                         return habitEntry
                     })
@@ -45,8 +46,10 @@ const habitsSlice = createSlice({
             })
         },
         updateHabit(state,action) {
-            const newHabit = action.payload.newHabit
-            newHabit.habitEntries = [...action.payload.newHabitEntries]
+            const newHabit = action.payload.newHabit;
+            if(typeof(action.payload.newHabitEntries) !== 'string') {
+                newHabit.habitEntries = [...action.payload.newHabitEntries];
+            }
             state.habitList = state.habitList.map(item=>{
                 if(item._id === newHabit._id) {
                     item = newHabit

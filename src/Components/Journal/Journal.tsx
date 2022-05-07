@@ -7,7 +7,7 @@ import useJournalHooks from '../../Hooks/useJournalHooks';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{ useState,useEffect} from 'react';
-import { Container,TextField,Button,Box,Typography} from '@mui/material';
+import { Container,TextField,Button,Typography} from '@mui/material';
 import { DatePicker} from '@mui/lab';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 
@@ -41,8 +41,8 @@ const Journal:React.FC = () => {
     return (
         <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
             {loading ?<Loading height='100%'/>:
-            <Box component="form" className="journal-form scale-in" onSubmit={journalUpdateHandler} >
-                <Box className={`journal-date`}>
+            <form className="journal-form scale-in" onSubmit={journalUpdateHandler} >
+                <div className={`journal-date`}>
                     <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(selectedDate.getTime() - 86400000))}}>
                         <CgArrowLeft className='journal-date-icon icon-interactive nav-icon' />
                         <Typography className='journal-date-button-text'>Previous Day</Typography>
@@ -56,10 +56,10 @@ const Journal:React.FC = () => {
                         <Typography className='journal-date-button-text'>Next Day</Typography>
                         <CgArrowRight className='journal-date-icon icon-interactive nav-icon' />
                     </Button>
-                </Box>
+                </div>
                 <TextField value={journalInput} onChange={(event)=>{journalInputHandler(event,false)}} className={`focus journal-entry input`} placeholder="Write down what is on you mind." fullWidth multiline required autoFocus />
                 <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry.journalEntry ?'Save':'New Entry'}</Button>
-            </Box>}
+            </form>}
         </Container>
     )
 }
