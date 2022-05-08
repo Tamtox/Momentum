@@ -132,6 +132,8 @@ const Habits:React.FC = () => {
                             <div className={`habit-list-item-title`} onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.habitTitle}</Typography>
                             </div>
+                            {habitListItem.habitEntries.length < 1 ? 
+                            <Button onClick={()=>{habitHooks.populateHabit(selectedDate,habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> :
                             <div className={`habit-weekdays`}>
                                 {habitListItem.habitEntries.map((habitEntry:any)=>{
                                     return (
@@ -144,6 +146,7 @@ const Habits:React.FC = () => {
                                     )
                                 })}
                             </div>
+                            }
                         </Card>
                     )
                 })}

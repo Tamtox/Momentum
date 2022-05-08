@@ -137,14 +137,29 @@ const useHabitHooks = () => {
                 data:{...habitItem,isArchived:isArchived,currentDate:new Date().toString()},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            console.log(habitsResponse.data)
             isArchived ? dispatch(habitsActions.toggleArchiveStatus({...habitItem,isArchived:true})) : dispatch(habitsActions.toggleArchiveStatus({habitItem:{...habitItem,isArchived:false},habitEntries:habitsResponse.data.habitEntries}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
         dispatch(authActions.setLoading(false))   
     }
-    return {loadHabitsData,loadArchivedHabitsData,deleteHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus}
+    // Populate habit with entries
+    const populateHabit = async (selectedDate:Date,_id:string) =>{
+        dispatch(authActions.setLoading(true))   
+        try {
+            const habitsResponse:{data:{newPopulatedEntries:any[]}} = await axios.request({
+                method:'PATCH',
+                url:`http://localhost:3001/habits/populateHabit`,
+                data:{selectedDate:selectedDate.toString(),_id},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(habitsActions.populateHabit({newPopulatedEntries:habitsResponse.data.newPopulatedEntries,_id}))
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }
+        dispatch(authActions.setLoading(false))   
+    }
+    return {loadHabitsData,loadArchivedHabitsData,deleteHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus,populateHabit}
 }
 
 export default useHabitHooks

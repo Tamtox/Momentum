@@ -57,6 +57,14 @@ const habitsSlice = createSlice({
                 return item
             })
         },
+        populateHabit(state,action) {
+            state.habitList = state.habitList.map(item=>{
+                if(item._id === action.payload._id) {
+                    item.habitEntries = action.payload.newPopulatedEntries
+                }
+                return item
+            })
+        },
         updateGoalId(state,action) {
             state.habitList = state.habitList.map(item=>{
                 if(item._id === action.payload._id) {

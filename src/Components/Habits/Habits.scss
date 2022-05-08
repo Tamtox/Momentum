@@ -75,6 +75,11 @@
             .habit-list-item-title:hover{
                 background-color: rgba(128, 128, 128, 0.25);
             }
+            .populate-week{
+                @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+                @include flex;
+                border-top: 1px dotted gray ;
+            }
             .habit-weekdays{
                 @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
                 display: grid;
