@@ -5,6 +5,8 @@ import axios from "axios";
 // Components
 import { authActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
 
+const httpAddress = `http://localhost:3001`;
+
 const useMiscHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
@@ -14,38 +16,38 @@ const useMiscHooks = () => {
             // Preload user data
             const userDataResponse = await axios.request({
                 method:'GET',
-                url:`http://localhost:3001/users/getUserData`,
+                url:`${httpAddress}/users/getUserData`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(authActions.setUsetData(userDataResponse.data))
             // Preload goal data
             const goalListResponse = await axios.request({
                 method:'GET',
-                url:`http://localhost:3001/goals/getGoals`,
+                url:`${httpAddress}/goals/getGoals`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(goalActions.setGoalList(goalListResponse.data))
             // Preload habit data
             const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
                 method:'POST',
-                url:`http://localhost:3001/habits/getHabits`,
-                data:{selectedDate:new Date()},
+                url:`${httpAddress}/habits/getHabits`,
+                data:{selectedTime:new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6),timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:new Date().toString()}))
             // Preload todo data
             const todoList = await axios.request({
                 method:'GET',
-                url:`http://localhost:3001/todo/getTodos`,
+                url:`${httpAddress}/todo/getTodos`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(todoActions.setToDoList(todoList.data))
             //Preload Journal Data
             const journalEntryResponse:{data:any[]} = await axios.request({
                 method:'POST',
-                url:`http://localhost:3001/journal/getJournalEntry`,
+                url:`${httpAddress}/journal/getJournalEntry`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{selectedDate:new Date().toString()}
+                data:{selectedDate:new Date().toISOString(),timezoneOffset:new Date().getTimezoneOffset()}
             })
             if(journalEntryResponse.data.length>0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]))

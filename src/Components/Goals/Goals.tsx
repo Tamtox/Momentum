@@ -62,7 +62,7 @@ const Goals:React.FC = () => {
     // Toggle new/detailed goal
     const [toggleNewGoal,setToggleNewGoal] = useState(false);
     // Set detailed id
-    const [detailedItem,setDetailedItem] = useState();
+    const [detailedItem,setDetailedItem] = useState<GoalInterface|undefined>();
     useEffect(() => {
         goalListLoaded || goalHooks.loadGoalData();
     }, [])
@@ -81,14 +81,16 @@ const Goals:React.FC = () => {
                 </FormControl>
                 <FormControl className={`search-goals`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
                     <InputLabel>Search</InputLabel>
-                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" endAdornment={<InputAdornment position="end"><IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive clear-input`}/></InputAdornment>}/>
+                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" 
+                        endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
+                    />
                 </FormControl>
                 <Button variant="outlined"  className={`add-new-goal`} onClick={()=>{setToggleNewGoal(!toggleNewGoal)}}>New Goal</Button>
             </div>
             {loading?
             <Loading height='80vh'/>:
             <div className="goal-list">
-                {filteredList.map((goalItem)=>{
+                {filteredList.map((goalItem:GoalInterface)=>{
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
                             <div className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}}>

@@ -62,7 +62,7 @@ const Todo:React.FC = () => {
     // Toggle new/detailed todo
     const [toggleNewTodo,setToggleNewTodo] = useState(false);
     // Set detailed id
-    const [detailedItem,setDetailedItem] = useState();
+    const [detailedItem,setDetailedItem] = useState<TodoInterface|undefined>();
     useEffect(() => {
         todoListLoaded || todoHooks.loadTodoData();
     }, [])
@@ -81,14 +81,16 @@ const Todo:React.FC = () => {
                 </FormControl>
                 <FormControl className={`search-todo`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
                     <InputLabel>Search</InputLabel>
-                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" endAdornment={<InputAdornment position="end"><IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive clear-input`}/></InputAdornment>}/>
+                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" 
+                        endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
+                    />
                 </FormControl>
                 <Button variant="outlined"  className={`add-new-todo`} onClick={()=>{setToggleNewTodo(!toggleNewTodo)}}>New To Do</Button>
             </div>
             {loading?
             <Loading height='80vh'/>:
             <div className="todo-list">
-                {filteredList.map((todoItem)=>{
+                {filteredList.map((todoItem:TodoInterface)=>{
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
                             <div className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}}>

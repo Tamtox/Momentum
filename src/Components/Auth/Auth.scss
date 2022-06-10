@@ -22,13 +22,18 @@
             }
         }
         .auth-switch{
+            @include widthAndHeight(calc(min(100%, 20rem)),calc(min(100%,2.8rem)));
+            @include flex;
+            justify-self: center;
             cursor: pointer;
             font-weight: 500;
+            font-size: 1.2rem;
             transition: font-size 0.3s;
-            color: darkblue;
+            border-radius: 30px;
+            transition: box-shadow 0.3s;
         }
         .auth-switch:hover{
-            font-size: 1.35rem;
+            box-shadow: 0 1px 6px gray;
         }
     }
 }

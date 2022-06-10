@@ -6,6 +6,9 @@ import axios from "axios";
 import { goalActions,habitsActions,authActions } from "../Store/Store";
 import type {HabitInterface,GoalInterface} from '../Misc/Interfaces';
 
+const httpAddress = `http://localhost:3001`;
+
+
 const useHabitHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
@@ -15,11 +18,11 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
                 method:'POST',
-                url:`http://localhost:3001/habits/getHabits`,
-                data:{selectedDate:date.toString()},
+                url:`${httpAddress}/habits/getHabits`,
+                data:{selectedTime:date.getTime(),timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:date.toString()}))
+            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:date.toISOString()}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
@@ -31,7 +34,7 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{archivedHabitList:[]}} = await axios.request({
                 method:'POST',
-                url:`http://localhost:3001/habits/getArchivedHabits`,
+                url:`${httpAddress}/habits/getArchivedHabits`,
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(habitsActions.setArchiveHabits(habitsResponse.data.archivedHabitList))
@@ -46,14 +49,14 @@ const useHabitHooks = () => {
     try {
         const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
             method:updateHabit ? 'PATCH' : 'POST',
-            url:`http://localhost:3001/habits/${updateHabit ? 'updateHabit' : 'addNewHabit'}`,
-            data:{...newHabit,currentDate:new Date().toString()},
+            url:`${httpAddress}/habits/${updateHabit ? 'updateHabit' : 'addNewHabit'}`,
+            data:{...newHabit,currentTime:new Date().getTime(),timezoneOffset:new Date().getTimezoneOffset()},
             headers:{Authorization: `Bearer ${token}`}
         })
         if(newGoal) {
             const newGoalResponse = await axios.request({
                 method:newHabit.goalId ? 'PATCH' : 'POST',
-                url:`http://localhost:3001/goals/${newHabit.goalId ?  'updateGoal' : 'addNewGoal'}`,
+                url:`${httpAddress}/goals/${newHabit.goalId ?  'updateGoal' : 'addNewGoal'}`,
                 data:newGoal,
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -64,13 +67,13 @@ const useHabitHooks = () => {
             if(!newHabit.goalId) {
                 await axios.request({
                     method:'PATCH',
-                    url:`http://localhost:3001/goals/updateGoal`,
+                    url:`${httpAddress}/goals/updateGoal`,
                     data:{_id:goalId,habitId},
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 await axios.request({
                     method:'PATCH',
-                    url:`http://localhost:3001/habits/updateHabit`,
+                    url:`${httpAddress}/habits/updateHabit`,
                     data:{_id:habitId,goalId,goalTargetDate},
                     headers:{Authorization: `Bearer ${token}`}
                 })
@@ -92,14 +95,14 @@ const useHabitHooks = () => {
         try {
             await axios.request({
                 method:'DELETE',
-                url:`http://localhost:3001/habits/deleteHabit`,
+                url:`${httpAddress}/habits/deleteHabit`,
                 data:{_id:habitId},
                 headers:{Authorization: `Bearer ${token}`}
             })
             if(pairedGoalId) {
                 await axios.request({
                     method:'DELETE',
-                    url:`http://localhost:3001/goals/deleteGoal`,
+                    url:`${httpAddress}/goals/deleteGoal`,
                     headers:{Authorization: `Bearer ${token}`},
                     data:{_id:pairedGoalId}
                 })
@@ -113,11 +116,11 @@ const useHabitHooks = () => {
     }
     // Change habit entry status
     const changeHabitStatus = async (habitId:string,habitEntryId:string,habitEntryStatus:string) => {
-        const dateCompleted = habitEntryStatus==="Pending" ? new Date().toString() : '';
+        const dateCompleted = habitEntryStatus==="Pending" ? new Date().getTime() : null;
         try {
             await axios.request({
                 method:'PATCH',
-                url:`http://localhost:3001/habits/updateHabitEntryStatus`,
+                url:`${httpAddress}/habits/updateHabitEntryStatus`,
                 data:{_id:habitEntryId,habitEntryStatus:habitEntryStatus==="Pending"?"Complete":"Pending",dateCompleted},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -133,8 +136,8 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{habitEntries:any[]}} = await axios.request({
                 method:'PATCH',
-                url:`http://localhost:3001/habits/updateHabitArchiveStatus`,
-                data:{...habitItem,isArchived:isArchived,currentDate:new Date().toString()},
+                url:`${httpAddress}/habits/updateHabitArchiveStatus`,
+                data:{...habitItem,isArchived:isArchived,currentTime:new Date().getTime(),timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
             isArchived ? dispatch(habitsActions.toggleArchiveStatus({...habitItem,isArchived:true})) : dispatch(habitsActions.toggleArchiveStatus({habitItem:{...habitItem,isArchived:false},habitEntries:habitsResponse.data.habitEntries}))
@@ -149,8 +152,8 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{newPopulatedEntries:any[]}} = await axios.request({
                 method:'PATCH',
-                url:`http://localhost:3001/habits/populateHabit`,
-                data:{selectedDate:selectedDate.toString(),_id},
+                url:`${httpAddress}/habits/populateHabit`,
+                data:{selectedTime:selectedDate.getTime(),timezoneOffset:new Date().getTimezoneOffset(),_id},
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(habitsActions.populateHabit({newPopulatedEntries:habitsResponse.data.newPopulatedEntries,_id}))

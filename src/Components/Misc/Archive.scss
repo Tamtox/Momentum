@@ -12,6 +12,12 @@
         align-items: center;
         margin: auto;
         background: white;
+        .search-archive{
+            transform: translateY(2px);
+            .clear-input{
+                font-size: 26px;
+            }
+        }
     }
     .archive-controls-dark{
         @extend .archive-controls;

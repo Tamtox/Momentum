@@ -1,18 +1,52 @@
 @import '../../Misc/mixins';
 
 .navbar{
-    @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,6vh)));
+    @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,7vh)));
     position: fixed;
     top:0;
     z-index: 50;
     @include grid(100%,1fr 1fr 1fr);
     align-items: center;
-    padding: 0 1rem 0 1rem;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
     max-width: 100%;
-    .toggle-sidebar{
-        color: white;
-        font-size: 24px;
+    .navbar-icon-container{
+        @include widthAndHeight(calc(min(100%, 35px)),calc(min(100%,35px)));
+        @include flex;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: box-shadow 0.15s , background 0.15s ;
+    }
+    .navbar-icon-container:hover{
+        background: white;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+    }
+    .navbar-icon-container-dark{
+        @extend .navbar-icon-container;
+    }
+    .navbar-icon-container-dark:hover{
+        background: #121212;
+        box-shadow: 0 1px 6px rgba(255, 255, 255, 0.5);
+    }
+    .navbar-main{
+        @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+        @include flex(flex-start,center);
+        padding: 0 0rem 0 0.65rem;
+        .toggle-sidebar-icon-container{
+            .toggle-sidebar-icon{
+                color: white;
+                font-size: 23px;
+            }
+            .toggle-sidebar-icon-dark{
+                color: white;
+                font-size: 23px;
+            }
+        }
+        .toggle-sidebar-icon-container:hover{
+            .toggle-sidebar-icon{
+                color: black;
+                font-size: 23px;
+            }
+        }
     }
     .navbar-title{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
@@ -21,65 +55,61 @@
         grid-area: 1 / 2 / span 1 / span 1;
     }
     .navbar-utility{
-        @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
-        @include flex(flex-end,center);
-        gap: 1rem;
+        @include widthAndHeight(calc(min(100%, 10rem)),calc(min(100%,100%)));
+        @include grid(100%, 1fr 1fr 1fr);
         grid-area: 1 / 3 / span 1 / span 1;
-        .toggle-dark-mode{
-            @include widthAndHeight(calc(min(100%, 3.5rem)),calc(min(100%,1.6rem)));
-            @include flex(space-around,center);
-            border-radius: 20px;
-            background-color: white;
-            box-shadow: 0 0 4px black;
-            cursor: pointer;
-            .toggle-dark-mode-slider{
-                @include widthAndHeight(calc(min(100%,23px)),calc(min(100%,23px)));
-                border-radius: 50%;
-                display: inline-block;
-                color: gray;
-                position: absolute;
-                transition: transform .3s ease, background 0.3s;
+        justify-self: flex-end;
+        align-items: center;
+        justify-items: center;
+        .nav-notifications-icon-container{
+            .nav-notifications-icon{
+                color: white;
+                font-size: 28px;
             }
+            .nav-notifications-icon-dark{
+                font-size: 28px;
+            }
+        }
+        .nav-notifications-icon-container:hover{
+            .nav-notifications-icon{
+                color: black;
+            }
+        }
+        .toggle-dark-mode{
             .toggle-dark-mode-moon{
                 color: rgb(255, 255, 175);
-                font-size: 20px;
+                font-size: 26px;
             }
             .toggle-dark-mode-sun{
-                color: rgb(255, 149, 56);
-                font-size: 20px;
+                color: rgb(255, 166, 87);
+                font-size: 28px;
             }
-            .dark{
-                transform: translateX(14px);
-                background: rgb(21, 34, 49);
-            }
-            .light{
-                transform: translateX(-14px);
-                background: rgb(74, 0, 224);
-            }
-        }
-        .toggle-dark-mode-dark{
-            @extend .toggle-dark-mode;
-            background-color: black;
-            box-shadow: 0 0 4px white;
         }
         .sign-buttons{
-            @include widthAndHeight(calc(min(100%, 120px)),calc(min(100%, 30px)));
-            @include flex;
-            .sign-button{
-                @include widthAndHeight(calc(min(100%, 120px)),calc(min(100%, 30px)));
-            }
             .sign-icon{
                 color: white;
-                display: none;
-                cursor: pointer;
+                font-size: 26px;
+            }
+            .sign-icon-dark{
+                color: white;
+                font-size: 26px;
+            }
+        }
+        .sign-buttons:hover{
+            .sign-icon{
+                color: black;
+                font-size: 26px;
+            }
+            .sign-icon-dark{
+                font-size: 26px;
             }
         }
     }
     .nav-sidebar{
-        height: calc(min(100%,94vh));
+        height: calc(min(100%,93vh));
         position: fixed;
         left: 0;
-        top: 6vh;
+        top: 7vh;
         display: grid;
         grid-auto-rows: calc(min(100%,2.6rem));
         color: white;
@@ -89,6 +119,11 @@
         box-shadow: 0 3px 4px black;
         transition: width 0.3s;
         border-top: 2px white dotted;
+        .nav-icon{
+            position: relative;
+            display: block;
+            font-size: 26px;
+        }
         .toggle-sidebar{
             justify-content: center !important;
         }
@@ -134,7 +169,7 @@
             color: black ;
         }
         .nav-element-dark:hover{
-            background: rgb(9, 12, 20);
+            background: black;
             color: white;
         }
     }
@@ -147,22 +182,52 @@
     .sidebar-hidden{
         display: none;
     }
+    .nav-notifications {
+        @include widthAndHeight(calc(min(100%, 20rem)),fit-content);
+        @include grid(100%,100%);
+        min-height: 5rem;
+        max-height: 30rem;
+        position: fixed;
+        top: 8vh;
+        right: 1vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        border-radius: 5px;
+        backdrop-filter: blur(20px);
+        padding: 1rem;
+        gap: 1rem;
+        justify-items: center;
+        align-items: center;
+        .nav-notification{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+            transition: 0.3s;
+        }
+        .nav-notification:hover{
+            background-color: white;
+            color: black;
+        }
+    }
+    .nav-notifications-light{
+        box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255, 255, 255,0.3);
+    }
+    .nav-notifications-dark{
+        box-shadow: 0 1px 6px rgba(255,255,255,0.25);
+        border: 1px solid rgba(0, 0, 0,0.3);
+    }
 }
 
 @media only screen and (max-width: 900px) {
     .navbar{
-        padding: 0 0.5rem 0 1rem;
+        padding: 0 0rem 0 0rem;
         .navbar-utility{
+            @include grid(100%, 1fr 1fr 1fr);
+            padding: 0 0.2rem 0 0rem;
             gap: 0.5rem;
-            .sign-buttons{
-                @include widthAndHeight(calc(min(100%, 30px)),calc(min(100%, 36px)));
-                .sign-button{
-                    display: none;
-                }
-                .sign-icon{
-                    display: block;
-                }
-            }
         }
         .nav-sidebar{
             width: calc(min(100%,20rem));

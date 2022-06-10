@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type { UserInterface } from '../Misc/Interfaces';
 import Cookies from 'js-cookie';
 
 const initialToken = Cookies.get('token');
@@ -6,11 +7,7 @@ const initialDarkMode = Cookies.get('darkMode')
 
 interface AuthSchema {
     token:string|undefined,
-    user:{
-        email:string,
-        name:string,
-        emailConfirmationStatus:string,
-    },
+    user:UserInterface,
     loading:boolean,
     darkMode:boolean|undefined,
     sidebarFull:boolean,
@@ -20,9 +17,15 @@ interface AuthSchema {
 const initialAuthState:AuthSchema = {
     token:initialToken,
     user:{
-        email:'',
         name:'',
+        email:'',
+        password:'',
+        creationDate:'', 
+        lastLogin:'',
+        lastOnline:'',
+        utcOffset:'',
         emailConfirmationStatus:'',
+        verificationCode:''
     },
     loading:false,
     darkMode:initialDarkMode === undefined?false:initialDarkMode === "true"?true:false,
@@ -42,7 +45,17 @@ const authSlice = createSlice({
         },
         logout(state) {
             state.token = undefined;
-            state.user = {email:'',name:'',emailConfirmationStatus:''}
+            state.user = {
+                name:'',
+                email:'',
+                password:'',
+                creationDate:'', 
+                lastLogin:'',
+                lastOnline:'',
+                utcOffset:'',
+                emailConfirmationStatus:'',
+                verificationCode:''
+            }
             Cookies.remove('token');
             Cookies.remove('darkMode');
         },
@@ -65,7 +78,7 @@ const authSlice = createSlice({
             state.sidebarFull = !state.sidebarFull 
         },
         toggleSidebarVisibility(state,action) {
-            state.sidebarVisible = action.payload || !state.sidebarVisible
+            state.sidebarVisible = action.payload
         }
     }
 })

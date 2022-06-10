@@ -5,6 +5,7 @@ import React,{useState} from 'react';
 import type {RootState} from '../../Store/Store';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 import Loading from '../Misc/Loading';
+import type { UserInterface } from '../../Misc/Interfaces';
 //Dependencies
 import { Container,TextField,Button,Typography,Card} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -16,7 +17,7 @@ const Profile:React.FC = () => {
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-    const userData = useSelector<RootState,{email:string,name:string,emailConfirmationStatus:string}>(state=>state.authSlice.user);
+    const userData = useSelector<RootState,UserInterface>(state=>state.authSlice.user);
     const [profileInputs,setProfileInputs] = useState({
         currentPass:'',
         newPass:'',
@@ -32,13 +33,11 @@ const Profile:React.FC = () => {
         deleteAccountMode:false,
         deleteAccountLabel:'Delete Account'
     })
-    const profileInputsHandler = (e:any,inputs:string[]) => {
-        inputs.map((input)=>{
-            setProfileInputs((prevState)=>({
-                ...prevState,[input]:e.target?.value || e
-            }))
-            return null
-        })
+    const profileInputsHandler = (input:string,inputName:string) => {
+        setProfileInputs((prevState)=>({
+            ...prevState,
+            [inputName]:input
+        }))
     }
     const modeChangeHandler = (mode:string,value?:boolean) => {
         setProfileInputs((prevState)=>({
@@ -50,24 +49,26 @@ const Profile:React.FC = () => {
         event.preventDefault();
         const [currentPass,newPass,repeatNewPass] = [profileInputs.currentPass,profileInputs.newPass,profileInputs.repeatNewPass];
         if(newPass.length < 6) {
-            return profileInputsHandler("New password is too short",['changePassLabel'])
+            return profileInputsHandler("New password is too short",'changePassLabel')
         }
         if(newPass.toLowerCase() !== repeatNewPass.toLowerCase()) {
-            return profileInputsHandler("New passwords don't match",['changePassLabel'])
+            return profileInputsHandler("New passwords don't match",'changePassLabel')
         }
         if(newPass.toLowerCase() === currentPass.toLowerCase()) {
-            return profileInputsHandler("Old and new passwords are the same",['changePassLabel'])
+            return profileInputsHandler("Old and new passwords are the same",'changePassLabel')
         }
         const passChangeResponse = await authHooks.changePassword(currentPass,newPass);
-        profileInputsHandler(passChangeResponse,['changePassLabel']);
-        profileInputsHandler('',['currentPass','newPass','repeatNewPass'])
+        profileInputsHandler(passChangeResponse,'changePassLabel');
+        profileInputsHandler('','currentPass');
+        profileInputsHandler('','newPass');
+        profileInputsHandler('','repeatNewPass');
     }
     let passwordChangeForm = profileInputs.changePassMode ? (
         <form className={`password-change-form profile-card scale-in`} onSubmit={changePasswordFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">{profileInputs.changePassLabel}</Typography>
-            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.currentPass} onChange={(e)=>{profileInputsHandler(e,['currentPass'])}} required fullWidth label="Old Password" type="password" />
-            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.newPass} onChange={(e)=>{profileInputsHandler(e,['newPass'])}} required fullWidth label="New Password" type="password" />
-            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.repeatNewPass} onChange={(e)=>{profileInputsHandler(e,['repeatNewPass'])}} required fullWidth label="Repeat New Password" type="password"/>
+            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.currentPass} onChange={(e)=>{profileInputsHandler(e.target.value,'currentPass')}} required fullWidth label="Old Password" type="password" autoComplete="new-password" />
+            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.newPass} onChange={(e)=>{profileInputsHandler(e.target.value,'newPass')}} required fullWidth label="New Password" type="password" autoComplete="new-password"/>
+            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.repeatNewPass} onChange={(e)=>{profileInputsHandler(e.target.value,'repeatNewPass')}} required fullWidth label="Repeat New Password" type="password" autoComplete="new-password"/>
             <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('changePassMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
@@ -84,7 +85,7 @@ const Profile:React.FC = () => {
     let verificationForm = profileInputs.verificationMode ? (
         <form className={`verification-form profile-card scale-in`} onSubmit={verifyAccountHandler} >
             <Typography  className='verification-label profile-card-item' component="h6" variant="h6">{profileInputs.verificationLabel}</Typography>
-            <TextField className={`verification-input scale-in profile-card-item`} value={profileInputs.verificationCode} onChange={(e)=>{profileInputsHandler(e,['verificationCode'])}} required fullWidth label="Verification Code" type="text" />
+            <TextField className={`verification-input scale-in profile-card-item`} value={profileInputs.verificationCode} onChange={(e)=>{profileInputsHandler(e.target.value,'verificationCode')}} required fullWidth label="Verification Code" type="text" />
             <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('verificationMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Verify</Button>}
@@ -96,12 +97,12 @@ const Profile:React.FC = () => {
         event.preventDefault();
         const emailAddress = profileInputs.email
         const sendVerificationResponse = await authHooks.sendVerificationLetter(emailAddress);
-        profileInputsHandler(sendVerificationResponse,['verificationLabel']);
+        profileInputsHandler(sendVerificationResponse,'verificationLabel');
     }
     let sendVerificationLetterForm = profileInputs.resendLetterMode ? (
         <form className={`send-verification-letter-form profile-card scale-in`} onSubmit={sendVerificationFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">{profileInputs.resendLetterLabel}</Typography>
-            <TextField className={`scale-in profile-card-item`} size="medium" defaultValue={userData.email} value={profileInputs.email} onChange={(e)=>{profileInputsHandler(e,['email'])}} required fullWidth label="Email" type="email" autoComplete="email" />
+            <TextField className={`scale-in profile-card-item`} size="medium" defaultValue={userData.email} value={profileInputs.email} onChange={(e)=>{profileInputsHandler(e.target.value,'email')}} required fullWidth label="Email" type="email" autoComplete="email" />
             <div className={`profile-buttons profile-card-item`}>
                 <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('resendLetterMode',false)}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button`}>Submit</Button>}
@@ -111,18 +112,15 @@ const Profile:React.FC = () => {
     // Delete account
     const deleteAccountFormHandler = async (event:React.FormEvent) => {
         event.preventDefault();
-        const userEmail = profileInputs.email
-        if(userEmail !== userData.email) {
-            return profileInputsHandler('Email does not match.',['deleteAccountLabel'])
-        }
-        authHooks.deleteAccount();
+        const deleteAccountResponse = await authHooks.deleteAccount(profileInputs.currentPass);
+        profileInputsHandler(deleteAccountResponse,'deleteAccountLabel');
     }
     let deleteAccountForm = profileInputs.deleteAccountMode ? (
         <form className={`delete-account-form profile-card scale-in`} onSubmit={deleteAccountFormHandler}>
             <Typography className={`profile-card-item`} component="h6" variant="h6">{profileInputs.deleteAccountLabel}</Typography>
-            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.email} onChange={(e)=>{profileInputsHandler(e,['email'])}} required fullWidth label="Enter your email" type="email" />
+            <TextField className={`scale-in profile-card-item`} size="medium" value={profileInputs.currentPass} onChange={(e)=>{profileInputsHandler(e.target.value,'currentPass')}} required fullWidth label="Enter your password" type="password" autoComplete="new-password"/>
             <div className={`profile-buttons profile-card-item`}>
-                <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('deleteAccountMode',false)}} className={`button`}>Back</Button>
+                <Button type="submit" variant="outlined" onClick={()=>{modeChangeHandler('deleteAccountMode',false);profileInputsHandler("",'currentPass')}} className={`button`}>Back</Button>
                 {loading?<LoadingButton className={`button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" color='error' className={`button`}>Delete</Button>}
             </div>
         </form>

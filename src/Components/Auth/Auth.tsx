@@ -6,7 +6,7 @@ import {useSelector} from 'react-redux';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 //Components
 import { RootState} from '../../Store/Store';
-import { Container,TextField,Button,Typography} from '@mui/material';
+import { Container,TextField,Button,Typography,Card} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 const Auth:React.FC = () => {
@@ -48,9 +48,10 @@ const Auth:React.FC = () => {
                 return alert('Passwords do not match!')
             }
         } 
-        const authResponse = await authHooks.signInUp(authInputs.email,authInputs.password,authInputs.isLogin,authInputs.username);
+        const authResponse:string = await authHooks.signInUp(authInputs.email,authInputs.password,authInputs.isLogin,authInputs.username);
         setAuthInputs((prevState)=>({
-            ...prevState,authLabel:authResponse
+            ...prevState,
+            authLabel:authResponse
         }))
     }
     // Reset password
@@ -94,7 +95,7 @@ const Auth:React.FC = () => {
                         {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>{authInputs.isLogin?'Sign In':'Sign Up'}</Button>}
                     </div>
                 </form>
-                <Typography className={`auth-switch`} component="h6" variant="h6" onClick={isLoginHandler}>{authInputs.isLogin?"Don't have an account ?":"Use existing account"}</Typography>
+                <Card className={`auth-switch`} onClick={isLoginHandler}>{authInputs.isLogin?"Don't have an account ?":"Use existing account"}</Card>
             </div>}
         </Container>
     )

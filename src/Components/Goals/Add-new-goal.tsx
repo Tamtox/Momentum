@@ -7,7 +7,7 @@ import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
-import React,{useState} from 'react';
+import React,{useState,useRef} from 'react';
 import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/lab';
 import {BsTrash,BsArchive} from 'react-icons/bs';
@@ -15,6 +15,15 @@ import {BsTrash,BsArchive} from 'react-icons/bs';
 const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {
     const goalHooks = useGoalHooks();
     const habitHooks = useHabitHooks();
+    console.log(props.detailedGoal)
+    // Close menu if click is on backdrop
+    const backdropRef = useRef<HTMLDivElement>(null);
+    const backdropClickHandler = (event:any) => {
+        if(event.target === backdropRef.current) {
+            props.setDetailedItem();
+            props.returnToGoals();
+        }   
+    }
     // Get paired habit if one exists
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.filter((item)=>item.goalId === props.detailedGoal?._id)[0];
@@ -25,6 +34,8 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
         selectedTime: detailedHabit?.habitTime ? new Date(new Date().setHours(Number(detailedHabit.habitTime?.split(':')[0]),Number(detailedHabit.habitTime?.split(':')[1]),0)) : new Date(),
         datePickerUsed:false,
         selectedDate:new Date(props.detailedGoal?.goalTargetDate || new Date()),
+        goalCreationUTCOffset:props.detailedGoal?.creationUTCOffset || `${new Date().getTimezoneOffset()}`,
+        habitCreationUTCOffset:detailedHabit?.creationUTCOffset || `${new Date().getTimezoneOffset()}`,
         habitMode:false,
     })
     const goalInputsHandler = (e:any,input:string) => {
@@ -65,23 +76,25 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
         const newGoal:GoalInterface = {
             goalTitle:goalInputs.goalTitle,
-            goalCreationDate:props.detailedGoal?.goalCreationDate || new Date().toString(),
-            goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toString() : (props.detailedGoal?.goalTargetDate || null),
+            goalCreationDate:props.detailedGoal?.goalCreationDate || new Date().toISOString(),
+            goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toISOString() : (props.detailedGoal?.goalTargetDate || null),
             goalStatus:props.detailedGoal?.goalStatus || 'Pending',
             dateCompleted:props.detailedGoal?.dateCompleted || '',
             isArchived:props.detailedGoal?.isArchived || false,
             habitId:props.detailedGoal?.habitId  || null ,
+            creationUTCOffset: `${new Date().getTimezoneOffset()}`,
             _id: props.detailedGoal?._id || ''
         }
         const newHabit:HabitInterface = {
             habitTitle: goalInputs.habitTitle || '' ,
             habitTime: goalInputs.timePickerUsed ? `${new Date(goalInputs.selectedTime).getHours()}:${new Date(goalInputs.selectedTime).getMinutes() ? new Date(goalInputs.selectedTime).getMinutes() : '00'}` : (detailedHabit?.habitTime || null),
-            habitCreationDate:detailedHabit?.habitCreationDate || new Date().toString(),
+            habitCreationDate:detailedHabit?.habitCreationDate || new Date().getTime(),
             habitWeekdays:activeDays,
             habitEntries:detailedHabit?.habitEntries || [],
             isArchived:detailedHabit?.isArchived || false,
             goalId:detailedHabit?.goalId || null, 
-            goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toString() : (detailedHabit?.goalTargetDate || null) ,
+            goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.getTime() : (detailedHabit?.goalTargetDate || null) ,
+            creationUTCOffset: new Date().getTimezoneOffset(),
             _id:detailedHabit?._id || ''
         }
         const newHabitArgument = (detailedHabit || goalInputs.habitMode) ? newHabit : null
@@ -91,7 +104,7 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
         props.returnToGoals();
     }
     return(
-        <div className={`add-new-goal-backdrop backdrop opacity-transition`}>
+        <div className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={backdropClickHandler}>
             <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
                 <div className={`add-new-goal-controls`}>
                     {props.detailedGoal && <Tooltip title="Archive Item">

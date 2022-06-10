@@ -6,6 +6,8 @@ import axios from "axios";
 import { todoActions,authActions } from "../Store/Store";
 import type {TodoInterface} from '../Misc/Interfaces';
 
+const httpAddress = `http://localhost:3001`;
+
 const useTodoHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
@@ -15,7 +17,7 @@ const useTodoHooks = () => {
         try {
             const todoList = await axios.request({
                 method:'GET',
-                url:`http://localhost:3001/todo/getTodos`,
+                url:`${httpAddress}/todo/getTodos`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(todoActions.setToDoList(todoList.data))
@@ -30,7 +32,7 @@ const useTodoHooks = () => {
         try {
             const todoList = await axios.request({
                 method:'GET',
-                url:`http://localhost:3001/todo/getArchivedTodos`,
+                url:`${httpAddress}/todo/getArchivedTodos`,
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(todoActions.setArchivedToDoList(todoList.data))
@@ -41,11 +43,11 @@ const useTodoHooks = () => {
     }
     // Toggle Todo status
     const changeTodoStatus = async (_id:string,todoStatus:string) => {
-        const dateCompleted = todoStatus==="Pending" ? new Date().toString() : '';
+        const dateCompleted = todoStatus==="Pending" ? new Date().toISOString() : '';
         try {
             await axios.request({
                 method:'PATCH',
-                url:`http://localhost:3001/todo/updateTodo`,
+                url:`${httpAddress}/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id,todoStatus:todoStatus==="Pending" ? "Complete" : "Pending",dateCompleted}
             })
@@ -55,12 +57,12 @@ const useTodoHooks = () => {
         }   
     }
     // Update or add todo
-    const updateTodo = async (newTodo:{},update:boolean) => {
+    const updateTodo = async (newTodo:TodoInterface,update:boolean) => {
         try {
             const newTodoResponse = await axios.request({
                 method:update ? 'PATCH' : 'POST',
-                url:`http://localhost:3001/todo/${update ? 'updateTodo' : 'addNewTodo'}`,
-                data:newTodo,
+                url:`${httpAddress}/todo/${update ? 'updateTodo' : 'addNewTodo'}`,
+                data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
             update ? dispatch(todoActions.updateToDo(newTodo)) : dispatch(todoActions.addToDo(newTodoResponse.data))
@@ -75,7 +77,7 @@ const useTodoHooks = () => {
         try {
             await axios.request({
                 method:'PATCH',
-                url:`http://localhost:3001/todo/updateTodo`,
+                url:`${httpAddress}/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:todoItem._id,isArchived}
             })
@@ -91,7 +93,7 @@ const useTodoHooks = () => {
         try {
             await axios.request({
                 method:'DELETE',
-                url:`http://localhost:3001/todo/deleteTodo`,
+                url:`${httpAddress}/todo/deleteTodo`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:_id}
             })

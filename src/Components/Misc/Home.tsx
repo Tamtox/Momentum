@@ -17,7 +17,6 @@ const Home:React.FC = () => {
     
     return(
         <Container component="main" className={`home ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            {loading ? <Loading height='100%'/> : Home }
         </Container>
     )
 }

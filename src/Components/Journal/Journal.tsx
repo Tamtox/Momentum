@@ -17,7 +17,7 @@ const Journal:React.FC = () => {
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-    const initialDate = journalEntry.date ? new Date(Number(journalEntry.date.split("/")[2]),Number(journalEntry.date.split("/")[1])-1,Number(journalEntry.date.split("/")[0])) : new Date();
+    const initialDate = journalEntry.date ? new Date(journalEntry.date) : new Date();
     const [selectedDate, setSelectedDate] = useState(initialDate);
     const [journalInput,setJournalInput] = useState('');
     const journalInputHandler = (e:any,loadEntry:boolean) => {
@@ -25,9 +25,9 @@ const Journal:React.FC = () => {
     }
      // Select Journal Entry of different Date
     const selectJournalEntryByDate = (newDate:Date|null) => {
-        newDate = newDate || new Date ()
+        newDate = newDate || new Date ();
         setSelectedDate(newDate);
-        journalHooks.loadJournalData(newDate.toString());
+        journalHooks.loadJournalData(newDate);
     }
     // Submit journal entry
     const journalUpdateHandler = async (event:React.FormEvent) => {

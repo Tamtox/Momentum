@@ -11,7 +11,8 @@ import type { TodoInterface,GoalInterface,HabitInterface } from '../../Misc/Inte
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
-import { Container,TextField,Button,Typography,FormControl,InputLabel,Select,MenuItem,Card} from '@mui/material';
+import {IoCloseCircleOutline} from 'react-icons/io5';
+import { Container,Button,Typography,FormControl,InputLabel,Select,MenuItem,Card,OutlinedInput,InputAdornment} from '@mui/material';
 
 const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
@@ -59,12 +60,12 @@ const Archive:React.FC = () => {
         }))
         setQueries(e.target.value,queries.searchQuery);
     }
-    const searchQueryHandler = (e:any) => {
+    const searchQueryHandler = (searchString:string) => {
         setNewQueries((prevState)=>({
             ...prevState,
-            searchQuery:e.target.value
+            searchQuery:searchString
         }))
-        setQueries(queries.sortQuery,e.target.value);
+        setQueries(queries.sortQuery,searchString);
     }
     let unfilteredList:any[] = [] ;
     if(archiveMode === 'todo') {unfilteredList = [...todoArchive]}
@@ -109,7 +110,12 @@ const Archive:React.FC = () => {
                         <MenuItem value="statusComp">Status Complete</MenuItem>
                     </Select>
                 </FormControl>
-                <TextField className={`search-archive`} sx={{width:"calc(min(100%, 33rem))"}} variant='outlined' value={queries.searchQuery} onChange={searchQueryHandler}  size='small' label="Search"/>
+                <FormControl className={`search-archive`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
+                    <InputLabel>Search</InputLabel>
+                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" 
+                        endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
+                    />
+                </FormControl>
                 <FormControl className='archive-mode select' size='small' >
                     <InputLabel id="archive-mode-label">Mode</InputLabel>
                     <Select labelId="archive-mode-label" value={archiveMode} onChange={(e)=>{setArchiveMode(e.target.value)}} size='small' label="Sort">

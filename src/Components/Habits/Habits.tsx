@@ -12,7 +12,7 @@ import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
 import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
-import type {HabitInterface} from '../../Misc/Interfaces';
+import type {HabitInterface,HabitEntryInterface} from '../../Misc/Interfaces';
 
 const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
@@ -65,32 +65,28 @@ const Habits:React.FC = () => {
     const currentWeekStartTime = new Date().getTime() + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
     const currentWeekEnd = new Date(new Date(currentWeekStartTime+86400000*6).setHours(23,59,59,999));
     const datepickerDateWeekStart = datepickerDate.getTime() + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6);
-    const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart).setHours(0,0,0,0)));
-    const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart+86400000*6).setHours(23,59,59,999)));
+    const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart)));
+    const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart+86400000*6)));
     // Weekday list for labels 
     const weekdaysList:{[key:string|number]:string} = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
     // Set detailed item
-    const [detailedHabit,setDetailedItem] = useState();
+    const [detailedHabit,setDetailedItem] = useState<HabitInterface|undefined>();
     // Toggle new/detailed habit
     const [toggleNewHabit,setToggleNewHabit] = useState(false);
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
         newDate = newDate || new Date ();
         // Load new week date only when week changes
-        const selectedWeekStartTime = selectedDate.getTime() + 86400000 * (selectedDate.getDay()? 1 - selectedDate.getDay() : -6);
-        const selectedWeekStart = new Date(new Date(selectedWeekStartTime).setHours(0,0,0,0));
-        const selectedWeekEnd = new Date(new Date(selectedWeekStartTime+86400000*6).setHours(23,59,59,999));
-        const newWeekStartTime = newDate.getTime() + 86400000 * (newDate.getDay()? 1 - newDate.getDay() : -6);
-        const newWeekStart = new Date(new Date(newWeekStartTime).setHours(0,0,0,0));
-        const newWeekEnd = new Date(new Date(newWeekStartTime+86400000*6).setHours(23,59,59,999));
-        if(newDate.getTime()<selectedWeekStart.getTime() || newDate.getTime()> selectedWeekEnd.getTime()) {
-            habitHooks.loadHabitsData(newDate)
+        const selectedWeekStartTime = selectedDate.setHours(0,0,0,0) + 86400000 * (selectedDate.getDay()? 1 - selectedDate.getDay() : -6);
+        const newWeekStartTime = new Date(newDate).setHours(0,0,0,0) + 86400000 * (newDate.getDay()? 1 - newDate.getDay() : -6);
+        if(newDate.getTime() < selectedWeekStartTime || newDate.getTime() > new Date(selectedWeekStartTime).setHours(23,59,59,999)) {
+            habitHooks.loadHabitsData(new Date(newWeekStartTime))
         }
-        setSelectedDate(new Date(newWeekStart));
-        setSelectedDateWeekEnd(new Date(newWeekEnd));
+        setSelectedDate(new Date(newWeekStartTime));
+        setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
     }
     useEffect(() => {
-        habitListLoaded || habitHooks.loadHabitsData(new Date());
+        habitListLoaded || habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
@@ -107,9 +103,11 @@ const Habits:React.FC = () => {
                 </FormControl>
                 <FormControl className={`search-habits`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
                     <InputLabel>Search</InputLabel>
-                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" endAdornment={<InputAdornment position="end"><IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive clear-input`}/></InputAdornment>}/>
+                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" 
+                        endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
+                    />
                 </FormControl>
-                <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit)}}>New Habit</Button>
+                <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit);loadSelectedDateData(new Date())}}>New Habit</Button>
             </div>
             <div className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
                     <DatePicker 
@@ -126,22 +124,23 @@ const Habits:React.FC = () => {
                 </div>
             {loading ? <Loading height='80vh'/> :
             <div className={`habit-list scale-in`}>
-                {filteredList.map((habitListItem:any)=>{
+                {filteredList.map((habitListItem:HabitInterface)=>{
                     return(
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
                             <div className={`habit-list-item-title`} onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.habitTitle}</Typography>
                             </div>
                             {habitListItem.habitEntries.length < 1 ? 
-                            <Button onClick={()=>{habitHooks.populateHabit(selectedDate,habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> :
+                            <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> :
                             <div className={`habit-weekdays`}>
-                                {habitListItem.habitEntries.map((habitEntry:any)=>{
+                                {habitListItem.habitEntries.map((habitEntry:HabitEntryInterface)=>{
+                                    const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
                                     return (
-                                        <div key={habitEntry._id} className={`habit-weekday`}>
-                                            <Typography className={`habit-weekday-label`}>{weekdaysList[habitEntry.weekday]}</Typography>
+                                        <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}>
+                                            <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[new Date(habitEntry.date).getDay()]}</Typography>
                                             {habitEntry.habitEntryStatus === 'Complete' ? 
-                                            <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/> : 
-                                            <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}/>}
+                                            <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} /> : 
+                                            <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} />}
                                         </div>
                                     )
                                 })}
