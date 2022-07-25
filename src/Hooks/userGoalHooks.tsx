@@ -58,7 +58,9 @@ const useGoalHooks = () => {
     }
     // Update or add goal
     const updateGoal = async (newGoal:GoalInterface,updateGoal:boolean,newHabit:HabitInterface|null,updateHabit:boolean) => {
-        dispatch(authActions.setLoading(true))   
+        dispatch(authActions.setLoading(true));
+        const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
             const newGoalResponse = await axios.request({
                 method:updateGoal ? 'PATCH' : 'POST',
@@ -70,7 +72,7 @@ const useGoalHooks = () => {
                 const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
                     method:newGoal.habitId ? 'PATCH' : 'POST',
                     url:`${httpAddress}/habits/${newGoal.habitId ? 'updateHabit' : 'addNewHabit'}`,
-                    data:{...newHabit,currentDate:new Date().toISOString(),timezoneOffset:new Date().getTimezoneOffset()},
+                    data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 // Update goal and habit ids
