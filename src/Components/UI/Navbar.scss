@@ -1,7 +1,7 @@
 @import '../../Misc/mixins';
 
 .navbar{
-    @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,7vh)));
+    @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,6vh)));
     position: fixed;
     top:0;
     z-index: 50;
@@ -106,10 +106,10 @@
         }
     }
     .nav-sidebar{
-        height: calc(min(100%,93vh));
+        height: calc(min(100%,94vh));
         position: fixed;
         left: 0;
-        top: 7vh;
+        top: 6vh;
         display: grid;
         grid-auto-rows: calc(min(100%,2.6rem));
         color: white;

@@ -23,7 +23,7 @@ const initialAuthState:AuthSchema = {
         creationDate:'', 
         lastLogin:'',
         lastOnline:'',
-        utcOffset:'',
+        utcOffset:0,
         emailConfirmationStatus:'',
         verificationCode:''
     },
@@ -52,7 +52,7 @@ const authSlice = createSlice({
                 creationDate:'', 
                 lastLogin:'',
                 lastOnline:'',
-                utcOffset:'',
+                utcOffset:0,
                 emailConfirmationStatus:'',
                 verificationCode:''
             }

@@ -15,7 +15,6 @@ import {BsTrash,BsArchive} from 'react-icons/bs';
 const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {
     const goalHooks = useGoalHooks();
     const habitHooks = useHabitHooks();
-    console.log(props.detailedGoal)
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:any) => {
@@ -28,14 +27,16 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.filter((item)=>item.goalId === props.detailedGoal?._id)[0];
     const [goalInputs,setGoalInputs] = useState({
-        goalTitle:props.detailedGoal?.goalTitle || '',
-        habitTitle:detailedHabit?.habitTitle || '',
+        goalTitle:props.detailedGoal?.title || '',
+        habitTitle:detailedHabit?.title || '',
         timePickerUsed:false,
-        selectedTime: detailedHabit?.habitTime ? new Date(new Date().setHours(Number(detailedHabit.habitTime?.split(':')[0]),Number(detailedHabit.habitTime?.split(':')[1]),0)) : new Date(),
+        selectedTime: detailedHabit?.time ? new Date(new Date().setHours(Number(detailedHabit.time?.split(':')[0]),Number(detailedHabit.time?.split(':')[1]),0)) : new Date(),
         datePickerUsed:false,
-        selectedDate:new Date(props.detailedGoal?.goalTargetDate || new Date()),
-        goalCreationUTCOffset:props.detailedGoal?.creationUTCOffset || `${new Date().getTimezoneOffset()}`,
-        habitCreationUTCOffset:detailedHabit?.creationUTCOffset || `${new Date().getTimezoneOffset()}`,
+        selectedDate:new Date(props.detailedGoal?.targetDate || new Date()),
+        goalCreationUTCOffset:props.detailedGoal?.creationUTCOffset || new Date().getTimezoneOffset(),
+        habitCreationUTCOffset:detailedHabit?.creationUTCOffset || new Date().getTimezoneOffset(),
+        goalAlarmUsed:props.detailedGoal?.alarmUsed || false,
+        habitAlarmUsed:detailedHabit?.alarmUsed || false,
         habitMode:false,
     })
     const goalInputsHandler = (e:any,input:string) => {
@@ -43,6 +44,18 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
             ...prevState,
             [input]:e.target.value
         }))
+    }
+    const goalAlarmSwitchHandler = () => {
+        setGoalInputs((prevState)=>({
+            ...prevState,
+            goalAlarmUsed:!prevState.goalAlarmUsed
+        }));
+    }
+    const habitAlarmSwitchHandler = () => {
+        setGoalInputs((prevState)=>({
+            ...prevState,
+            habitAlarmUsed:!prevState.habitAlarmUsed
+        }));
     }
     const habitModeHandler = () => {
         setGoalInputs((prevState)=>({
@@ -69,32 +82,34 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
     // Set habit active weekdays
     const weekdays = [1,2,3,4,5,6,0];
     const weekdaysLabels:{[key:number]:string} = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',0:'Sun'};
-    const [checkBoxes,setCheckboxes] = useState<{[key:number]:boolean}>(detailedHabit?.habitWeekdays || {1:false,2:false,3:false,4:false,5:false,6:false,0:false});
+    const [checkBoxes,setCheckboxes] = useState<{[key:number]:boolean}>(detailedHabit?.weekdays || {1:false,2:false,3:false,4:false,5:false,6:false,0:false});
     // Submit or update goal 
     const updateGoal = async (event:React.FormEvent) => {
         event.preventDefault();
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
         const newGoal:GoalInterface = {
-            goalTitle:goalInputs.goalTitle,
-            goalCreationDate:props.detailedGoal?.goalCreationDate || new Date().toISOString(),
-            goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.toISOString() : (props.detailedGoal?.goalTargetDate || null),
-            goalStatus:props.detailedGoal?.goalStatus || 'Pending',
+            title:goalInputs.goalTitle,
+            creationDate:props.detailedGoal?.creationDate || new Date().toISOString(),
+            targetDate:goalInputs.datePickerUsed ? new Date(goalInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (props.detailedGoal?.targetDate || null),
+            status:props.detailedGoal?.status || 'Pending',
             dateCompleted:props.detailedGoal?.dateCompleted || '',
             isArchived:props.detailedGoal?.isArchived || false,
             habitId:props.detailedGoal?.habitId  || null ,
-            creationUTCOffset: `${new Date().getTimezoneOffset()}`,
+            creationUTCOffset: goalInputs.goalCreationUTCOffset,
+            alarmUsed:goalInputs.goalAlarmUsed,
             _id: props.detailedGoal?._id || ''
         }
         const newHabit:HabitInterface = {
-            habitTitle: goalInputs.habitTitle || '' ,
-            habitTime: goalInputs.timePickerUsed ? `${new Date(goalInputs.selectedTime).getHours()}:${new Date(goalInputs.selectedTime).getMinutes() ? new Date(goalInputs.selectedTime).getMinutes() : '00'}` : (detailedHabit?.habitTime || null),
-            habitCreationDate:detailedHabit?.habitCreationDate || new Date().getTime(),
-            habitWeekdays:activeDays,
-            habitEntries:detailedHabit?.habitEntries || [],
+            title: goalInputs.habitTitle || '' ,
+            time: goalInputs.timePickerUsed ? new Date(new Date(goalInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedHabit?.time || null),
+            creationDate:detailedHabit?.creationDate || new Date().toISOString(),
+            weekdays:activeDays,
+            entries:detailedHabit?.entries || [],
             isArchived:detailedHabit?.isArchived || false,
             goalId:detailedHabit?.goalId || null, 
-            goalTargetDate:goalInputs.datePickerUsed ? goalInputs.selectedDate.getTime() : (detailedHabit?.goalTargetDate || null) ,
-            creationUTCOffset: new Date().getTimezoneOffset(),
+            goalTargetDate:goalInputs.datePickerUsed ? new Date(goalInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedHabit?.goalTargetDate || null) ,
+            creationUTCOffset: goalInputs.habitCreationUTCOffset,
+            alarmUsed:goalInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''
         }
         const newHabitArgument = (detailedHabit || goalInputs.habitMode) ? newHabit : null
@@ -132,6 +147,14 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
                         renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                         value={goalInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
                     />}
+                </div>
+                <div className={`add-new-goal-alarm-switches`}>
+                    {(goalInputs.datePickerUsed || props.detailedGoal) && <FormGroup>
+                        <FormControlLabel control={<Switch checked={goalInputs.goalAlarmUsed} onChange={goalAlarmSwitchHandler} />} label="Goal alarm" />
+                    </FormGroup>}
+                    {(goalInputs.timePickerUsed || detailedHabit) && <FormGroup>
+                        <FormControlLabel control={<Switch checked={goalInputs.habitAlarmUsed} onChange={habitAlarmSwitchHandler} />} label="Habit alarm" />
+                    </FormGroup>}
                 </div>
                 <TextField value={goalInputs.goalTitle} onChange={(e)=>{goalInputsHandler(e,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
                 {(goalInputs.habitMode || props.detailedGoal?.habitId) && <TextField value={goalInputs.habitTitle} onChange={(e)=>{goalInputsHandler(e,'habitTitle')}} className={`add-new-goal-habit-title focus input`} label='Habit Title' multiline required />}

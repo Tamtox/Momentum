@@ -93,11 +93,11 @@ const Todo:React.FC = () => {
                 {filteredList.map((todoItem:TodoInterface)=>{
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
-                            <div className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.todoStatus)}}>
-                                {todoItem.todoStatus === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive ${todoItem.todoStatus}`} /> : <IoEllipseOutline className={`icon-interactive ${todoItem.todoStatus}`}/>}
+                            <div className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.status)}}>
+                                {todoItem.status === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive ${todoItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${todoItem.status}`}/>}
                             </div>
                             <div  className={`todo-item-title`} onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}}>
-                                <Typography className='todo-item-title-text'>{todoItem.todoTitle}</Typography>
+                                <Typography className='todo-item-title-text'>{todoItem.title}</Typography>
                             </div>
                         </Card>
                     )

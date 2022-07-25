@@ -42,14 +42,14 @@ const useGoalHooks = () => {
         dispatch(authActions.setLoading(false))   
     }
     // Toggle Goal status
-    const changeGoalStatus = async (_id:string,goalStatus:string) => {
-        const dateCompleted = goalStatus==="Pending" ? new Date().toISOString() : '';
+    const changeGoalStatus = async (_id:string,status:string) => {
+        const dateCompleted = status ==="Pending" ? new Date().toISOString() : '';
         try {
             await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/goals/updateGoal`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id,goalStatus:goalStatus==="Pending"?"Complete":"Pending",dateCompleted,timezoneOffset:new Date().getTimezoneOffset()}
+                data:{_id,status:status ==="Pending"?"Complete":"Pending",dateCompleted,timezoneOffset:new Date().getTimezoneOffset()}
             })
             dispatch(goalActions.changeGoalStatus({_id,dateCompleted}))
         } catch (error) {
@@ -76,7 +76,7 @@ const useGoalHooks = () => {
                 // Update goal and habit ids
                 const habitId = updateHabit ? newHabit._id : newHabitResponse.data.newHabit._id
                 const goalId = updateGoal ? newGoal._id : newGoalResponse.data._id
-                const goalTargetDate = updateGoal ? newGoal.goalTargetDate : newGoalResponse.data.goalTargetDate
+                const goalTargetDate = updateGoal ? newGoal.targetDate : newGoalResponse.data.goalTargetDate
                 if(!newGoal.habitId) {
                     await axios.request({
                         method:'PATCH',
@@ -93,8 +93,8 @@ const useGoalHooks = () => {
                     updateGoal ? newGoal.habitId = habitId : newGoalResponse.data.habitId = habitId
                     updateHabit ? newHabit.goalId = goalId :  newHabitResponse.data.newHabit.goalId = goalId
                     updateHabit ? newHabit.goalTargetDate = goalTargetDate  : newHabitResponse.data.newHabit.goalTargetDate = goalTargetDate
-                    updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
                 }
+                updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
             } 
             updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
         } catch (error) {

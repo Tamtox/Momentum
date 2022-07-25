@@ -28,9 +28,8 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 1.2rem;
-            transition: font-size 0.3s;
             border-radius: 30px;
-            transition: box-shadow 0.3s;
+            transition: box-shadow 0.15s;
         }
         .auth-switch:hover{
             box-shadow: 0 1px 6px gray;

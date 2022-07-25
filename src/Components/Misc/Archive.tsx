@@ -133,7 +133,7 @@ const Archive:React.FC = () => {
                         <Card variant='elevation' className={`archive-item scale-in`} key={archiveItem._id}>
                             <Button className={`restore-item`} onClick={()=>{restoreItem(archiveItem)}}>Restore</Button>
                             <div  className={`archive-item-title`}>
-                                <Typography className='archive-item-title-text'>{archiveItem[`${archiveMode}Title`]}</Typography>
+                                <Typography className='archive-item-title-text'>{archiveItem.title}</Typography>
                             </div>
                         </Card>
                     )

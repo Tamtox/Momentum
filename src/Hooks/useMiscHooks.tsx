@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { authActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
+import { authActions,notificationActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -20,6 +20,14 @@ const useMiscHooks = () => {
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(authActions.setUsetData(userDataResponse.data))
+            // Preload notifications
+            const notificationResponse = await axios.request({
+                method:'POST',
+                url:`${httpAddress}/notification/getNotifications`,
+                data:{clientSelectedTime:new Date().setHours(0,0,0,0),timezoneOffset:new Date().getTimezoneOffset()},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(notificationActions.setNotificationList(notificationResponse.data.notificationList));
             // Preload goal data
             const goalListResponse = await axios.request({
                 method:'GET',
@@ -31,7 +39,7 @@ const useMiscHooks = () => {
             const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/getHabits`,
-                data:{selectedTime:new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6),timezoneOffset:new Date().getTimezoneOffset()},
+                data:{clientSelectedWeekStartTime:new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6),clientTimezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:new Date().toString()}))
@@ -47,13 +55,13 @@ const useMiscHooks = () => {
                 method:'POST',
                 url:`${httpAddress}/journal/getJournalEntry`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{selectedDate:new Date().toISOString(),timezoneOffset:new Date().getTimezoneOffset()}
+                data:{clientSelectedDayStartTime:new Date().setHours(0,0,0,0),timezoneOffset:new Date().getTimezoneOffset()}
             })
             if(journalEntryResponse.data.length>0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
             } 
             if (journalEntryResponse.data.length === 0) {
-                dispatch(journalActions.setEntry({date:'',entry:'',id:''}))
+                dispatch(journalActions.setEntry({date:'',entry:'',id:''}));
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;

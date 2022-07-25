@@ -128,12 +128,12 @@ const Habits:React.FC = () => {
                     return(
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
                             <div className={`habit-list-item-title`} onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}}> 
-                                <Typography className={`habit-list-item-title-text`}>{habitListItem.habitTitle}</Typography>
+                                <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
                             </div>
-                            {habitListItem.habitEntries.length < 1 ? 
+                            {habitListItem.entries.length < 1 ? 
                             <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> :
                             <div className={`habit-weekdays`}>
-                                {habitListItem.habitEntries.map((habitEntry:HabitEntryInterface)=>{
+                                {habitListItem.entries.map((habitEntry:HabitEntryInterface)=>{
                                     const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
                                     return (
                                         <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}>

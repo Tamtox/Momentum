@@ -3,8 +3,8 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { todoActions,authActions } from "../Store/Store";
-import type {TodoInterface} from '../Misc/Interfaces';
+import { todoActions,notificationActions,authActions } from "../Store/Store";
+import type {TodoInterface,NotificationInterface} from '../Misc/Interfaces';
 
 const httpAddress = `http://localhost:3001`;
 
@@ -42,14 +42,14 @@ const useTodoHooks = () => {
         dispatch(authActions.setLoading(false))   
     }
     // Toggle Todo status
-    const changeTodoStatus = async (_id:string,todoStatus:string) => {
-        const dateCompleted = todoStatus==="Pending" ? new Date().toISOString() : '';
+    const changeTodoStatus = async (_id:string,status:string) => {
+        const dateCompleted = status === "Pending" ? new Date().toISOString() : '';
         try {
             await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id,todoStatus:todoStatus==="Pending" ? "Complete" : "Pending",dateCompleted}
+                data:{_id,status:status ==="Pending" ? "Complete" : "Pending",dateCompleted}
             })
             dispatch(todoActions.changeToDoStatus({_id,dateCompleted}))
         } catch (error) {
@@ -65,7 +65,13 @@ const useTodoHooks = () => {
                 data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            update ? dispatch(todoActions.updateToDo(newTodo)) : dispatch(todoActions.addToDo(newTodoResponse.data))
+            if(update) {
+                dispatch(todoActions.updateToDo(newTodo));
+                dispatch(notificationActions.updateNotification(newTodo));
+            } else {
+                dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));
+                dispatch(notificationActions.addNotification(newTodoResponse.data.newTodoNotification));
+            }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
@@ -97,7 +103,8 @@ const useTodoHooks = () => {
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:_id}
             })
-            dispatch(todoActions.deleteToDo(_id))
+            dispatch(todoActions.deleteToDo(_id));
+            dispatch(notificationActions.deleteNotification(_id));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   

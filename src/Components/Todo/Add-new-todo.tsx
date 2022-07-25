@@ -5,7 +5,7 @@ import useTodoHooks from '../../Hooks/useTodoHooks';
 import type {TodoInterface} from '../../Misc/Interfaces';
 //Dependencies
 import React,{useState,useRef} from 'react';
-import { TextField,Button,Card,Tooltip} from '@mui/material';
+import { TextField,Button,Card,Tooltip,FormControlLabel,FormGroup,Switch} from '@mui/material';
 import { DateTimePicker } from '@mui/lab';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
@@ -21,16 +21,23 @@ const AddNewTodo:React.FC<{detailedTodo:TodoInterface|undefined,toggleNewTodo:bo
         }   
     }
     const [todoInputs,setTodoInputs] = useState({
-        todoTitle:props.detailedTodo?.todoTitle || '',
-        todoDescription:props.detailedTodo?.todoDescription || '',
+        todoTitle:props.detailedTodo?.title || '',
+        todoDescription:props.detailedTodo?.description || '',
         datePickerUsed:false,
-        selectedDate:new Date(props.detailedTodo?.todoTargetDate || new Date()),
-        creationUTCOffset:props.detailedTodo?.creationUTCOffset || `${new Date().getTimezoneOffset()}`
+        selectedDate:new Date(props.detailedTodo?.targetDate || new Date()),
+        creationUTCOffset:props.detailedTodo?.creationUTCOffset || new Date().getTimezoneOffset(),
+        alarmUsed: props.detailedTodo?.alarmUsed || false
     })
     const todoInputsHandler = (e:any,input:string) => {
         setTodoInputs((prevState)=>({
             ...prevState,
             [input]:e.target.value
+        }));
+    }
+    const alarmSwitchHandler = () => {
+        setTodoInputs((prevState)=>({
+            ...prevState,
+            alarmUsed:!prevState.alarmUsed
         }));
     }
     const datePick = (newDate: Date | null) => {
@@ -45,17 +52,18 @@ const AddNewTodo:React.FC<{detailedTodo:TodoInterface|undefined,toggleNewTodo:bo
     const updateTodo = async (event:React.FormEvent) => {
         event.preventDefault();
         const newTodo:TodoInterface = {
-            todoTitle:todoInputs.todoTitle,
-            todoDescription:todoInputs.todoDescription,
-            todoCreationDate:props.detailedTodo?.todoCreationDate || new Date().toISOString(),
-            todoTargetDate:todoInputs.datePickerUsed ? todoInputs.selectedDate.toISOString() : (props.detailedTodo?.todoTargetDate || null),
-            todoStatus:props.detailedTodo?.todoStatus || 'Pending',
+            title:todoInputs.todoTitle,
+            description:todoInputs.todoDescription,
+            creationDate:props.detailedTodo?.creationDate || new Date().toISOString(),
+            targetDate:todoInputs.datePickerUsed ? todoInputs.selectedDate.toISOString() : (props.detailedTodo?.targetDate || null),
+            status:props.detailedTodo?.status || 'Pending',
             dateCompleted:props.detailedTodo?.dateCompleted || null,
             isArchived:props.detailedTodo?.isArchived || false,
             creationUTCOffset: todoInputs.creationUTCOffset,
+            alarmUsed: todoInputs.alarmUsed,
             _id: props.detailedTodo?._id || "",
         }
-        todoHooks.updateTodo(newTodo,!!props.detailedTodo)
+        todoHooks.updateTodo(newTodo,!!props.detailedTodo);
         // Reset detailed item and return to todo list
         props.setDetailedItem();
         props.returnToTodo();
@@ -80,6 +88,9 @@ const AddNewTodo:React.FC<{detailedTodo:TodoInterface|undefined,toggleNewTodo:bo
                         </div>
                     </Tooltip>}
                 </div>
+                {(todoInputs.datePickerUsed || props.detailedTodo) && <FormGroup className='add-new-todo-alarm-switch'>
+                    <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />
+                </FormGroup>}
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
                 <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
                 <div className={`add-new-todo-buttons`}>

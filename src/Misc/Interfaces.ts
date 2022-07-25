@@ -2,55 +2,58 @@ interface UserInterface {
     name:string,
     email:string,
     password:string,
-    creationDate:string, /* Date format : new Date */
-    lastLogin:string,
-    lastOnline:string,
-    utcOffset:string,
+    creationDate:string, /* Date format : .toIsoString() */
+    lastLogin:string, /* Date format : .toIsoString() */
+    lastOnline:string, /* Date format : .toIsoString() */
+    utcOffset:number, 
     emailConfirmationStatus:string,
     verificationCode:string
 }   
 interface TodoInterface {
-    todoTitle:string,
-    todoDescription:string,
-    todoCreationDate:string,
-    todoTargetDate:string | null,
-    todoStatus:string,
-    dateCompleted:string | null,
+    title:string,
+    description:string,
+    creationDate:string, /* Date format : .toIsoString() */
+    targetDate:string | null, /* Date format : .toIsoString() */
+    status:string,
+    dateCompleted:string | null, /* Date format : .toIsoString() */
     isArchived:boolean,
-    creationUTCOffset:string
+    creationUTCOffset:number,
+    alarmUsed:boolean,
     _id:string
 }
 
 interface GoalInterface {
-    goalTitle:string,
-    goalCreationDate:string,
-    goalTargetDate:string | null,
-    goalStatus:string,
-    dateCompleted:string,
+    title:string,
+    creationDate:string, /* Date format : .toIsoString() */
+    targetDate:string | null, /* Date format : .toIsoString() */
+    status:string,
+    dateCompleted:string, /* Date format : .toIsoString() */
     habitId:string | null,
     isArchived:boolean,
-    creationUTCOffset:string
+    creationUTCOffset:number,
+    alarmUsed:boolean,
     _id:string
 }
 
 interface HabitEntryInterface {
-    date:number /* Date format : .toLocaleString() */
+    date:string /* Date format : .toIsoString() */
     habitEntryStatus:string,
-    dateCompleted:number | null /* Date format : .toIsoString() */
+    dateCompleted:string | null /* Date format : .toIsoString() */
     habitId:string,
     _id:string,
 }
 
 interface HabitInterface {
-    habitTitle:string,
-    habitTime:string | null, /* Date format : .toLocaleTimeString() */
-    habitCreationDate:number, /* Date format : .toISOString() */
-    habitWeekdays:{[key:number|string]:boolean},
+    title:string,
+    time:string | null, /* Date format : .toLocaleTimeString() */
+    creationDate:string, /* Date format : .toIsoString() */
+    weekdays:{[key:number|string]:boolean},
     goalId:string | null,
-    goalTargetDate:number | null,
-    habitEntries:HabitEntryInterface[]
+    goalTargetDate:string | null, /* Date format : .toIsoString() */
+    entries:HabitEntryInterface[]
     isArchived:boolean,
-    creationUTCOffset:number
+    creationUTCOffset:number,
+    alarmUsed:boolean,
     _id:string,
 }
 
@@ -59,8 +62,7 @@ interface NotificationInterface {
     time:string | null,
     notificationParentId:string, 
     notificationParentTitle:string,
-    notificationRead:boolean,
-    dateRead:string | null, /* Date format : Date.toString() */
+    dateCompleted:string | null, /* Date format : .toIsoString() */
     alarmUsed:boolean,
     utcOffset:string
     _id:string

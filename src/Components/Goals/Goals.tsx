@@ -93,11 +93,11 @@ const Goals:React.FC = () => {
                 {filteredList.map((goalItem:GoalInterface)=>{
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
-                            <div className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.goalStatus)}}>
-                                {goalItem.goalStatus === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.goalStatus}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.goalStatus}`} />}
+                            <div className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.status)}}>
+                                {goalItem.status === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.status}`} />}
                             </div>
                             <div className={`goal-item-title`} onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}}>
-                                <Typography className={`goal-item-title-text`}>{goalItem.goalTitle}</Typography>
+                                <Typography className={`goal-item-title-text`}>{goalItem.title}</Typography>
                             </div>
                         </Card>
                     )

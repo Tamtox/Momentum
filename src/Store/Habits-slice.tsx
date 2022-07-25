@@ -23,7 +23,7 @@ const habitsSlice = createSlice({
     reducers:{
         addHabit(state,action) {
             const newHabit = action.payload.newHabit
-            newHabit.habitEntries = [...action.payload.newHabitEntries]
+            newHabit.entries = [...action.payload.newHabitEntries]
             state.habitList.push(newHabit)
         },
         deleteHabit(state,action) {
@@ -34,7 +34,7 @@ const habitsSlice = createSlice({
         changeHabitStatus(state,action) {
             state.habitList = state.habitList.map(habitListItem=>{
                 if(habitListItem._id === action.payload.habitId) {
-                    habitListItem.habitEntries.map(habitEntry=>{
+                    habitListItem.entries.map(habitEntry=>{
                         if(habitEntry._id === action.payload.habitEntryId) {
                             habitEntry.habitEntryStatus = habitEntry.habitEntryStatus === 'Pending'?'Complete':'Pending'
                             habitEntry.dateCompleted = action.payload.dateCompleted
@@ -60,7 +60,7 @@ const habitsSlice = createSlice({
         populateHabit(state,action) {
             state.habitList = state.habitList.map(item=>{
                 if(item._id === action.payload._id) {
-                    item.habitEntries = action.payload.newPopulatedEntries
+                    item.entries = action.payload.newPopulatedEntries
                 }
                 return item
             })
@@ -81,7 +81,7 @@ const habitsSlice = createSlice({
                 state.archivedHabitList = state.archivedHabitList.concat({...action.payload})
             } else {
                 const habitItem = action.payload.habitItem;
-                habitItem.habitEntries = action.payload.habitEntries
+                habitItem.entries = action.payload.habitEntries
                 state.archivedHabitList = state.archivedHabitList.filter(item=>{
                     return item._id !== habitItem._id
                 })
@@ -90,12 +90,12 @@ const habitsSlice = createSlice({
         },
         setHabits(state,action) {
             state.habitList = action.payload.habitList.map((habitListItem:any)=>{
-                if(!habitListItem.habitEntries) {
-                    habitListItem.habitEntries = []
+                if(!habitListItem.entries) {
+                    habitListItem.entries = []
                 }
                 action.payload.habitEntries.forEach((habitEntry:any)=>{
                     if(habitListItem._id === habitEntry.habitId) {
-                        habitListItem.habitEntries.push(habitEntry)
+                        habitListItem.entries.push(habitEntry)
                     }
                 })
                 return habitListItem

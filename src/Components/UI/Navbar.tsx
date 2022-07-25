@@ -16,7 +16,8 @@ import {FaSun,FaMoon,FaBars} from 'react-icons/fa';
 import {FiTarget} from 'react-icons/fi';
 import {BiBell} from 'react-icons/bi';
 //Components
-import { authActions} from '../../Store/Store';
+import { authActions,notificationActions} from '../../Store/Store';
+import type { NotificationInterface } from '../../Misc/Interfaces';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 
 const  Navbar:React.FC = () => {
@@ -27,6 +28,8 @@ const  Navbar:React.FC = () => {
     const isCompact = useMediaQuery('(max-width:900px)');
     // Toggle dark mode slider
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
+    const notificationList = useSelector<RootState,NotificationInterface[]>(state=>state.notificationSlice.notificationList);
+    const notificationListLoaded = useSelector<RootState,boolean>(state=>state.notificationSlice.notificationListLoaded);
     // Menus states 
     const [notificationsVisible,setNotificationsVisible] = useState(false);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -54,10 +57,10 @@ const  Navbar:React.FC = () => {
     // Notifications Bar
     let notifications = (
         <div className={`nav-notifications nav-${isDarkMode?'dark':'light'} nav-notifications-${isDarkMode?'dark':'light'}`} ref={notificationsMenuRef} onClick={outsideClickHandler}>
-            <div className={`nav-notification`}>Example Notification</div>
-            <div className={`nav-notification`}>Example Notification</div>
-            <div className={`nav-notification`}>Example Notification</div>
-            <div className={`nav-notification`}>Example Notification</div>
+            {/* {notificationList.map((notification:NotificationInterface)=>{
+                return (<div className={`nav-notification`}>{notification.notificationParentTitle}</div>)
+            })} */}
+            123
         </div>
     )
     // Sidebar
@@ -138,7 +141,7 @@ const  Navbar:React.FC = () => {
                 </Tooltip>
             </div>
             {isLoggedIn && sidebar}
-            {notificationsVisible && notifications}
+            {/* {notificationsVisible && notifications} */}
         </header>
     )
 }

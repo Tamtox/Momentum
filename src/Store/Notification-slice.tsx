@@ -17,13 +17,33 @@ const notificationSlice = createSlice({
     initialState:initialNotificationState,
     reducers: {
         addNotification(state,action) {
-            state.notificationList.push(action.payload)
+            state.notificationList.push(action.payload);
         },
         deleteNotification(state,action) {
-            state.notificationList = state.notificationList.filter(item=>{
-                return item._id !== action.payload
+            state.notificationList = state.notificationList.filter((item:NotificationInterface)=>{
+                return item.notificationParentId !== action.payload
             })
         },
+        updateNotification(state,action) {
+            state.notificationList = state.notificationList.map((item:NotificationInterface)=>{
+                if(action.payload._id === item.notificationParentId) {
+                    item.alarmUsed = action.payload.alarmUsed
+                    item.date = action.payload.todoTargetDate
+                    item.time = new Date(action.payload.todoTargetDate).toLocaleTimeString("en-GB")
+                    item.notificationParentTitle = action.payload.todoTitle
+                }
+                return item
+            })
+        },  
+        updateNotificationStatus(state,action) {
+            state.notificationList = state.notificationList.map((item:NotificationInterface)=>{
+                if(action.payload._id === item.notificationParentId) {
+                    item.alarmUsed = action.payload.alarmUsed
+                    item.dateCompleted = action.payload.dateCompleted
+                }
+                return item
+            })
+        },  
         setNotificationList(state,action) {
             state.notificationList = action.payload;
             state.notificationListLoaded = true;

@@ -18,7 +18,7 @@ const useJournalHooks = () => {
                 method:'POST',
                 url:`${httpAddress}/journal/getJournalEntry`,
                 headers:{Authorization: `Bearer ${newToken || token}`},
-                data:{selectedDate:selectedDate.toISOString(),timezoneOffset:new Date().getTimezoneOffset() }
+                data:{clientSelectedDayStartTime:selectedDate.setHours(0,0,0,0),timezoneOffset:new Date().getTimezoneOffset()}
             })
             if(journalEntryResponse.data.length > 0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]));
@@ -39,7 +39,7 @@ const useJournalHooks = () => {
                 method:'PATCH',
                 url:`${httpAddress}/journal/updateJournalEntry`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{selectedDate:selectedDate.toISOString(),timezoneOffset:new Date().getTimezoneOffset(),journalEntry:newJournalEntry}
+                data:{clientSelectedDayStartTime:selectedDate.setHours(0,0,0,0),timezoneOffset:new Date().getTimezoneOffset(),journalEntry:newJournalEntry}
             })
             Array.isArray(journalEntryResponse.data) ? dispatch(journalActions.setEntry(journalEntryResponse.data[0])) : dispatch(journalActions.updateEntry(newJournalEntry))
         } catch (error) {
