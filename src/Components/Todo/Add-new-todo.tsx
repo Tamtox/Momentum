@@ -79,8 +79,8 @@ const AddNewTodo:React.FC<{detailedTodo:TodoInterface|undefined,toggleNewTodo:bo
                     </Tooltip>}
                     <DateTimePicker 
                     inputFormat="dd/MM/yyyy HH:mm" label="Target Date/Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                    value={todoInputs.selectedDate} onChange={newDate=>{datePick(newDate);}}
+                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                    value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
                     />
                     {props.detailedTodo && <Tooltip title="Delete Item">
                         <div>

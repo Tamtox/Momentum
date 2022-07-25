@@ -142,13 +142,13 @@ const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedIt
                 <div className='add-new-habit-datetime'>
                     {(habitInputs.goalMode || props.detailedHabit?.goalId) && <DatePicker 
                         inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                        value={habitInputs.selectedDate} onChange={newDate=>{goalDatePick(newDate);}}
+                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                        value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
                     />}
                     <TimePicker 
                         inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
-                        value={habitInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
+                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
+                        value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
                     />
                 </div>
                 <div className={`add-new-habit-alarm-switches`}>

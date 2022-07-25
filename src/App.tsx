@@ -51,7 +51,7 @@ const App:React.FC = () => {
       MuiCard: {
         styleOverrides: {
           root:{
-            boxShadow: "0px 1px 2px black",
+            boxShadow: "0px 1px 3px black",
             lineHeight: "1",
           }
         }

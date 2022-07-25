@@ -139,13 +139,13 @@ const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:
                 <div className='add-new-goal-datetime'>
                     <DatePicker 
                         inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                        value={goalInputs.selectedDate} onChange={newDate=>{goalDatePick(newDate);}}
+                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                        value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
                     />
                     {(goalInputs.habitMode || props.detailedGoal?.habitId) && <TimePicker 
                         inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                        value={goalInputs.selectedTime} onChange={newTime=>{habitTimePick(newTime);}}
+                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                        value={goalInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
                     />}
                 </div>
                 <div className={`add-new-goal-alarm-switches`}>

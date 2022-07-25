@@ -12,13 +12,15 @@ const useJournalHooks = () => {
     const dispatch = useDispatch();
     // Load journal entry from database if it exists 
     const loadJournalData = async (selectedDate:Date,newToken?:string) => {
-        dispatch(authActions.setLoading(true))
+        dispatch(authActions.setLoading(true));
+        const clientSelectedDayStartTime = new Date(selectedDate).setHours(0,0,0,0);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
             const journalEntryResponse:{data:any[]} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/journal/getJournalEntry`,
                 headers:{Authorization: `Bearer ${newToken || token}`},
-                data:{clientSelectedDayStartTime:selectedDate.setHours(0,0,0,0),timezoneOffset:new Date().getTimezoneOffset()}
+                data:{clientSelectedDayStartTime,clientTimezoneOffset}
             })
             if(journalEntryResponse.data.length > 0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]));
@@ -33,13 +35,15 @@ const useJournalHooks = () => {
     }
     // Update journal entry if it exists ,create if not
     const updateJournalEntry = async (selectedDate:Date,newJournalEntry:string) => {
-        dispatch(authActions.setLoading(true))
+        dispatch(authActions.setLoading(true));
+        const clientSelectedDayStartTime = new Date(selectedDate).setHours(0,0,0,0);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
             const journalEntryResponse = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/journal/updateJournalEntry`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{clientSelectedDayStartTime:selectedDate.setHours(0,0,0,0),timezoneOffset:new Date().getTimezoneOffset(),journalEntry:newJournalEntry}
+                data:{clientSelectedDayStartTime,clientTimezoneOffset,journalEntry:newJournalEntry}
             })
             Array.isArray(journalEntryResponse.data) ? dispatch(journalActions.setEntry(journalEntryResponse.data[0])) : dispatch(journalActions.updateEntry(newJournalEntry))
         } catch (error) {

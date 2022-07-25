@@ -49,8 +49,8 @@ const Journal:React.FC = () => {
                     </Button>
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date-picker`}  {...props} />}
-                    value={selectedDate} onChange={newDate=>{selectJournalEntryByDate(newDate)}}
+                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker journal-date-picker`}  {...props} />}
+                    value={selectedDate} onChange={(newDate:Date|null)=>{selectJournalEntryByDate(newDate)}}
                     />
                     <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(selectedDate.getTime() + 86400000))}}>
                         <Typography className='journal-date-button-text'>Next Day</Typography>
@@ -58,7 +58,7 @@ const Journal:React.FC = () => {
                     </Button>
                 </div>
                 <TextField value={journalInput} onChange={(event)=>{journalInputHandler(event,false)}} className={`focus journal-entry input`} placeholder="Write down what is on you mind." fullWidth multiline required autoFocus />
-                <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry.journalEntry ?'Save':'New Entry'}</Button>
+                <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry.journalEntry ?'Update':'New Entry'}</Button>
             </form>}
         </Container>
     )
