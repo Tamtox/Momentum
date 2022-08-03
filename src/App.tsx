@@ -10,7 +10,7 @@ import Cookies from 'js-cookie';
 import { useDispatch } from 'react-redux';
 import { authActions } from './Store/Store';
 //Components
-import Navbar from './Components/UI/Navbar';
+import Navbar from './Components/UI/Navbar/Navbar';
 import Loading from './Components/Misc/Loading';
 import useMiscHooks from './Hooks/useMiscHooks';
 
@@ -107,14 +107,22 @@ const App:React.FC = () => {
         <Navbar />
         <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
-              <Route path='/' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
+              <Route path='/' element={isLoggedIn ? <Todo/> : <Auth/>} />
+              <Route path='/auth' element={isLoggedIn ? <Todo/> : <Auth/>} />
+              <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
+              <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
+              <Route path='/journal' element={isLoggedIn ? <Journal/> : <Auth/>} />
+              <Route path='/habits' element={isLoggedIn ? <Habits/> : <Auth/>} />
+              <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} />
+              <Route path='/archive' element={isLoggedIn ? <Archive/> : <Auth/>} />
+              {/* <Route path='/' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
               <Route path='/auth' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
               <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
               <Route path='/todo' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth />} />
               <Route path='/journal' element={isLoggedIn ? (verificationStatus === "Complete" ? <Journal/> : <Profile/>) : <Auth/>} />
               <Route path='/habits' element={isLoggedIn ? (verificationStatus === "Complete" ? <Habits/> : <Profile/>) : <Auth/>} />
               <Route path='/goals' element={isLoggedIn ? (verificationStatus === "Complete" ? <Goals/> : <Profile/>) : <Auth/>} />
-              <Route path='/archive' element={isLoggedIn ? (verificationStatus === "Complete" ? <Archive/> : <Profile/>) : <Auth/>} />
+              <Route path='/archive' element={isLoggedIn ? (verificationStatus === "Complete" ? <Archive/> : <Profile/>) : <Auth/>} /> */}
             </Routes>
         </Suspense>
       </Box>

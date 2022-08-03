@@ -3,7 +3,7 @@
 .auth{
     @include flex;
     .auth-card{
-        @include widthAndHeight(calc(min(98%,30rem)),calc(min(90vh, 70vh)));
+        @include widthAndHeight(calc(min(98%,30rem)),calc(min(98vh,30rem)));
         @include grid(10% 80% 10%,100%);
         align-items: center;
         .auth-form{

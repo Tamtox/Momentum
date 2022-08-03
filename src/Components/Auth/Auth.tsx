@@ -85,10 +85,10 @@ const Auth:React.FC = () => {
                 <Typography component="h5" variant="h5">{authInputs.authLabel}</Typography>
                 <form className={`auth-form`} onSubmit={authFormSubmit}>
                     <div className={`auth-inputs scale-in`}>
-                        <TextField className={`auth-input`} value={authInputs.email} onChange={(event)=>{authInputsHandler(event,'email')}} required fullWidth label="Email Address" type="email" autoComplete="email" />
-                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.username} onChange={(event)=>{authInputsHandler(event,'username')}} required fullWidth label="Username" type="text"/>}
-                        <TextField className={`auth-input`} value={authInputs.password} onChange={(event)=>{authInputsHandler(event,'password')}} required fullWidth label="Password" type="password" autoComplete="current-password" />
-                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.passwordRepeat} onChange={(event)=>{authInputsHandler(event,'passwordRepeat')}} required fullWidth label="Repeat Password" type="password" autoComplete="current-password" />}
+                        <TextField className={`auth-input`} value={authInputs.email} onChange={(event)=>{authInputsHandler(event,'email')}} size="medium" required fullWidth label="Email Address" type="email" autoComplete="email" />
+                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.username} onChange={(event)=>{authInputsHandler(event,'username')}} size="medium" required fullWidth label="Username" type="text"/>}
+                        <TextField className={`auth-input`} value={authInputs.password} onChange={(event)=>{authInputsHandler(event,'password')}} size="medium" required fullWidth label="Password" type="password" autoComplete="current-password" />
+                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.passwordRepeat} onChange={(event)=>{authInputsHandler(event,'passwordRepeat')}} size="medium" required fullWidth label="Repeat Password" type="password" autoComplete="current-password" />}
                     </div>
                     <div className={`auth-buttons`}>
                         <Button onClick={()=>{passResetModeHandler(true)}} variant="outlined" className={`button auth-button`} sx={{width:'fit-content'}}>Reset Password</Button>

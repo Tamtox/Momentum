@@ -1,0 +1,50 @@
+@import '../../../Misc/mixins';
+
+.nav-notifications {
+    @include widthAndHeight(calc(min(100%, 20rem)),fit-content);
+    @include grid(20% 80%,100%);
+    min-height: 5rem;
+    max-height: 30rem;
+    position: fixed;
+    top: 7.5vh;
+    right: 0.5vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border-radius: 5px;
+    backdrop-filter: blur(20px);
+    padding: 1rem;
+    gap: 1rem;
+    justify-items: center;
+    align-items: center;
+    .nav-notifications-date-picker{
+        @include widthAndHeight(calc(min(100%,45rem)),fit-content); 
+        @include flex;
+        .journal-date-button{
+            width: 1rem;
+            @include flex;
+            color: white;
+        }
+    }
+    .nav-notifications-list{
+        .nav-notification{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+            transition: 0.3s;
+        }
+        .nav-notification:hover{
+            background-color: white;
+            color: black;
+        }
+    }
+}
+.nav-notifications-light{
+    box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255, 255, 255,0.3);
+}
+.nav-notifications-dark{
+    box-shadow: 0 1px 6px rgba(255,255,255,0.25);
+    border: 1px solid rgba(0, 0, 0,0.3);
+}

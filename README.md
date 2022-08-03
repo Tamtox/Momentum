@@ -8,7 +8,7 @@ Features :
     Goals - set mid to long term goals that can be paired up with habits 
 
 Planned Features : 
-
+    Calendar
     Notifications and Alarms 
     Events
     Data Visualization

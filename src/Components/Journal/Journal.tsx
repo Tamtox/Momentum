@@ -23,7 +23,7 @@ const Journal:React.FC = () => {
     const journalInputHandler = (e:any,loadEntry:boolean) => {
         loadEntry ? setJournalInput(e) : setJournalInput(e.target.value)
     }
-     // Select Journal Entry of different Date
+    // Select Journal Entry of different Date
     const selectJournalEntryByDate = (newDate:Date|null) => {
         newDate = newDate || new Date ();
         setSelectedDate(newDate);

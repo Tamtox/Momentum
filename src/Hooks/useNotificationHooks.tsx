@@ -11,11 +11,13 @@ const useNotificationHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
     const loadNotifications = async (date:Date) => {
+        const clientSelectedDayStartTime = new Date(date).setHours(0,0,0,0);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
             const notificationResponse = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/notification/loadNotifications`,
-                data:{selectedDate:Date},
+                url:`${httpAddress}/notification/getNotifications`,
+                data:{clientSelectedDayStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(notificationActions.setNotificationList(notificationResponse.data.notificationList));

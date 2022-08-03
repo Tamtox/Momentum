@@ -60,10 +60,9 @@ const useMiscHooks = () => {
                 headers:{Authorization: `Bearer ${token}`},
                 data:{clientSelectedDayStartTime,clientTimezoneOffset}
             })
-            if(journalEntryResponse.data.length>0) {
+            if(journalEntryResponse.data.length > 0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
-            } 
-            if (journalEntryResponse.data.length === 0) {
+            } else if (journalEntryResponse.data.length === 0) {
                 dispatch(journalActions.setEntry({date:'',entry:'',id:''}));
             }
         } catch (error) {

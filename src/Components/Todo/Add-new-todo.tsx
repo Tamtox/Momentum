@@ -11,7 +11,6 @@ import {BsTrash,BsArchive} from 'react-icons/bs';
 
 const AddNewTodo:React.FC<{detailedTodo:TodoInterface|undefined,toggleNewTodo:boolean,setDetailedItem:()=>{},returnToTodo:()=>{}}> = (props) => {
     const todoHooks = useTodoHooks();
-    console.log(props.detailedTodo);
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:any) => {

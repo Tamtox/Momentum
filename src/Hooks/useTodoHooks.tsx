@@ -69,7 +69,7 @@ const useTodoHooks = () => {
                 dispatch(todoActions.updateToDo(newTodo));
                 dispatch(notificationActions.updateNotification(newTodo));
             } else {
-                dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));
+                dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));    
                 dispatch(notificationActions.addNotification(newTodoResponse.data.newTodoNotification));
             }
         } catch (error) {

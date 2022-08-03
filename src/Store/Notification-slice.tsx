@@ -17,11 +17,13 @@ const notificationSlice = createSlice({
     initialState:initialNotificationState,
     reducers: {
         addNotification(state,action) {
-            state.notificationList.push(action.payload);
+            if(action.payload) {
+                state.notificationList.push(action.payload);
+            }
         },
         deleteNotification(state,action) {
             state.notificationList = state.notificationList.filter((item:NotificationInterface)=>{
-                return item.notificationParentId !== action.payload
+                return item.notificationParentId !== action.payload;
             })
         },
         updateNotification(state,action) {
