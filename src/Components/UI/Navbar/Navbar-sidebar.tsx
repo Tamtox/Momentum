@@ -14,7 +14,9 @@ import {FiTarget} from 'react-icons/fi';
 //Components
 import { authActions} from '../../../Store/Store';
 
-const NavbarSidebar:React.FC = () => {
+type SidebarProps = React.HTMLProps<HTMLDivElement>
+
+const NavbarSidebar = React.forwardRef<HTMLDivElement,SidebarProps>((props,ref) => {
     const dispatch = useDispatch();
     const isCompact = useMediaQuery('(max-width:900px)');
     // Toggle dark mode slider
@@ -22,13 +24,12 @@ const NavbarSidebar:React.FC = () => {
     // Menus states 
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-    const sidebarRef = useRef<HTMLDivElement>(null);
     // Close/open sidebar if screen size changes 
     useEffect(()=>{
         dispatch(authActions.toggleSidebarVisibility(isCompact ? false : true));
     },[isCompact])
     return (
-        <div className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`} ref={sidebarRef}>
+        <div ref={ref} className={`nav-sidebar nav-${isDarkMode?'dark':'light'}  sidebar-${sidebarVisible?(sidebarFull?'full':'compact'):'hidden'}`}>
             {/* <NavLink to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
                 <CgHomeAlt className='nav-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Home</Typography>
@@ -62,6 +63,6 @@ const NavbarSidebar:React.FC = () => {
             </NavLink>
         </div>
     )
-}
+});
 
 export default NavbarSidebar

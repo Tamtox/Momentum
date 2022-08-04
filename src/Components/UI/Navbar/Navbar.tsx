@@ -33,17 +33,15 @@ const Navbar:React.FC = () => {
     const sidebarRef = useRef<HTMLDivElement>(null);
     const outsideClickHandler = (event:any) => {
         // Toggle notifications menu or close it if click happens elsewhere
-        // if(!!notificationsIconRef.current?.contains(event.target)) {
-        //     setNotificationsVisible(!notificationsVisible);
-        // }
-        // else if(!notificationsMenuRef.current?.contains(event.target)) {
-        //     setNotificationsVisible(false);
-        // }   
+        if(!!notificationsIconRef.current?.contains(event.target)) {
+            setNotificationsVisible(!notificationsVisible);
+        } else if(!notificationsMenuRef.current?.contains(event.target)) {
+            setNotificationsVisible(false);
+        }   
         // Toggle sidebar or close it if click happens elsewhere
         if(!!sidebarIconRef.current?.contains(event.target)) {
             dispatch(authActions.toggleSidebarVisibility(!sidebarVisible));
-        }
-        else if(isCompact && !sidebarRef.current?.contains(event.target)) {
+        } else if(isCompact && !sidebarRef.current?.contains(event.target)) {
             dispatch(authActions.toggleSidebarVisibility(false));
         }
     } 
@@ -84,8 +82,8 @@ const Navbar:React.FC = () => {
                     </div>
                 </Tooltip>
             </div>
-            {isLoggedIn && <NavbarSidebar/>}
-            {notificationsVisible && <NavbarNotifications/>}
+            {isLoggedIn && <NavbarSidebar ref={sidebarRef}/>}
+            {notificationsVisible && <NavbarNotifications ref={notificationsMenuRef}/>}
         </header>
     )
 }

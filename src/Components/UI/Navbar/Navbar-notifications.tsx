@@ -1,20 +1,21 @@
 //Styles
 import './Navbar-notifications.scss';
 //Dependencies
-import React, { useEffect,useState,useRef } from 'react';
+import React, { useEffect,useState} from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch } from 'react-redux';
 import type {RootState} from '../../../Store/Store';
-import {Typography,Tooltip,TextField,Button} from '@mui/material';
+import {TextField,Button} from '@mui/material';
 import { DatePicker} from '@mui/lab';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 //Components
-import { notificationActions} from '../../../Store/Store';
+import { notificationActions } from '../../../Store/Store';
 import type { NotificationInterface } from '../../../Misc/Interfaces';
 import useNotificationHooks from '../../../Hooks/useNotificationHooks';
 
-const NavbarNotifications:React.FC = () => {
-    const isLoggedIn = !!useSelector<RootState>(state=>state.authSlice.token);
+type NotificationProps = React.HTMLProps<HTMLDivElement>
+
+const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((props,ref) => {
     const notificationHooks = useNotificationHooks();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -33,21 +34,21 @@ const NavbarNotifications:React.FC = () => {
         notificationListLoaded || notificationHooks.loadNotifications(new Date());
     }, [])
     return (
-        <div className={`nav-notifications nav-${isDarkMode?'dark':'light'} nav-notifications-${isDarkMode?'dark':'light'}`}>
+        <div ref={ref} className={`nav-notifications nav-${isDarkMode?'dark':'light'} nav-notifications-${isDarkMode?'dark':'light'}`}>
             <div className='nav-notifications-date-picker'>
-                <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectNotificationDate(new Date(selectedDate.getTime() - 86400000))}}>
-                    <CgArrowLeft className='journal-date-icon icon-interactive nav-icon' />
+                <Button variant='outlined' className={`button notifications-date-button`} onClick={()=>{selectNotificationDate(new Date(selectedDate.getTime() - 86400000))}}>
+                    <CgArrowLeft className='notifications-date-icon icon-interactive nav-icon' />
                 </Button>
                 <DatePicker 
                 inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
-                renderInput={(props:any) => <TextField size='small' className={`focus date-picker journal-date-picker`}  {...props} />}
+                renderInput={(props:any) => <TextField size='small' className={`focus date-picker notifications-date-picker`}  {...props} />}
                 value={selectedDate} onChange={(newDate:Date|null)=>{selectNotificationDate(newDate)}}
                 />
-                <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectNotificationDate(new Date(selectedDate.getTime() + 86400000))}}>
-                    <CgArrowRight className='journal-date-icon icon-interactive nav-icon' />
+                <Button variant='outlined' className={`button notifications-date-button`} onClick={()=>{selectNotificationDate(new Date(selectedDate.getTime() + 86400000))}}>
+                    <CgArrowRight className='notifications-date-icon icon-interactive nav-icon' />
                 </Button>
             </div>
-            <div className='nav-notifications-list'>
+            {!!notificationList.length && <div className='nav-notifications-list'>
                 {notificationList.map((notification:NotificationInterface)=>{
                     return (
                     <div className={`nav-notification`} key={notification._id}>
@@ -55,9 +56,9 @@ const NavbarNotifications:React.FC = () => {
                     </div>
                     )
                 })}
-            </div>
+            </div>}
         </div>
     )
-}
+});
 
 export default NavbarNotifications
