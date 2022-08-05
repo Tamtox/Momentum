@@ -1,31 +1,6 @@
 @import '../../Misc/mixins';
 
 .goals{
-    .goal-controls{
-        @include widthAndHeight(calc(min(70rem, 100%)),10vh);
-        position: -webkit-sticky;
-        position: sticky;
-        top: 6vh;
-        z-index: 49;
-        @include grid(100%,1fr 2fr 1fr);
-        justify-items: center;
-        align-items: center;
-        margin: auto;
-        background: white;
-        .add-new-goal{
-            transform: translateY(2px);
-        }
-        .search-goals{
-            transform: translateY(2px);
-            .clear-input{
-                font-size: 26px;
-            }
-        }
-    }
-    .goal-controls-dark{
-        @extend .goal-controls;
-        background: #121212;
-    }
     .loading{
         height: 90%;
     }
@@ -83,25 +58,6 @@
                 .Complete{
                     font-size: 33px;
                 }
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 769px) {
-    .goals{
-        .goal-controls{
-            @include widthAndHeight(calc(min(98%, 70rem)),15vh);
-            @include grid(1fr 1fr,1fr 1fr);
-            .search-goals{
-                grid-area: 1 / 1 / span 1 / span 2;
-                order: 0;
-            }
-            .sort-goals{
-                order: 1;
-            }
-            .add-new-goal{
-                order: 2;
             }
         }
     }

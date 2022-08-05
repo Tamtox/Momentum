@@ -25,7 +25,7 @@ const Navbar:React.FC = () => {
     // Toggle dark mode slider
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     // Menus states 
-    const [notificationsVisible,setNotificationsVisible] = useState(true);
+    const [notificationsVisible,setNotificationsVisible] = useState(false);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const notificationsMenuRef = useRef<HTMLDivElement>(null);
     const notificationsIconRef = useRef<HTMLDivElement>(null);

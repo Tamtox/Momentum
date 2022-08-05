@@ -22,6 +22,7 @@ const Journal = React.lazy(()=> import('./Components/Journal/Journal'));
 const Habits = React.lazy(()=> import('./Components/Habits/Habits'));
 const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
 const Archive = React.lazy(()=> import('./Components/Misc/Archive'));
+const NotFound = React.lazy(()=> import('./Components/Misc/NotFound'));
 
 const App:React.FC = () => {
   const miscHooks = useMiscHooks();
@@ -115,6 +116,7 @@ const App:React.FC = () => {
               <Route path='/habits' element={isLoggedIn ? <Habits/> : <Auth/>} />
               <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} />
               <Route path='/archive' element={isLoggedIn ? <Archive/> : <Auth/>} />
+              <Route path='*' element={isLoggedIn ? <NotFound/> : <Auth/>} />
               {/* <Route path='/' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
               <Route path='/auth' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
               <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />

@@ -32,8 +32,9 @@
         }
     }
     .nav-notifications-list{
+        @include flex;
+        flex-direction: column;
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
-        background-color: red;
         .nav-notification{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
             padding: 0.5rem;

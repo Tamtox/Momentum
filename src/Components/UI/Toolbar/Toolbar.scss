@@ -1,0 +1,47 @@
+@import '../../../Misc//_mixins';
+
+.toolbar{
+    @include widthAndHeight(calc(min(70rem, 100%)),10vh);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 6vh;
+    z-index: 49;
+    @include grid(100%,1fr 2fr 1fr);
+    justify-items: center;
+    align-items: center;
+    margin: auto;
+    background: white;
+    .toolbar-add-new-item{
+        transform: translateY(2px);
+    }
+    .toolbar-search{
+        transform: translateY(2px);
+        .clear-input{
+            font-size: 26px;
+        }
+    }
+    .toolbar-sort{
+
+    }
+}
+.toolbar-dark{
+    @extend .toolbar;
+    background: #121212;
+}
+
+@media only screen and (max-width: 769px) {
+    .toolbar{
+        @include widthAndHeight(calc(min(100%, 70rem)),15vh);
+        @include grid(1fr 1fr,1fr 1fr);
+        .toolbar-search{
+            grid-area: 1 / 1 / span 1 / span 2;
+            order: 0;
+        }
+        .toolbar-sort{
+            order: 1;
+        }
+        .toolbar-add-new-item{
+            order: 2;
+        }
+    }
+}

@@ -16,13 +16,19 @@ import type {HabitInterface,HabitEntryInterface} from '../../Misc/Interfaces';
 
 const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
-        if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.habitCreationDate).getTime() - new Date(itemB.habitCreationDate).getTime()) };
-        if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.habitCreationDate).getTime() - new Date(itemA.habitCreationDate).getTime()) };
-        if (sortQuery === 'noEntries') { list = list.filter(item=>item.habitEntries.length<1) };
-        if (sortQuery === 'hasEntries') { list = list.filter(item=>item.habitEntries.length>0) };
+        if (sortQuery === 'dateAsc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
+        if (sortQuery === 'dateDesc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
+        if (sortQuery === 'noEntries') { list = list.filter((item:HabitInterface)=>item.entries.length<1) };
+        if (sortQuery === 'hasEntries') { list = list.filter((item:HabitInterface)=>item.entries.length>0) };
     }
     if(searchQuery) {
-        list = list.filter(item=>item.habitTitle.toLowerCase().includes(searchQuery.toLowerCase()));
+        list = list.filter((item:HabitInterface)=>{
+            if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
+                return item;
+            } else {
+                return false;
+            }
+        });
     }
     return list
 }

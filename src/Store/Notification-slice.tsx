@@ -30,9 +30,8 @@ const notificationSlice = createSlice({
             state.notificationList = state.notificationList.map((item:NotificationInterface)=>{
                 if(action.payload._id === item.notificationParentId) {
                     item.alarmUsed = action.payload.alarmUsed
-                    item.date = action.payload.todoTargetDate
-                    item.time = new Date(action.payload.todoTargetDate).toLocaleTimeString("en-GB")
-                    item.notificationParentTitle = action.payload.todoTitle
+                    item.date = action.payload.targetDate
+                    item.notificationParentTitle = action.payload.title
                 }
                 return item
             })

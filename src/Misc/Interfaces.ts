@@ -59,7 +59,6 @@ interface HabitInterface {
 
 interface NotificationInterface {
     date:string /* Date format : .toIsoString() */
-    time:string | null,
     notificationParentId:string, 
     notificationParentTitle:string,
     dateCompleted:string | null, /* Date format : .toIsoString() */

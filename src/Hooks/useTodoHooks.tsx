@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { todoActions,notificationActions,authActions } from "../Store/Store";
-import type {TodoInterface,NotificationInterface} from '../Misc/Interfaces';
+import type {TodoInterface} from '../Misc/Interfaces';
 
 const httpAddress = `http://localhost:3001`;
 
@@ -70,7 +70,7 @@ const useTodoHooks = () => {
                 dispatch(notificationActions.updateNotification(newTodo));
             } else {
                 dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));    
-                dispatch(notificationActions.addNotification(newTodoResponse.data.newTodoNotification));
+                dispatch(notificationActions.addNotification(newTodoResponse.data.notification));
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
