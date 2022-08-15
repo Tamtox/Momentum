@@ -45,7 +45,7 @@ const Journal:React.FC = () => {
                 <div className={`journal-date`}>
                     <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(selectedDate.getTime() - 86400000))}}>
                         <CgArrowLeft className='journal-date-icon icon-interactive nav-icon' />
-                        <Typography className='journal-date-button-text'>Previous Day</Typography>
+                        <Typography className='journal-date-button-text'>Prev Day</Typography>
                     </Button>
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'

@@ -1,0 +1,53 @@
+@import '../../Misc/mixins';
+
+.schedule{
+    @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,100%))); 
+    margin-top: 0.5rem;
+    .schedule-title{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,100%))); 
+        padding: 0.5rem;
+        font-size: 1.5rem;
+    }
+    .schedule-date{
+        @include widthAndHeight(calc(min(100%, 40rem)),calc(min(100%,100%))); 
+        @include flex(space-around,center);
+        margin: auto;
+        padding: 0.5rem;
+        gap: 1rem;
+        .schedule-date-picker{}
+        .schedule-date-button{
+            width: 10rem;
+            @include flex;
+            gap: 0.2rem;
+        }
+    }
+    .schedule-list{
+        @include widthAndHeight(calc(minmax(70vw, 100%)),calc(min(100%, 100%)));
+        display: grid;
+        grid-template-columns: calc(min(40rem, 100%));
+        grid-auto-rows: 3.5rem;
+        justify-content: center;
+        padding: 1rem 0 7vh 0;
+        gap: 1rem ;
+        margin: auto;
+        .schedule-item{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
+            @include grid(100%,20% 80%);
+            justify-items: center;
+            align-items: center;
+        }
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .schedule{
+        .schedule-date{
+            .schedule-date-button{
+                width: 1rem;
+                .schedule-date-button-text{
+                    display: none;
+                }
+            }
+        }
+    }
+}

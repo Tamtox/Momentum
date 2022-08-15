@@ -1,7 +1,7 @@
 @import '../../../Misc/mixins';
 
 .nav-notifications {
-    @include widthAndHeight(calc(min(100%, 20rem)),fit-content);
+    @include widthAndHeight(calc(min(100%, 23rem)),fit-content);
     @include grid(20% 80%,100%);
     min-height: 5rem;
     max-height: 30rem;
@@ -12,20 +12,19 @@
     overflow-x: hidden;
     border-radius: 5px;
     backdrop-filter: blur(20px);
-    padding: 0.5rem;
+    padding: 1rem;
     gap: 1rem;
     justify-items: center;
     align-items: center;
+    z-index: 50;
     .nav-notifications-date-picker{
         @include widthAndHeight(calc(min(100%,45rem)),fit-content); 
         @include flex;
         .notifications-date-picker{
-            color: white;
         }
         .notifications-date-button{
             width: 1rem;
             @include flex;
-            color: white;
             .notifications-date-icon{
                 font-size: 1.5rem;
             }
@@ -35,13 +34,17 @@
         @include flex;
         flex-direction: column;
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+        gap: 0.5rem;
         .nav-notification{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
+            @include grid(100%,30% 70%);
+            align-items: center;
             padding: 0.5rem;
             cursor: pointer;
             border-radius: 5px;
             color: white;
             transition: 0.3s;
+            background-color: red;
         }
         .nav-notification:hover{
             background-color: white;
@@ -50,10 +53,10 @@
     }
 }
 .nav-notifications-light{
-    box-shadow: 0 1px 6px rgba(0,0,0,0.25);
-    border: 1px solid rgba(255, 255, 255,0.3);
+    box-shadow: 0px 0px 2px black;
+    background: white;
 }
 .nav-notifications-dark{
-    box-shadow: 0 1px 6px rgba(255,255,255,0.25);
-    border: 1px solid rgba(0, 0, 0,0.3);
+    box-shadow: 0px 0px 2px white;
+    background: #121212;
 }

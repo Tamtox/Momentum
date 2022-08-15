@@ -14,7 +14,7 @@ import Navbar from './Components/UI/Navbar/Navbar';
 import Loading from './Components/Misc/Loading';
 import useMiscHooks from './Hooks/useMiscHooks';
 
-// const Home = React.lazy(()=> import('./Components/Misc/Home'));
+const Home = React.lazy(()=> import('./Components/Home/Home'));
 const Auth = React.lazy(()=> import('./Components/Auth/Auth'));
 const Profile = React.lazy(()=> import('./Components/Auth/Profile'));
 const Todo = React.lazy(()=> import('./Components/Todo/Todo'));
@@ -108,7 +108,7 @@ const App:React.FC = () => {
         <Navbar />
         <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
-              <Route path='/' element={isLoggedIn ? <Todo/> : <Auth/>} />
+              <Route path='/' element={isLoggedIn ? <Home/> : <Auth/>} />
               <Route path='/auth' element={isLoggedIn ? <Todo/> : <Auth/>} />
               <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
               <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />

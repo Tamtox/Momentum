@@ -1,44 +1,19 @@
 @import '../../Misc/mixins';
 
 .habits{
-    .habit-controls{
-        @include widthAndHeight(calc(min(70rem, 100%)),10vh);
-        @include grid(1fr,1fr 2fr 1fr);
-        justify-items: center;
-        align-items: center;
-        margin: auto;
-        position: -webkit-sticky;
-        position: sticky;
-        background: white;
-        .add-new-habit {
-            transform: translateY(2px);
-        }
-        .search-habits{
-            transform: translateY(2px);
-            .clear-input{
-                font-size: 26px;
-            }
-        }
-        .habit-list-label{
-            @include widthAndHeight(calc(min(100%, 20rem)),calc(min(100%, 2.6rem)));
-            @include flex;
-            gap: 0.5rem;
-            border-radius: 5px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-    }
-    .habit-controls-dark{
-        @extend .habit-controls;
-        background: #121212;
-    }
     .habit-week-range{
-        @include widthAndHeight(calc(min(70rem, 100%)),7vh);
-        @include flex;
+        @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%))); 
+        @include flex(center,center);
         gap: 1rem;
         margin: auto;
         position: -webkit-sticky;
         position: sticky;
         background: white;
+        .habit-date-button{
+            width: 10rem;
+            @include flex;
+            gap: 0.2rem;
+        }
     }
     .habit-week-range-dark{
         @extend .habit-week-range;
@@ -118,25 +93,6 @@
                         font-size: 33px;
                     }
                 }
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 769px) {
-    .habits{
-        .habit-controls{
-            @include widthAndHeight(calc(min(98%, 70rem)),15vh);
-            @include grid(1fr 1fr,1fr 1fr);
-            .search-habits{
-                grid-area: 1 / 1 / span 1 / span 2;
-                order: 0;
-            }
-            .sort-habits{
-                order: 1;
-            }
-            .add-new-habit{
-                order: 2;
             }
         }
     }

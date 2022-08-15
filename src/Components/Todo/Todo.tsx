@@ -14,7 +14,7 @@ import {useLocation} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 import { Container,Typography,Card} from '@mui/material';
 
-const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
+const filterList = (list:TodoInterface[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
         if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
@@ -22,7 +22,7 @@ const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) =>
         if (sortQuery === 'statusComp') { list = list.filter(item=>item.status === 'Complete') };
     }
     if(searchQuery) {
-        list = list.filter((item:TodoInterface)=>{
+        list = list.filter((item)=>{
             if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
                 return item;
             } else {
@@ -55,8 +55,7 @@ const Todo:React.FC = () => {
     return (
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'todo'} addNewItem={():any=>setToggleNewTodo(true)}/>
-            {loading?
-            <Loading height='80vh'/>:
+            {loading ? <Loading height='80vh'/>:
             <div className="todo-list">
                 {filteredList.map((todoItem:TodoInterface)=>{
                     return (

@@ -6,7 +6,6 @@
     }
     .todo-list{
         @include widthAndHeight(calc(minmax(70vw, 100%)),calc(min(100%, 100%)));
-        background-color: red;
         display: grid;
         grid-template-columns: repeat(auto-fit,min(33rem, 100%));
         grid-auto-rows: 3.5rem;
@@ -59,25 +58,6 @@
                 .Complete{
                     font-size: 33px;
                 }
-            }
-        }
-    }
-}
-
-@media only screen and (max-width: 769px) {
-    .todo{
-        .todo-controls{
-            @include widthAndHeight(calc(min(100%, 70rem)),15vh);
-            @include grid(1fr 1fr,1fr 1fr);
-            .search-todo{
-                grid-area: 1 / 1 / span 1 / span 2;
-                order: 0;
-            }
-            .sort-todo{
-                order: 1;
-            }
-            .add-new-todo{
-                order: 2;
             }
         }
     }

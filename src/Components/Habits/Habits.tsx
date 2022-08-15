@@ -5,9 +5,11 @@ import {useSelector} from 'react-redux';
 import React,{ useState,useEffect } from 'react';
 import {Container,TextField,Button,Typography,Card,FormControl,InputLabel,Select,MenuItem,OutlinedInput,InputAdornment} from '@mui/material';
 import { DatePicker } from '@mui/lab';
-import {IoCheckboxOutline,IoSquareOutline,IoCloseCircleOutline} from 'react-icons/io5';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { CgArrowLeft, CgArrowRight } from 'react-icons/cg';
+import {IoCheckboxOutline,IoSquareOutline} from 'react-icons/io5';
+import { useLocation } from 'react-router-dom';
 //Components
+import Toolbar from '../UI/Toolbar/Toolbar';
 import Loading from '../Misc/Loading';
 import AddNewHabit from './Add-new-habit';
 import type {RootState} from '../../Store/Store';
@@ -43,29 +45,9 @@ const Habits:React.FC = () => {
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
     // Sorting by query params
-    const [navigate,location] = [useNavigate(),useLocation()];
+    const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] 
-    function setQueries(sortQuery:string|null,searchQuery:string|null) {
-        const sortQueryString = sortQuery ? `?sort=${sortQuery}` : ''
-        const searchQueryString = searchQuery ? sortQuery ? `&search=${searchQuery}` : `?search=${searchQuery}` : ''
-        navigate(`/habits${sortQueryString}${searchQueryString}`);
-    }
-    const [queries,setNewQueries] = useState({sortQuery:searchQuery || '',searchQuery:searchQuery || ''}) ;
-    const sortQueryHandler = (e:any) => {
-        setNewQueries((prevState)=>({
-            ...prevState,
-            sortQuery:e.target.value
-        }))
-        setQueries(e.target.value,queries.searchQuery);
-    }
-    const searchQueryHandler = (searchString:string) => {
-        setNewQueries((prevState)=>({
-            ...prevState,
-            searchQuery:searchString
-        }))
-        setQueries(queries.sortQuery,searchString);
-    }
     const filteredList = filterList([...habitList],sortQuery,searchQuery);
     // Date selection and max date for datepicker
     const currentWeekStartTime = new Date().getTime() + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
@@ -96,26 +78,12 @@ const Habits:React.FC = () => {
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <div className={`habit-controls${isDarkMode?'-dark':''} scale-in`}>
-                <FormControl className='sort-habits select' size='small' >
-                    <InputLabel id="habits-sort-label">Sort</InputLabel>
-                    <Select labelId="habits-sort-label" value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
-                        <MenuItem value="">All Habits</MenuItem>
-                        <MenuItem value="dateAsc">Creation Date Ascending</MenuItem>
-                        <MenuItem value="dateDesc">Creation Date Descending</MenuItem>
-                        <MenuItem value="noEntries">Habits without entries</MenuItem>
-                        <MenuItem value="hasEntries">Habits with entries</MenuItem>
-                    </Select>
-                </FormControl>
-                <FormControl className={`search-habits`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
-                    <InputLabel>Search</InputLabel>
-                    <OutlinedInput value={queries.searchQuery} onChange={(e)=>{searchQueryHandler(e.target.value)}} label="Search" 
-                        endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
-                    />
-                </FormControl>
-                <Button variant="outlined" className={`add-new-habit button`} onClick={()=>{setToggleNewHabit(!toggleNewHabit);loadSelectedDateData(new Date())}}>New Habit</Button>
-            </div>
+            <Toolbar mode={'habit'} addNewItem={():any=>{setToggleNewHabit(true)}}/>
             <div className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
+                    <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() - 86400000 * 7))}}>
+                        <CgArrowLeft className='habit-date-icon icon-interactive nav-icon' />
+                        <Typography className='habit-date-button-text'>Prev Week</Typography>
+                    </Button> 
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
                     renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
@@ -127,6 +95,10 @@ const Habits:React.FC = () => {
                     renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
                     value={selectedDateWeekEnd} onChange={newDate=>{loadSelectedDateData(newDate);}} disabled
                     />
+                    <Button variant='outlined' disabled={selectedDate.getTime() + 86400000 * 7 >= currentWeekEnd.getTime() ? true : false} className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
+                        <Typography className='habit-date-button-text'>Next Week</Typography>
+                        <CgArrowRight className='habit-date-icon icon-interactive nav-icon' />
+                    </Button> 
                 </div>
             {loading ? <Loading height='80vh'/> :
             <div className={`habit-list scale-in`}>

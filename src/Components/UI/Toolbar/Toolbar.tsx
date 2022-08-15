@@ -44,8 +44,8 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
                     <MenuItem value="">All Items</MenuItem>
                     <MenuItem value="dateAsc">Creation Date Ascending</MenuItem>
                     <MenuItem value="dateDesc">Creation Date Descending</MenuItem>
-                    <MenuItem value="statusPend">Status Pending</MenuItem>
-                    <MenuItem value="statusComp">Status Complete</MenuItem>
+                    {props.mode === 'habit' ? <MenuItem value="noEntries">No Entries</MenuItem> : <MenuItem value="statusPend">Status Pending</MenuItem>}
+                    {props.mode === 'habit' ? <MenuItem value="hasEntries">Entries</MenuItem> :<MenuItem value="statusComp">Status Complete</MenuItem>}
                 </Select>
             </FormControl>
             <FormControl className={`toolbar-search`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">

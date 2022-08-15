@@ -66,11 +66,11 @@ const Navbar:React.FC = () => {
             </div>}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
             <div className={`navbar-utility`}>
-                {isLoggedIn &&<Tooltip title="Notifications" enterDelay={3000}>
+                {/* {isLoggedIn &&<Tooltip title="Notifications" enterDelay={3000}>
                     <div className={`navbar-icon-container${isDarkMode ? '-dark' : ''} nav-notifications-icon-container`} ref={notificationsIconRef}>
                         <BiBell className={`nav-notifications-icon${isDarkMode?'-dark':''} icon`} />
                     </div>
-                </Tooltip>}
+                </Tooltip>} */}
                 <Tooltip title={`${isDarkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode'}`} enterDelay={3000}>
                     <div className={`toggle-dark-mode navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={()=>{dispatch(authActions.setDarkMode())}}>
                         {isDarkMode ? <FaMoon className='icon toggle-dark-mode-moon'/> : <FaSun className='icon toggle-dark-mode-sun' />}

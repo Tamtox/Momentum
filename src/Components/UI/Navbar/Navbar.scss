@@ -55,12 +55,10 @@
         grid-area: 1 / 2 / span 1 / span 1;
     }
     .navbar-utility{
-        @include widthAndHeight(calc(min(100%, 10rem)),calc(min(100%,100%)));
-        @include grid(100%, 1fr 1fr 1fr);
-        grid-area: 1 / 3 / span 1 / span 1;
+        @include widthAndHeight(calc(min(100%, 7rem)),calc(min(100%,100%)));
+        @include flex(center,center);
+        gap: 1rem;
         justify-self: flex-end;
-        align-items: center;
-        justify-items: center;
         .nav-notifications-icon-container{
             .nav-notifications-icon{
                 color: white;
@@ -103,17 +101,6 @@
             .sign-icon-dark{
                 font-size: 26px;
             }
-        }
-    }
-}
-
-@media only screen and (max-width: 900px) {
-    .navbar{
-        padding: 0 0rem 0 0rem;
-        .navbar-utility{
-            @include grid(100%, 1fr 1fr 1fr);
-            padding: 0 0.2rem 0 0rem;
-            gap: 0.5rem;
         }
     }
 }
