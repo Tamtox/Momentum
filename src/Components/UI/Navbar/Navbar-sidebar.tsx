@@ -42,19 +42,19 @@ const NavbarSidebar = React.forwardRef<HTMLDivElement,SidebarProps>((props,ref) 
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Profile</Typography>
             </NavLink>
             <NavLink to="/todo" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-todo`}>
-                <BsCalendar2Check className='nav-icon' />
+                <BsCalendar2Check className='nav-icon navigation-todo-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>To Do</Typography>
             </NavLink>
             <NavLink to="/journal" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-journal`}>
-                <BsFillJournalBookmarkFill className='nav-icon' />
+                <BsFillJournalBookmarkFill className='nav-icon navigation-journal-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Journal</Typography>
             </NavLink>
             <NavLink to="/habits" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-habits`}>
-                <MdSchedule className='nav-icon' />
+                <MdSchedule className='nav-icon navigation-habit-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Habits</Typography>
             </NavLink>
             <NavLink to="/goals" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-goals`}>
-                <FiTarget className='nav-icon' />
+                <FiTarget className='nav-icon navigation-goal-icon' />
                 <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Goals</Typography>
             </NavLink>
             <NavLink to="/archive" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-archive`}>

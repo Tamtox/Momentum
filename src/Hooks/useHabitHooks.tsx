@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { goalActions,habitsActions,authActions } from "../Store/Store";
+import { goalActions,habitsActions } from "../Store/Store";
 import type {HabitInterface,GoalInterface} from '../Misc/Interfaces';
 
 const httpAddress = `http://localhost:3001`;
@@ -13,7 +13,7 @@ const useHabitHooks = () => {
     const dispatch = useDispatch();
     // Load habits data
     const loadHabitsData = async (selectedDate:Date,newToken?:string) => {
-        dispatch(authActions.setLoading(true));
+        dispatch(habitsActions.setHabitLoading(true));
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
@@ -27,11 +27,11 @@ const useHabitHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(habitsActions.setHabitLoading(false))   
     }
     // Load habits archive
     const loadArchivedHabitsData = async () => {
-        dispatch(authActions.setLoading(true))
+        dispatch(habitsActions.setHabitLoading(true))
         try {
             const habitsResponse:{data:{archivedHabitList:[]}} = await axios.request({
                 method:'POST',
@@ -42,11 +42,12 @@ const useHabitHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(habitsActions.setHabitLoading(false))   
     }
     // Update or add habit 
     const updateHabit = async (newHabit:HabitInterface,updateHabit:boolean,newGoal:GoalInterface|null,updateGoal:boolean) =>{
-        dispatch(authActions.setLoading(true));
+        dispatch(habitsActions.setHabitLoading(true));
+        newGoal && dispatch(goalActions.setGoalLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
@@ -90,11 +91,12 @@ const useHabitHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+        dispatch(habitsActions.setHabitLoading(false));
+        newGoal && dispatch(goalActions.setGoalLoading(false));   
     }
     // Delete habit
     const deleteHabit = async (habitId:string,pairedGoalId:string|null) => {
-        dispatch(authActions.setLoading(true))   
+        dispatch(habitsActions.setHabitLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
@@ -115,7 +117,7 @@ const useHabitHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(habitsActions.setHabitLoading(false))   
     }
     // Change habit entry status
     const changeHabitStatus = async (habitId:string,habitEntryId:string,habitEntryStatus:string) => {
@@ -134,7 +136,7 @@ const useHabitHooks = () => {
     }
     // Change habit archive status 
     const toggleHabitArchiveStatus = async (habitItem:HabitInterface) =>{
-        dispatch(authActions.setLoading(true));
+        dispatch(habitsActions.setHabitLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset  = new Date().getTimezoneOffset();      
         const isArchived = habitItem.isArchived ? false : true
@@ -149,11 +151,11 @@ const useHabitHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(habitsActions.setHabitLoading(false))   
     }
     // Populate habit with entries
     const populateHabit = async (selectedDate:Date,_id:string) =>{
-        dispatch(authActions.setLoading(true));
+        dispatch(habitsActions.setHabitLoading(true));
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
@@ -167,7 +169,7 @@ const useHabitHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(habitsActions.setHabitLoading(false))   
     }
     return {loadHabitsData,loadArchivedHabitsData,deleteHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus,populateHabit}
 }

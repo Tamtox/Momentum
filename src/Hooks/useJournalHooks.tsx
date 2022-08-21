@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { journalActions,authActions } from "../Store/Store";
+import { journalActions } from "../Store/Store";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -12,7 +12,7 @@ const useJournalHooks = () => {
     const dispatch = useDispatch();
     // Load journal entry from database if it exists 
     const loadJournalData = async (selectedDate:Date,newToken?:string) => {
-        dispatch(authActions.setLoading(true));
+        dispatch(journalActions.setJournalLoading(true));
         const clientSelectedDayStartTime = new Date(selectedDate).setHours(0,0,0,0);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
@@ -31,11 +31,11 @@ const useJournalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))
+        dispatch(journalActions.setJournalLoading(false))
     }
     // Update journal entry if it exists ,create if not
     const updateJournalEntry = async (selectedDate:Date,newJournalEntry:string) => {
-        dispatch(authActions.setLoading(true));
+        dispatch(journalActions.setJournalLoading(true));
         const clientSelectedDayStartTime = new Date(selectedDate).setHours(0,0,0,0);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
@@ -49,7 +49,7 @@ const useJournalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))
+        dispatch(journalActions.setJournalLoading(false))
     }
     return {loadJournalData,updateJournalEntry}
 }

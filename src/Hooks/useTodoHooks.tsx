@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { todoActions,notificationActions,authActions } from "../Store/Store";
+import { todoActions,scheduleActions } from "../Store/Store";
 import type {TodoInterface} from '../Misc/Interfaces';
 
 const httpAddress = `http://localhost:3001`;
@@ -13,7 +13,7 @@ const useTodoHooks = () => {
     const dispatch = useDispatch();
     // Load todo data
     const loadTodoData = async (newToken?:string) => {
-        dispatch(authActions.setLoading(true))
+        dispatch(todoActions.setTodoLoading(true))
         try {
             const todoList = await axios.request({
                 method:'GET',
@@ -24,11 +24,11 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(todoActions.setTodoLoading(false))   
     }
     // Load archived todo data
     const loadArchivedTodoData = async () => {
-        dispatch(authActions.setLoading(true))
+        dispatch(todoActions.setTodoLoading(true))
         try {
             const todoList = await axios.request({
                 method:'GET',
@@ -39,7 +39,7 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(todoActions.setTodoLoading(false))   
     }
     // Toggle Todo status
     const changeTodoStatus = async (_id:string,status:string) => {
@@ -67,10 +67,10 @@ const useTodoHooks = () => {
             })
             if(update) {
                 dispatch(todoActions.updateToDo(newTodo));
-                dispatch(notificationActions.updateNotification(newTodo));
+                dispatch(scheduleActions.updateScheduleItem(newTodo));
             } else {
                 dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));    
-                dispatch(notificationActions.addNotification(newTodoResponse.data.notification));
+                dispatch(scheduleActions.addScheduleItem(newTodoResponse.data.scheduleItem));
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
@@ -78,7 +78,7 @@ const useTodoHooks = () => {
     }
     // Toggle archive status
     const toggleTodoArchiveStatus = async (todoItem:TodoInterface) => {
-        dispatch(authActions.setLoading(true))   
+        dispatch(todoActions.setTodoLoading(true))   
         const isArchived = todoItem.isArchived ? false : true
         try {
             await axios.request({
@@ -91,11 +91,11 @@ const useTodoHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+        dispatch(todoActions.setTodoLoading(false))   
     }
     // Delete Todo
     const deleteToDo = async (_id:string) => {
-        dispatch(authActions.setLoading(true))   
+        dispatch(todoActions.setTodoLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
@@ -104,11 +104,11 @@ const useTodoHooks = () => {
                 data:{_id:_id}
             })
             dispatch(todoActions.deleteToDo(_id));
-            dispatch(notificationActions.deleteNotification(_id));
+            dispatch(scheduleActions.deleteScheduleItem(_id));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+        dispatch(todoActions.setTodoLoading(false))   
     }
     return {loadTodoData,loadArchivedTodoData,changeTodoStatus,updateTodo,toggleTodoArchiveStatus,deleteToDo}
 }

@@ -3,7 +3,7 @@ import './Habits.scss';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{ useState,useEffect } from 'react';
-import {Container,TextField,Button,Typography,Card,FormControl,InputLabel,Select,MenuItem,OutlinedInput,InputAdornment} from '@mui/material';
+import {Container,TextField,Button,Typography,Card} from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { CgArrowLeft, CgArrowRight } from 'react-icons/cg';
 import {IoCheckboxOutline,IoSquareOutline} from 'react-icons/io5';
@@ -37,7 +37,7 @@ const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) =>
 
 const Habits:React.FC = () => {
     const habitHooks = useHabitHooks();
-    const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
+    const habitLoading = useSelector<RootState,boolean>(state=>state.habitsSlice.habitLoading);
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
@@ -81,26 +81,26 @@ const Habits:React.FC = () => {
             <Toolbar mode={'habit'} addNewItem={():any=>{setToggleNewHabit(true)}}/>
             <div className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
                     <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() - 86400000 * 7))}}>
-                        <CgArrowLeft className='habit-date-icon icon-interactive nav-icon' />
+                        <CgArrowLeft className='habit-date-button-icon icon-interactive nav-icon' />
                         <Typography className='habit-date-button-text'>Prev Week</Typography>
                     </Button> 
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
-                    renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                    value={selectedDate} onChange={newDate=>{loadSelectedDateData(newDate);}}
+                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
+                    value={selectedDate} onChange={(newDate:Date)=>{loadSelectedDateData(newDate);}}
                     />
                     to
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
-                    renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                    value={selectedDateWeekEnd} onChange={newDate=>{loadSelectedDateData(newDate);}} disabled
+                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
+                    value={selectedDateWeekEnd} onChange={(newDate:Date)=>{loadSelectedDateData(newDate);}} disabled
                     />
                     <Button variant='outlined' disabled={selectedDate.getTime() + 86400000 * 7 >= currentWeekEnd.getTime() ? true : false} className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
                         <Typography className='habit-date-button-text'>Next Week</Typography>
-                        <CgArrowRight className='habit-date-icon icon-interactive nav-icon' />
+                        <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
                     </Button> 
                 </div>
-            {loading ? <Loading height='80vh'/> :
+            {habitLoading ? <Loading height='80vh'/> :
             <div className={`habit-list scale-in`}>
                 {filteredList.map((habitListItem:HabitInterface)=>{
                     return(

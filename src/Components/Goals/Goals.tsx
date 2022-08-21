@@ -37,7 +37,7 @@ const Goals:React.FC = () => {
     const goalHooks = useGoalHooks();
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const goalListLoaded = useSelector<RootState,boolean>(state=>state.goalSlice.goalListLoaded);
-    const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
+    const goalLoading = useSelector<RootState,boolean>(state=>state.goalSlice.goalLoading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
      // Sorting by query params
@@ -55,8 +55,7 @@ const Goals:React.FC = () => {
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'goal'} addNewItem={():any=>{setToggleNewGoal(true)}}/>
-            {loading?
-            <Loading height='80vh'/>:
+            {goalLoading ? <Loading height='80vh'/>:
             <div className="goal-list">
                 {filteredList.map((goalItem:GoalInterface)=>{
                     return (

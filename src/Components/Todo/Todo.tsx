@@ -37,7 +37,7 @@ const Todo:React.FC = () => {
     const todoHooks = useTodoHooks();
     const todoList = useSelector<RootState,TodoInterface[]>(state=>state.todoSlice.todoList);
     const todoListLoaded = useSelector<RootState,boolean>(state=>state.todoSlice.todoListLoaded);
-    const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
+    const todoLoading = useSelector<RootState,boolean>(state=>state.todoSlice.todoLoading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     // Sorting by query params
@@ -55,7 +55,7 @@ const Todo:React.FC = () => {
     return (
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'todo'} addNewItem={():any=>setToggleNewTodo(true)}/>
-            {loading ? <Loading height='80vh'/>:
+            {todoLoading ? <Loading height='80vh'/>:
             <div className="todo-list">
                 {filteredList.map((todoItem:TodoInterface)=>{
                     return (

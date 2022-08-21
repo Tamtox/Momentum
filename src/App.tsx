@@ -18,6 +18,7 @@ const Home = React.lazy(()=> import('./Components/Home/Home'));
 const Auth = React.lazy(()=> import('./Components/Auth/Auth'));
 const Profile = React.lazy(()=> import('./Components/Auth/Profile'));
 const Todo = React.lazy(()=> import('./Components/Todo/Todo'));
+const TodoItem = React.lazy(()=> import('./Components/Todo/Add-new-todo'));
 const Journal = React.lazy(()=> import('./Components/Journal/Journal'));
 const Habits = React.lazy(()=> import('./Components/Habits/Habits'));
 const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
@@ -112,6 +113,8 @@ const App:React.FC = () => {
               <Route path='/auth' element={isLoggedIn ? <Todo/> : <Auth/>} />
               <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
               <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
+              <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
+              {/* <Route path='/todo/:id' element={isLoggedIn ? <TodoItem/> : <Auth />} /> */}
               <Route path='/journal' element={isLoggedIn ? <Journal/> : <Auth/>} />
               <Route path='/habits' element={isLoggedIn ? <Habits/> : <Auth/>} />
               <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} />

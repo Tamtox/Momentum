@@ -8,13 +8,13 @@ import useJournalHooks from '../../Hooks/useJournalHooks';
 import {useSelector} from 'react-redux';
 import React,{ useState,useEffect} from 'react';
 import { Container,TextField,Button,Typography} from '@mui/material';
-import { DatePicker} from '@mui/lab';
+import { DatePicker} from '@mui/x-date-pickers';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 
 const Journal:React.FC = () => {
     const journalHooks = useJournalHooks();
     const journalEntry = useSelector<RootState,{date:string|null,journalEntry:string,_id:string}>(state=>state.journalSlice);
-    const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
+    const journalLoading = useSelector<RootState,boolean>(state=>state.journalSlice.journalLoading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     const initialDate = journalEntry.date ? new Date(journalEntry.date) : new Date();
@@ -40,7 +40,7 @@ const Journal:React.FC = () => {
     }, [journalEntry.journalEntry])
     return (
         <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
-            {loading ?<Loading height='100%'/>:
+            {journalLoading ? <Loading height='100%'/>:
             <form className="journal-form scale-in" onSubmit={journalUpdateHandler} >
                 <div className={`journal-date`}>
                     <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(selectedDate.getTime() - 86400000))}}>

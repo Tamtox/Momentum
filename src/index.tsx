@@ -3,8 +3,8 @@ import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {Provider} from 'react-redux';
 import {BrowserRouter} from 'react-router-dom';
-import {LocalizationProvider} from '@mui/lab';
-import DateAdapter from '@mui/lab/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 // Components
 import App from './App';
 import store from './Store/Store';
@@ -14,7 +14,7 @@ root.render(
   <React.StrictMode>
   <Provider store={store}>
     <BrowserRouter>
-      <LocalizationProvider dateAdapter={DateAdapter}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <App />
       </LocalizationProvider>
     </BrowserRouter>

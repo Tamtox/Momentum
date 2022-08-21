@@ -9,7 +9,7 @@ import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 import {useSelector} from 'react-redux';
 import React,{useState,useRef} from 'react';
 import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
-import { DatePicker,TimePicker } from '@mui/lab';
+import { DatePicker,TimePicker } from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
 const AddNewGoal:React.FC<{detailedGoal:GoalInterface|undefined,setDetailedItem:()=>{},returnToGoals:()=>{}}> = (props) => {

@@ -97,3 +97,17 @@
         }
     }
 }
+
+
+@media only screen and (max-width: 550px) {
+    .habits{
+        .habit-week-range{
+            .habit-date-button{
+                width: 1rem;
+                .habit-date-button-text{
+                    display: none;
+                }
+            }
+        }
+    }
+}

@@ -55,6 +55,14 @@
         transition: 0.3s;
         border-radius: 20px;
         cursor: default;
+        .navigation-todo-icon{
+        }
+        .navigation-journal-icon{
+        }
+        .navigation-habit-icon{
+        }
+        .navigation-goal-icon{
+        }
     }
     .nav-element-dark{
         @extend .nav-element;

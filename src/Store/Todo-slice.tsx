@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import type {TodoInterface} from '../Misc/Interfaces';
 
 interface TodoSchema {
+    todoLoading:boolean,
     todoList:TodoInterface[],
     todoListLoaded:boolean,
     archivedTodoList:TodoInterface[],
@@ -9,6 +10,7 @@ interface TodoSchema {
 }
 
 const initialTodoState:TodoSchema = {
+    todoLoading:false,
     todoList:[],
     archivedTodoList:[],
     todoListLoaded : false,
@@ -18,6 +20,9 @@ const todoSlice = createSlice({
     name:'todo',
     initialState:initialTodoState,
     reducers:{
+        setTodoLoading(state,action) {
+            state.todoLoading = action.payload
+        },
         addToDo(state,action) {
             state.todoList.push(action.payload)
         },

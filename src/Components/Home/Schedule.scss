@@ -31,10 +31,51 @@
         gap: 1rem ;
         margin: auto;
         .schedule-item{
-            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));
-            @include grid(100%,20% 80%);
-            justify-items: center;
-            align-items: center;
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));   
+            @include flex;
+            .schedule-item-time{
+                @include widthAndHeight(calc(min(100%, 10rem)),calc(min(100%, 100%)));   
+                @include flex;
+                padding: 2px 0 0 0.5rem ;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                .schedule-item-time-text{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                    padding: 2px 0 0 0;
+                    transition: font-size 0.3s;
+                }
+            }
+            .schedule-item-title{
+                @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%, 100%)));   
+                @include flex;
+                grid-area: 1 / 2 / span 1 / span 1 ;
+                padding: 2px 0 0 0.5rem ;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                .schedule-item-title-text{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: center;
+                    padding: 2px 0 0 0;
+                    transition: font-size 0.3s;
+                }
+            }
+            .schedule-item-title:hover{
+                background-color: rgba(128, 128, 128, 0.25);
+            }
+        }
+        .schedule-todo{
+            border-left: 5px solid blue;
+        }
+        .schedule-goal{
+            border-left: 5px solid red;
+        }
+        .schedule-habit{
+            border-left: 5px solid greenyellow;
         }
     }
 }

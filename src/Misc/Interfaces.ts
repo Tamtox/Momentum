@@ -14,6 +14,7 @@ interface TodoInterface {
     description:string,
     creationDate:string, /* Date format : .toIsoString() */
     targetDate:string | null, /* Date format : .toIsoString() */
+    targetTime:string | null, /* Date format : .toLocaleTimeString() */
     status:string,
     dateCompleted:string | null, /* Date format : .toIsoString() */
     isArchived:boolean,
@@ -47,7 +48,7 @@ interface HabitInterface {
     title:string,
     time:string | null, /* Date format : .toLocaleTimeString() */
     creationDate:string, /* Date format : .toIsoString() */
-    weekdays:{[key:number|string]:boolean},
+    weekdays:{[weekday:number]:boolean},
     goalId:string | null,
     goalTargetDate:string | null, /* Date format : .toIsoString() */
     entries:HabitEntryInterface[]
@@ -57,10 +58,12 @@ interface HabitInterface {
     _id:string,
 }
 
-interface NotificationInterface {
+interface ScheduleInterface {
     date:string /* Date format : .toIsoString() */
-    notificationParentId:string, 
-    notificationParentTitle:string,
+    time:string|null,
+    parentId:string, 
+    parentTitle:string,
+    parentType:string,
     dateCompleted:string | null, /* Date format : .toIsoString() */
     alarmUsed:boolean,
     utcOffset:string
@@ -68,4 +71,4 @@ interface NotificationInterface {
 }
 
 
-export type {UserInterface,TodoInterface,GoalInterface,HabitEntryInterface,HabitInterface,NotificationInterface}
+export type {UserInterface,TodoInterface,GoalInterface,HabitEntryInterface,HabitInterface,ScheduleInterface}

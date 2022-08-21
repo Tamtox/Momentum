@@ -61,7 +61,7 @@ const Navbar:React.FC = () => {
             {isLoggedIn && 
             <div className='navbar-main'>
                 <div className={`toggle-sidebar-icon-container navbar-icon-container${isDarkMode ? '-dark' : ''}`} ref={sidebarIconRef} >
-                    <FaBars className={`icon-interactive toggle-sidebar-icon${isDarkMode ? '-dark' : ''}`} />
+                    <FaBars className={`toggle-sidebar-icon${isDarkMode ? '-dark' : ''}`} />
                 </div>
             </div>}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>

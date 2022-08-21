@@ -4,7 +4,7 @@ import todoSlice from './Todo-slice';
 import habitsSlice from './Habits-slice';
 import journalSlice from './Journal-slice';
 import goalSlice from './Goal-slice';
-import notificationSlice from './Notification-slice';
+import scheduleSlice from './Schedule-slice';
 
 const store = configureStore({
     reducer: {
@@ -13,7 +13,7 @@ const store = configureStore({
         habitsSlice:habitsSlice.reducer,
         journalSlice:journalSlice.reducer,
         goalSlice:goalSlice.reducer,
-        notificationSlice:notificationSlice.reducer
+        scheduleSlice:scheduleSlice.reducer
     }
 });
 
@@ -22,7 +22,7 @@ export const todoActions = todoSlice.actions
 export const habitsActions = habitsSlice.actions
 export const journalActions = journalSlice.actions
 export const goalActions = goalSlice.actions
-export const notificationActions = notificationSlice.actions
+export const scheduleActions = scheduleSlice.actions
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 

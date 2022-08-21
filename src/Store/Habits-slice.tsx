@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import type {HabitInterface,} from '../Misc/Interfaces';
 
 interface HabitsSchema {
+    habitLoading:boolean,
     habitList: HabitInterface[],
     habitListLoaded:boolean,
     archivedHabitList: HabitInterface[],
@@ -10,6 +11,7 @@ interface HabitsSchema {
 }
 
 const initialHabitsState:HabitsSchema = {
+    habitLoading:false,
     habitList:[],
     habitListLoaded:false,
     archivedHabitList:[],
@@ -21,6 +23,9 @@ const habitsSlice = createSlice({
     name:'habits',
     initialState:initialHabitsState, 
     reducers:{
+        setHabitLoading(state,action) {
+            state.habitLoading = action.payload
+        },
         addHabit(state,action) {
             const newHabit = action.payload.newHabit
             newHabit.entries = [...action.payload.newHabitEntries]

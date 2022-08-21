@@ -10,9 +10,9 @@
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
     max-width: 100%;
     .navbar-icon-container{
-        @include widthAndHeight(calc(min(100%, 35px)),calc(min(100%,35px)));
+        @include widthAndHeight(calc(min(100%, 40px)),calc(min(100%,40px)));
         @include flex;
-        border-radius: 10px;
+        border-radius: 20px;
         cursor: pointer;
         transition: box-shadow 0.15s , background 0.15s ;
     }
@@ -25,7 +25,7 @@
     }
     .navbar-icon-container-dark:hover{
         background: #121212;
-        box-shadow: 0 1px 6px rgba(255, 255, 255, 0.5);
+        box-shadow: 0 1px 6px rgba(255, 255, 255, 1);
     }
     .navbar-main{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
@@ -59,6 +59,7 @@
         @include flex(center,center);
         gap: 1rem;
         justify-self: flex-end;
+        grid-area: 1 / 3 / span 1 / span 1;
         .nav-notifications-icon-container{
             .nav-notifications-icon{
                 color: white;

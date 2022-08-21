@@ -9,6 +9,7 @@ interface AuthSchema {
     token:string|undefined,
     user:UserInterface,
     loading:boolean,
+    authLoading:boolean,
     darkMode:boolean|undefined,
     sidebarFull:boolean,
     sidebarVisible:boolean
@@ -28,6 +29,7 @@ const initialAuthState:AuthSchema = {
         verificationCode:''
     },
     loading:false,
+    authLoading:false,
     darkMode:initialDarkMode === undefined?false:initialDarkMode === "true"?true:false,
     sidebarFull:true,
     sidebarVisible:true
@@ -69,6 +71,9 @@ const authSlice = createSlice({
         },
         setLoading(state,action) {
             state.loading = action.payload
+        },
+        setAuthLoading(state,action) {
+            state.authLoading = action.payload
         },
         setDarkMode(state) {
             state.darkMode = !state.darkMode

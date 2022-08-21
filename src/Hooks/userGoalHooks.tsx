@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { authActions,goalActions,habitsActions } from "../Store/Store";
+import { goalActions,habitsActions } from "../Store/Store";
 import type {HabitInterface,GoalInterface} from '../Misc/Interfaces';
 
 const httpAddress = `http://localhost:3001`;
@@ -13,7 +13,7 @@ const useGoalHooks = () => {
     const dispatch = useDispatch();
      // Load goal data
     const loadGoalData = async (newToken?:string) => {
-        dispatch(authActions.setLoading(true))
+        dispatch(goalActions.setGoalLoading(true))
         try {
             const goalListResponse = await axios.request({
                 method:'GET',
@@ -24,11 +24,11 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(goalActions.setGoalLoading(false))   
     }
      // Load archived goal data
     const loadArchivedGoalData = async (newToken?:string) => {
-        dispatch(authActions.setLoading(true))
+        dispatch(goalActions.setGoalLoading(true))
         try {
             const goalListResponse = await axios.request({
                 method:'GET',
@@ -39,7 +39,7 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(goalActions.setGoalLoading(false))   
     }
     // Toggle Goal status
     const changeGoalStatus = async (_id:string,status:string) => {
@@ -58,7 +58,8 @@ const useGoalHooks = () => {
     }
     // Update or add goal
     const updateGoal = async (newGoal:GoalInterface,updateGoal:boolean,newHabit:HabitInterface|null,updateHabit:boolean) => {
-        dispatch(authActions.setLoading(true));
+        dispatch(goalActions.setGoalLoading(true));
+        newHabit && dispatch(habitsActions.setHabitLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
@@ -102,11 +103,12 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+        dispatch(goalActions.setGoalLoading(false));
+        newHabit && dispatch(habitsActions.setHabitLoading(false));   
     }
     // Toggle archive status
     const toggleGoalArchiveStatus = async (goalItem:GoalInterface) => {
-        dispatch(authActions.setLoading(true))   
+        dispatch(goalActions.setGoalLoading(true))   
         const isArchived = goalItem.isArchived ? false : true
         try {
             await axios.request({
@@ -119,11 +121,11 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+        dispatch(goalActions.setGoalLoading(false))   
     }
     // Delete Goal
     const deleteGoal = async (_id:string,pairedHabitId:string|null) => {
-        dispatch(authActions.setLoading(true))   
+        dispatch(goalActions.setGoalLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
@@ -144,7 +146,7 @@ const useGoalHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
-        dispatch(authActions.setLoading(false))   
+        dispatch(goalActions.setGoalLoading(false))   
     }
     return {loadGoalData,loadArchivedGoalData,changeGoalStatus,updateGoal,toggleGoalArchiveStatus,deleteGoal}
 }

@@ -9,31 +9,31 @@ import {TextField,Button,Typography} from '@mui/material';
 import { DatePicker} from '@mui/lab';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 //Components
-import { notificationActions } from '../../../Store/Store';
-import type { NotificationInterface } from '../../../Misc/Interfaces';
-import useNotificationHooks from '../../../Hooks/useNotificationHooks';
+import { scheduleActions } from '../../../Store/Store';
+import type { ScheduleInterface } from '../../../Misc/Interfaces';
+import useScheduleHooks from '../../../Hooks/useScheduleHooks';
 
 type NotificationProps = React.HTMLProps<HTMLDivElement>
 
 const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((props,ref) => {
-    const notificationHooks = useNotificationHooks();
+    const scheduleHooks = useScheduleHooks();
     const navigate = useNavigate();
     const dispatch = useDispatch();
     // Toggle dark mode slider
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
-    const notificationList = useSelector<RootState,NotificationInterface[]>(state=>state.notificationSlice.notificationList);
-    const notificationListLoaded = useSelector<RootState,boolean>(state=>state.notificationSlice.notificationListLoaded);
+    const notificationList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList);
+    const notificationListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
     // Select Date for Notifications
     const [selectedDate, setSelectedDate] = useState(new Date());
     const selectNotificationDate = (newDate:Date|null) => {
         newDate = newDate || new Date ();
         setSelectedDate(newDate);
-        notificationHooks.loadNotifications(newDate);
+        scheduleHooks.loadScheduleItems(newDate);
     }
     const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     console.log(sortedList);
     useEffect(() => {
-        notificationListLoaded || notificationHooks.loadNotifications(new Date());
+        notificationListLoaded || scheduleHooks.loadScheduleItems(new Date());
     }, [])
     return (
         <div ref={ref} className={`nav-notifications nav-notifications-${isDarkMode?'dark':'light'}`}>
@@ -51,11 +51,11 @@ const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((
                 </Button>
             </div>
             {!!notificationList.length && <div className='nav-notifications-list'>
-                {notificationList.map((notification:NotificationInterface)=>{
+                {notificationList.map((notification:ScheduleInterface)=>{
                     return (
                     <div className={`nav-notification`} key={notification._id}>
                         <Typography>{new Date(notification.date).toLocaleTimeString()}</Typography>
-                        <Typography>{notification.notificationParentTitle}</Typography>
+                        <Typography>{notification.parentTitle}</Typography>
                     </div>
                     )
                 })}

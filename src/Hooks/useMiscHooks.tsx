@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { authActions,notificationActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
+import { authActions,scheduleActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -23,14 +23,14 @@ const useMiscHooks = () => {
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(authActions.setUsetData(userDataResponse.data))
-            // Preload notifications
-            const notificationResponse = await axios.request({
+            // Preload schedule
+            const scheduleResponse = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/notification/getNotifications`,
+                url:`${httpAddress}/schedule/getSchedule`,
                 data:{clientSelectedDayStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(notificationActions.setNotificationList(notificationResponse.data.notificationList));
+            dispatch(scheduleActions.setScheduleList(scheduleResponse.data.scheduleList));
             // Preload goal data
             const goalListResponse = await axios.request({
                 method:'GET',

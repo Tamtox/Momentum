@@ -9,7 +9,7 @@ import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 import {useSelector} from 'react-redux';
 import React,{ useState,useRef } from 'react';
 import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
-import { DatePicker,TimePicker } from '@mui/lab';
+import { DatePicker,TimePicker } from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 
 const AddNewHabit:React.FC<{detailedHabit:HabitInterface|undefined,setDetailedItem:()=>{},returnToHabits:()=>{}}> = (props) => {

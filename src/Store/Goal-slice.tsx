@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import type {GoalInterface} from '../Misc/Interfaces';
 
 interface GoalSchema {
+    goalLoading:boolean,
     goalList: GoalInterface[],
     goalListLoaded:boolean,
     archivedGoalList: GoalInterface[],
@@ -9,6 +10,7 @@ interface GoalSchema {
 }
 
 const initialGoalState:GoalSchema = {
+    goalLoading:false,
     goalList: [],
     goalListLoaded:false,
     archivedGoalList:[],
@@ -19,6 +21,9 @@ const goalSlice = createSlice({
     name:'goals',
     initialState:initialGoalState, 
     reducers:{
+        setGoalLoading(state,action) {
+            state.goalLoading = action.payload
+        },
         addGoal(state,action) {
             state.goalList.push(action.payload)
         },
