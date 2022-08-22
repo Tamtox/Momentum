@@ -5,10 +5,12 @@ Features :
     Todo - create, organize and filter short-term tasks . 
     Journal - keep a daily record of your thoughts and activities .  
     Habits - maintain your routines and daily activities . Pair your habits with goals .
-    Goals - set mid to long term goals that can be paired up with habits 
+    Goals - set mid to long term goals that can be paired up with habits.
+    Schedule - combines features above into day-to-day schedule
 
 Planned Features : 
     Calendar
     Notifications and Alarms 
     Events
     Data Visualization
+    Mobile design

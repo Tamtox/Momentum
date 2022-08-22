@@ -68,7 +68,7 @@ const useMiscHooks = () => {
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(authActions.setLoading(false))   
+        dispatch(authActions.setLoading(false));   
     }
     return {preloadData}
 }

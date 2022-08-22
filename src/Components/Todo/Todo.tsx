@@ -10,7 +10,7 @@ import type {TodoInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
-import {useLocation} from 'react-router-dom';
+import {useLocation,useNavigate} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 import { Container,Typography,Card} from '@mui/material';
 
@@ -42,6 +42,7 @@ const Todo:React.FC = () => {
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     // Sorting by query params
     const location = useLocation();
+    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')]; 
     const filteredList = filterList([...todoList],sortQuery,searchQuery);
@@ -63,14 +64,14 @@ const Todo:React.FC = () => {
                             <div className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.status)}}>
                                 {todoItem.status === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive ${todoItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${todoItem.status}`}/>}
                             </div>
-                            <div  className={`todo-item-title`} onClick={()=>{setDetailedItem(todoItem);setToggleNewTodo(!toggleNewTodo)}}>
+                            <div  className={`todo-item-title`} onClick={()=>{navigate(`${location.pathname}/${todoItem._id}`)}}>
                                 <Typography className='todo-item-title-text'>{todoItem.title}</Typography>
                             </div>
                         </Card>
                     )
                 })}
             </div>}
-            {toggleNewTodo && <AddNewTodo detailedTodo={detailedItem} toggleNewTodo={toggleNewTodo} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />}
+            {/* {toggleNewTodo && <AddNewTodo detailedTodo={detailedItem} toggleNewTodo={toggleNewTodo} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />} */}
         </Container>
     )
 }
