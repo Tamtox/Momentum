@@ -21,7 +21,9 @@ const Todo = React.lazy(()=> import('./Components/Todo/Todo'));
 const TodoItem = React.lazy(()=> import('./Components/Todo/Add-new-todo'));
 const Journal = React.lazy(()=> import('./Components/Journal/Journal'));
 const Habits = React.lazy(()=> import('./Components/Habits/Habits'));
+const HabitItem = React.lazy(()=> import('./Components/Habits/Add-new-habit'));
 const Goals = React.lazy(()=> import('./Components/Goals/Goals'));
+const GoalItem = React.lazy(()=> import('./Components/Goals/Add-new-goal'));
 const Archive = React.lazy(()=> import('./Components/Misc/Archive'));
 const NotFound = React.lazy(()=> import('./Components/Misc/NotFound'));
 
@@ -117,7 +119,9 @@ const App:React.FC = () => {
               <Route path='/todo/:id' element={isLoggedIn ? <TodoItem/> : <Auth />} />
               <Route path='/journal' element={isLoggedIn ? <Journal/> : <Auth/>} />
               <Route path='/habits' element={isLoggedIn ? <Habits/> : <Auth/>} />
+              <Route path='/habits/:id' element={isLoggedIn ? <HabitItem/> : <Auth />} />
               <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} />
+              <Route path='/goals/:id' element={isLoggedIn ? <GoalItem/> : <Auth />} />
               <Route path='/archive' element={isLoggedIn ? <Archive/> : <Auth/>} />
               <Route path='*' element={isLoggedIn ? <NotFound/> : <Auth/>} />
               {/* <Route path='/' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />

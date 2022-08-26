@@ -13,12 +13,11 @@ import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 
 const Journal:React.FC = () => {
     const journalHooks = useJournalHooks();
-    const journalEntry = useSelector<RootState,{date:string|null,journalEntry:string,_id:string}>(state=>state.journalSlice);
+    const journalEntry = useSelector<RootState,{journalDate:string,journalEntry:string,_id:string}>(state=>state.journalSlice);
     const journalLoading = useSelector<RootState,boolean>(state=>state.journalSlice.journalLoading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-    const initialDate = journalEntry.date ? new Date(journalEntry.date) : new Date();
-    const [selectedDate, setSelectedDate] = useState(initialDate);
+    const [selectedDate, setSelectedDate] = useState(new Date(journalEntry.journalDate));
     const [journalInput,setJournalInput] = useState('');
     const journalInputHandler = (e:any,loadEntry:boolean) => {
         loadEntry ? setJournalInput(e) : setJournalInput(e.target.value)

@@ -26,12 +26,12 @@ const useJournalHooks = () => {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]));
             } 
             if (journalEntryResponse.data.length === 0) {
-                dispatch(journalActions.setEntry({date:'',journalEntry:'',id:''}));
+                dispatch(journalActions.setEntry({date:selectedDate.toISOString(),journalEntry:'',id:''}));
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
-        dispatch(journalActions.setJournalLoading(false))
+        dispatch(journalActions.setJournalLoading(false));
     }
     // Update journal entry if it exists ,create if not
     const updateJournalEntry = async (selectedDate:Date,newJournalEntry:string) => {

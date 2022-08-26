@@ -120,13 +120,13 @@ const useHabitHooks = () => {
         dispatch(habitsActions.setHabitLoading(false))   
     }
     // Change habit entry status
-    const changeHabitStatus = async (habitId:string,habitEntryId:string,habitEntryStatus:string) => {
-        const dateCompleted = habitEntryStatus==="Pending" ? new Date().getTime() : null;
+    const changeHabitStatus = async (habitId:string,habitEntryId:string,status:string) => {
+        const dateCompleted = status==="Pending" ? new Date().getTime() : null;
         try {
             await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabitEntryStatus`,
-                data:{_id:habitEntryId,habitEntryStatus:habitEntryStatus==="Pending"?"Complete":"Pending",dateCompleted},
+                data:{_id:habitEntryId,status:status==="Pending"?"Complete":"Pending",dateCompleted},
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId,dateCompleted}))

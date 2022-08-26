@@ -5,13 +5,15 @@ import type {ScheduleInterface} from "../Misc/Interfaces";
 interface ScheduleSchema {
     scheduleLoading:boolean,
     scheduleList:ScheduleInterface[],
-    scheduleListLoaded:boolean
+    scheduleListLoaded:boolean,
+    scheduleDate:string
 }
 
 const initialScheduleState:ScheduleSchema = {
     scheduleLoading:false,
     scheduleList:[],
     scheduleListLoaded:false,
+    scheduleDate: new Date().toISOString(),
 }
 
 const scheduleSlice = createSlice({
@@ -22,7 +24,7 @@ const scheduleSlice = createSlice({
             state.scheduleLoading = action.payload
         },
         addScheduleItem(state,action) {
-            if(action.payload) {
+            if(new Date(action.payload.date).toLocaleDateString() === new Date(state.scheduleDate).toLocaleDateString()) {
                 state.scheduleList.push(action.payload);
             }
         },
@@ -35,19 +37,20 @@ const scheduleSlice = createSlice({
             state.scheduleList = state.scheduleList.map((item:ScheduleInterface)=>{
                 if(action.payload._id === item.parentId) {
                     item.alarmUsed = action.payload.alarmUsed
-                    item.date = action.payload.targetDate
+                    item.date = action.payload.date
+                    item.time = action.payload.time
                     item.parentTitle = action.payload.title
+                    item.isArchived = action.payload.isArchived
                 }
-                return item
+                return item;
             })
         },  
         updateScheduleItemStatus(state,action) {
             state.scheduleList = state.scheduleList.map((item:ScheduleInterface)=>{
                 if(action.payload._id === item.parentId) {
-                    item.alarmUsed = action.payload.alarmUsed
                     item.dateCompleted = action.payload.dateCompleted
                 }
-                return item
+                return item;
             })
         },  
         setScheduleList(state,action) {
@@ -55,6 +58,7 @@ const scheduleSlice = createSlice({
             state.scheduleListLoaded = true;
         },
         clearScheduleList(state) {
+            state.scheduleDate = new Date().toISOString();
             state.scheduleList = [];
             state.scheduleListLoaded = false;
         }

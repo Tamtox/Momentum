@@ -4,14 +4,13 @@ import './Habits.scss';
 import {useSelector} from 'react-redux';
 import React,{ useState,useEffect } from 'react';
 import {Container,TextField,Button,Typography,Card} from '@mui/material';
-import { DatePicker } from '@mui/lab';
+import { DatePicker } from '@mui/x-date-pickers';
 import { CgArrowLeft, CgArrowRight } from 'react-icons/cg';
 import {IoCheckboxOutline,IoSquareOutline} from 'react-icons/io5';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 //Components
 import Toolbar from '../UI/Toolbar/Toolbar';
 import Loading from '../Misc/Loading';
-import AddNewHabit from './Add-new-habit';
 import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {HabitInterface,HabitEntryInterface} from '../../Misc/Interfaces';
@@ -46,6 +45,7 @@ const Habits:React.FC = () => {
     const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
     // Sorting by query params
     const location = useLocation();
+    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] 
     const filteredList = filterList([...habitList],sortQuery,searchQuery);
@@ -57,10 +57,6 @@ const Habits:React.FC = () => {
     const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart+86400000*6)));
     // Weekday list for labels 
     const weekdaysList:{[key:string|number]:string} = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
-    // Set detailed item
-    const [detailedHabit,setDetailedItem] = useState<HabitInterface|undefined>();
-    // Toggle new/detailed habit
-    const [toggleNewHabit,setToggleNewHabit] = useState(false);
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
         newDate = newDate || new Date ();
@@ -78,7 +74,7 @@ const Habits:React.FC = () => {
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Toolbar mode={'habit'} addNewItem={():any=>{setToggleNewHabit(true)}}/>
+            <Toolbar mode={'habit'} addNewItem={():any=>navigate(`${location.pathname}/new-habit`)}/>
             <div className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
                     <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() - 86400000 * 7))}}>
                         <CgArrowLeft className='habit-date-button-icon icon-interactive nav-icon' />
@@ -87,13 +83,13 @@ const Habits:React.FC = () => {
                     <DatePicker 
                     inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
                     renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                    value={selectedDate} onChange={(newDate:Date)=>{loadSelectedDateData(newDate);}}
+                    value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}}
                     />
                     to
                     <DatePicker 
-                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
+                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
                     renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                    value={selectedDateWeekEnd} onChange={(newDate:Date)=>{loadSelectedDateData(newDate);}} disabled
+                    value={selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
                     />
                     <Button variant='outlined' disabled={selectedDate.getTime() + 86400000 * 7 >= currentWeekEnd.getTime() ? true : false} className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
                         <Typography className='habit-date-button-text'>Next Week</Typography>
@@ -105,7 +101,7 @@ const Habits:React.FC = () => {
                 {filteredList.map((habitListItem:HabitInterface)=>{
                     return(
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
-                            <div className={`habit-list-item-title`} onClick={()=>{setDetailedItem(habitListItem);setToggleNewHabit(!toggleNewHabit)}}> 
+                            <div className={`habit-list-item-title`} onClick={()=>{navigate(`${location.pathname}/${habitListItem._id}`)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
                             </div>
                             {habitListItem.entries.length < 1 ? 
@@ -114,11 +110,11 @@ const Habits:React.FC = () => {
                                 {habitListItem.entries.map((habitEntry:HabitEntryInterface)=>{
                                     const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
                                     return (
-                                        <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.habitEntryStatus)}}>
+                                        <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.status)}}>
                                             <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[new Date(habitEntry.date).getDay()]}</Typography>
-                                            {habitEntry.habitEntryStatus === 'Complete' ? 
-                                            <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} /> : 
-                                            <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.habitEntryStatus}`} />}
+                                            {habitEntry.status === 'Complete' ? 
+                                            <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} /> : 
+                                            <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} />}
                                         </div>
                                     )
                                 })}
@@ -129,7 +125,6 @@ const Habits:React.FC = () => {
                 })}
             </div>
             } 
-            {toggleNewHabit && <AddNewHabit detailedHabit={detailedHabit} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToHabits={():any=>setToggleNewHabit(false)} />}
         </Container>
     )
 }

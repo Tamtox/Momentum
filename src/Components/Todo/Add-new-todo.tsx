@@ -18,7 +18,6 @@ const AddNewTodo:React.FC = () => {
     const navigate = useNavigate();
     const todoHooks = useTodoHooks();
     const todoList = useSelector<RootState,TodoInterface[]>(state=>state.todoSlice.todoList);
-    const todoListLoaded = useSelector<RootState,boolean>(state=>state.todoSlice.todoListLoaded);
     const todoLoading = useSelector<RootState,boolean>(state=>state.todoSlice.todoLoading);
     const id = location.pathname.split('/')[2];
     const detailedTodo = todoList.find((todoitem)=> todoitem._id === id);
@@ -26,7 +25,7 @@ const AddNewTodo:React.FC = () => {
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:any) => {
         if(event.target === backdropRef.current) {
-            navigate("/todo",{replace:true});
+            navigate("/todo");
         }   
     }
     const todoTime = detailedTodo?.targetTime? detailedTodo?.targetTime.split(':') : null;
@@ -86,7 +85,7 @@ const AddNewTodo:React.FC = () => {
         }
         todoHooks.updateTodo(newTodo,!!detailedTodo);
         // Return to todo list
-        navigate("/todo",{replace:true});
+        navigate("/todo");
     }
     return(
         <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={backdropClickHandler}>
@@ -94,7 +93,7 @@ const AddNewTodo:React.FC = () => {
                 <div className={`add-new-todo-controls`}>
                     {detailedTodo && <Tooltip title="Archive Item">
                         <div>
-                            <BsArchive className={`icon-interactive archive-todo`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo",{replace:true})}}/>
+                            <BsArchive className={`icon-interactive archive-todo`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
                         </div>
                     </Tooltip>}
                     <DatePicker 
@@ -109,7 +108,7 @@ const AddNewTodo:React.FC = () => {
                     />}
                     {detailedTodo && <Tooltip title="Delete Item">
                         <div>
-                            <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(detailedTodo!._id);navigate("/todo",{replace:true})}}/>
+                            <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(detailedTodo!._id);navigate("/todo")}}/>
                         </div>
                     </Tooltip>}
                 </div>
@@ -119,7 +118,7 @@ const AddNewTodo:React.FC = () => {
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
                 <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
                 <div className={`add-new-todo-buttons`}>
-                    <Button variant="outlined" className={`button`} onClick={()=>{navigate("/todo",{replace:true})}}>Back</Button>
+                    <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedTodo?'Update':'Submit'}</Button>
                 </div>
             </Card>}

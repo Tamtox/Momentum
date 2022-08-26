@@ -4,13 +4,12 @@ import './Goals.scss';
 import Toolbar from '../UI/Toolbar/Toolbar';
 import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
-import AddNewGoal from './Add-new-goal';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import type {GoalInterface} from '../../Misc/Interfaces';
 // Dependencies
 import {useSelector} from 'react-redux';
-import React,{useState,useEffect} from 'react';
-import {useLocation} from 'react-router-dom';
+import React,{useEffect} from 'react';
+import {useLocation,useNavigate} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 import { Container,Typography,Card,} from '@mui/material';
 
@@ -42,19 +41,16 @@ const Goals:React.FC = () => {
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
      // Sorting by query params
     const location = useLocation();
+    const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] ;
     const filteredList = filterList([...goalList],sortQuery,searchQuery);
-    // Toggle new/detailed goal
-    const [toggleNewGoal,setToggleNewGoal] = useState(false);
-    // Set detailed id
-    const [detailedItem,setDetailedItem] = useState<GoalInterface|undefined>();
     useEffect(() => {
         goalListLoaded || goalHooks.loadGoalData();
     }, [])
     return (
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Toolbar mode={'goal'} addNewItem={():any=>{setToggleNewGoal(true)}}/>
+            <Toolbar mode={'goal'} addNewItem={():any=>navigate(`${location.pathname}/new-goal`)}/>
             {goalLoading ? <Loading height='80vh'/>:
             <div className="goal-list">
                 {filteredList.map((goalItem:GoalInterface)=>{
@@ -63,14 +59,13 @@ const Goals:React.FC = () => {
                             <div className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.status)}}>
                                 {goalItem.status === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.status}`} />}
                             </div>
-                            <div className={`goal-item-title`} onClick={()=>{setDetailedItem(goalItem);setToggleNewGoal(!toggleNewGoal)}}>
+                            <div className={`goal-item-title`} onClick={()=>{navigate(`${location.pathname}/${goalItem._id}`)}}>
                                 <Typography className={`goal-item-title-text`}>{goalItem.title}</Typography>
                             </div>
                         </Card>
                     )
                 })}
             </div>}
-            {toggleNewGoal && <AddNewGoal detailedGoal={detailedItem} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToGoals={():any=>setToggleNewGoal(false)} />}
         </Container>
     )
 }

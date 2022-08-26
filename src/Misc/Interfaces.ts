@@ -38,7 +38,7 @@ interface GoalInterface {
 
 interface HabitEntryInterface {
     date:string /* Date format : .toIsoString() */
-    habitEntryStatus:string,
+    status:string,
     dateCompleted:string | null /* Date format : .toIsoString() */
     habitId:string,
     _id:string,
@@ -66,7 +66,8 @@ interface ScheduleInterface {
     parentType:string,
     dateCompleted:string | null, /* Date format : .toIsoString() */
     alarmUsed:boolean,
-    utcOffset:string
+    utcOffset:string,
+    isArchived:boolean,
     _id:string
 }
 

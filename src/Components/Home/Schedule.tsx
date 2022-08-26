@@ -20,9 +20,10 @@ const Schedule:React.FC = () => {
     const dispatch = useDispatch();
     const scheduleLoading = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleLoading);
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList);
+    const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
      // Select Date for Schedule
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
         newDate = newDate || new Date ();
         setSelectedDate(newDate);
@@ -30,7 +31,6 @@ const Schedule:React.FC = () => {
     }
     // const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     // console.log(sortedList);
-    console.log(scheduleList)
     useEffect(() => {
         scheduleListLoaded || scheduleHooks.loadScheduleItems(new Date());
     }, [])
@@ -54,14 +54,14 @@ const Schedule:React.FC = () => {
             </div>
             {scheduleLoading ? <Loading height='80vh'/>:
             <div className={`schedule-list`}>
-                {scheduleList.map((schedule:ScheduleInterface)=>{
+                {scheduleList.map((scheduleItem:ScheduleInterface)=>{
                     return (
-                    <Card variant='elevation' className={`schedule-item scale-in schedule-${schedule.parentType}`} key={schedule._id}>
-                        {schedule.time && <div className={`schedule-item-time`}>
-                            <Typography className={`schedule-item-time-text`}>{`${schedule.time.split(':')[0]}:${schedule.time.split(':')[1]}`}</Typography>
+                    <Card variant='elevation' className={`schedule-item scale-in schedule-${scheduleItem.parentType}`} key={scheduleItem._id}>
+                        {scheduleItem.time && <div className={`schedule-item-time`}>
+                            <Typography className={`schedule-item-time-text`}>{`${scheduleItem.time.split(':')[0]}:${scheduleItem.time.split(':')[1]}`}</Typography>
                         </div>}
-                        <div className={`schedule-item-title`}>
-                            <Typography className={`schedule-item-title-text`}>{schedule.parentTitle}</Typography>
+                        <div className={`schedule-item-title`} onClick={()=>{navigate(`/${scheduleItem.parentType}${scheduleItem.parentType === 'todo' ? '' : 's'}/${scheduleItem.parentId}`)}}>
+                            <Typography className={`schedule-item-title-text`}>{scheduleItem.parentTitle}</Typography>
                         </div>
                     </Card>
                     )

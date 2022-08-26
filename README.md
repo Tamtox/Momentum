@@ -14,3 +14,4 @@ Planned Features :
     Events
     Data Visualization
     Mobile design
+    Error handling

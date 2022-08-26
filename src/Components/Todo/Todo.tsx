@@ -4,12 +4,11 @@ import './Todo.scss';
 import Toolbar from '../UI/Toolbar/Toolbar';
 import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
-import AddNewTodo from './Add-new-todo';
 import useTodoHooks from '../../Hooks/useTodoHooks';
 import type {TodoInterface} from '../../Misc/Interfaces';
 //Dependencies
 import {useSelector} from 'react-redux';
-import React,{useState,useEffect} from 'react';
+import React,{useEffect} from 'react';
 import {useLocation,useNavigate} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 import { Container,Typography,Card} from '@mui/material';
@@ -46,16 +45,12 @@ const Todo:React.FC = () => {
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')]; 
     const filteredList = filterList([...todoList],sortQuery,searchQuery);
-    // Toggle new/detailed todo
-    const [toggleNewTodo,setToggleNewTodo] = useState(false);
-    // Set detailed id
-    const [detailedItem,setDetailedItem] = useState<TodoInterface|undefined>();
     useEffect(() => {
         todoListLoaded || todoHooks.loadTodoData();
     }, [])
     return (
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <Toolbar mode={'todo'} addNewItem={():any=>setToggleNewTodo(true)}/>
+            <Toolbar mode={'todo'} addNewItem={():any=>navigate(`${location.pathname}/new-todo`)}/>
             {todoLoading ? <Loading height='80vh'/>:
             <div className="todo-list">
                 {filteredList.map((todoItem:TodoInterface)=>{
@@ -71,7 +66,6 @@ const Todo:React.FC = () => {
                     )
                 })}
             </div>}
-            {/* {toggleNewTodo && <AddNewTodo detailedTodo={detailedItem} toggleNewTodo={toggleNewTodo} setDetailedItem={():any=>{setDetailedItem(undefined)}} returnToTodo={():any=>setToggleNewTodo(false)} />} */}
         </Container>
     )
 }

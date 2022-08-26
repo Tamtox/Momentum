@@ -17,7 +17,7 @@ const initialHabitsState:HabitsSchema = {
     archivedHabitList:[],
     archivedHabitListLoaded:false,
     // habitEntries:[],
-    datepickerDate: new Date().toString()
+    datepickerDate: new Date().toISOString()
 };
 const habitsSlice = createSlice({
     name:'habits',
@@ -27,9 +27,7 @@ const habitsSlice = createSlice({
             state.habitLoading = action.payload
         },
         addHabit(state,action) {
-            const newHabit = action.payload.newHabit
-            newHabit.entries = [...action.payload.newHabitEntries]
-            state.habitList.push(newHabit)
+            state.habitList.push(action.payload)
         },
         deleteHabit(state,action) {
             state.habitList = state.habitList.filter(item=>{
@@ -41,7 +39,7 @@ const habitsSlice = createSlice({
                 if(habitListItem._id === action.payload.habitId) {
                     habitListItem.entries.map(habitEntry=>{
                         if(habitEntry._id === action.payload.habitEntryId) {
-                            habitEntry.habitEntryStatus = habitEntry.habitEntryStatus === 'Pending'?'Complete':'Pending'
+                            habitEntry.status = habitEntry.status === 'Pending'?'Complete':'Pending'
                             habitEntry.dateCompleted = action.payload.dateCompleted
                         }
                         return habitEntry
@@ -86,37 +84,41 @@ const habitsSlice = createSlice({
                 state.archivedHabitList = state.archivedHabitList.concat({...action.payload})
             } else {
                 const habitItem = action.payload.habitItem;
-                habitItem.entries = action.payload.habitEntries
+                habitItem.entries = action.payload.habitEntries;
                 state.archivedHabitList = state.archivedHabitList.filter(item=>{
-                    return item._id !== habitItem._id
+                    return item._id !== habitItem._id;
                 })
-                state.habitList = state.habitList.concat(habitItem)
+                state.habitList = state.habitList.concat(habitItem);
             }
         },
         setHabits(state,action) {
+            const habitEntries = action.payload.habitEntries;
             state.habitList = action.payload.habitList.map((habitListItem:any)=>{
                 if(!habitListItem.entries) {
-                    habitListItem.entries = []
+                    habitListItem.entries = [];
                 }
-                action.payload.habitEntries.forEach((habitEntry:any)=>{
-                    if(habitListItem._id === habitEntry.habitId) {
-                        habitListItem.entries.push(habitEntry)
+                for(let i = 0; i < habitEntries.length; i++) {
+                    if(habitListItem._id === habitEntries[i].habitId) {
+                        habitListItem.entries.push(habitEntries[i]);
+                        habitEntries.splice(i,1);
+                        i--;
                     }
-                })
+                }
                 return habitListItem
             })
-            state.habitListLoaded = true
-            state.datepickerDate = action.payload.date
+            state.habitListLoaded = true;
+            state.datepickerDate = action.payload.date;
         },
         setArchiveHabits(state,action) {
-            state.archivedHabitList = action.payload
-            state.archivedHabitListLoaded = true
+            state.archivedHabitList = action.payload;
+            state.archivedHabitListLoaded = true;
         },
         clearHabitData(state) {
             state.habitList = [];
             state.habitListLoaded = false;
             state.archivedHabitList = [];
             state.archivedHabitListLoaded = false;
+            state.datepickerDate = new Date().toISOString();
         }
     }
 });
