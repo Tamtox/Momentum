@@ -1,15 +1,14 @@
 //Styles
 import './App.scss';
 //Dependencies
-import {useSelector} from 'react-redux';
 import React,{Suspense,useEffect} from 'react';
+import {useSelector,useDispatch} from 'react-redux';
 import {Route, Routes} from 'react-router-dom';
-import {RootState} from './Store/Store';
 import { CssBaseline,ThemeProvider,createTheme,Box } from '@mui/material';
 import Cookies from 'js-cookie';
-import { useDispatch } from 'react-redux';
-import { authActions } from './Store/Store';
 //Components
+import {RootState} from './Store/Store';
+import { authActions } from './Store/Store';
 import Navbar from './Components/UI/Navbar/Navbar';
 import Loading from './Components/Misc/Loading';
 import useMiscHooks from './Hooks/useMiscHooks';

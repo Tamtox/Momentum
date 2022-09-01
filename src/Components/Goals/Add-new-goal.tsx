@@ -1,17 +1,17 @@
 // Styles
 import './Add-new-goal.scss';
+// Dependencies
+import React,{useState,useRef} from 'react';
+import {useSelector} from 'react-redux';
+import { useLocation,useNavigate } from 'react-router-dom';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
+import { DatePicker,TimePicker } from '@mui/x-date-pickers';
+import {BsTrash,BsArchive} from 'react-icons/bs';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
-//Dependencies
-import {useSelector} from 'react-redux';
-import { useLocation,useNavigate } from 'react-router-dom';
-import React,{useState,useRef} from 'react';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,FormControl,FormLabel,Tooltip,Checkbox,Typography} from '@mui/material';
-import { DatePicker,TimePicker } from '@mui/x-date-pickers';
-import {BsTrash,BsArchive} from 'react-icons/bs';
 
 const AddNewGoal:React.FC = () => {
     const location = useLocation();

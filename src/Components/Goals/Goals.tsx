@@ -1,17 +1,17 @@
 // Styles
 import './Goals.scss';
+// Dependencies
+import React,{useEffect} from 'react';
+import {useSelector} from 'react-redux';
+import {useLocation,useNavigate} from 'react-router-dom';
+import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
+import { Container,Typography,Card,} from '@mui/material';
 // Components
 import Toolbar from '../UI/Toolbar/Toolbar';
 import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import type {GoalInterface} from '../../Misc/Interfaces';
-// Dependencies
-import {useSelector} from 'react-redux';
-import React,{useEffect} from 'react';
-import {useLocation,useNavigate} from 'react-router-dom';
-import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
-import { Container,Typography,Card,} from '@mui/material';
 
 function filterList(list:GoalInterface[],sortQuery:string|null,searchQuery:string|null) {
     if(sortQuery) {

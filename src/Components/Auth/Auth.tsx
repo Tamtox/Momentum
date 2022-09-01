@@ -1,13 +1,13 @@
 //Styles
 import './Auth.scss';
 //Dependencies
-import React,{useState,} from 'react';
+import React,{useState} from 'react';
 import {useSelector} from 'react-redux';
-import useAuthHooks from '../../Hooks/useAuthHooks';
-//Components
-import { RootState} from '../../Store/Store';
 import { Container,TextField,Button,Typography,Card} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+//Components
+import {RootState} from '../../Store/Store';
+import useAuthHooks from '../../Hooks/useAuthHooks';
 
 const Auth:React.FC = () => {
     const authHooks = useAuthHooks();

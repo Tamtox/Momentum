@@ -1,17 +1,17 @@
 // Styles
 import './Add-new-habit.scss';
+//Dependencies
+import React,{ useState,useRef } from 'react';
+import {useSelector} from 'react-redux';
+import { useLocation,useNavigate } from 'react-router-dom';
+import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
+import { DatePicker,TimePicker } from '@mui/x-date-pickers';
+import {BsTrash,BsArchive} from 'react-icons/bs';
 //Components
 import { RootState } from "../../Store/Store";
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
-//Dependencies
-import {useSelector} from 'react-redux';
-import { useLocation,useNavigate } from 'react-router-dom';
-import React,{ useState,useRef } from 'react';
-import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
-import { DatePicker,TimePicker } from '@mui/x-date-pickers';
-import {BsTrash,BsArchive} from 'react-icons/bs';
 
 const AddNewHabit:React.FC = () => {
     const location = useLocation();

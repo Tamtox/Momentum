@@ -51,11 +51,11 @@ interface HabitInterface {
     weekdays:{[weekday:number]:boolean},
     goalId:string | null,
     goalTargetDate:string | null, /* Date format : .toIsoString() */
-    entries:HabitEntryInterface[]
     isArchived:boolean,
     creationUTCOffset:number,
     alarmUsed:boolean,
     _id:string,
+    entries:{[key:number]:HabitEntryInterface},
 }
 
 interface ScheduleInterface {

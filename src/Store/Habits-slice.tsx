@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import type {HabitInterface,} from '../Misc/Interfaces';
+import type {HabitEntryInterface, HabitInterface,} from '../Misc/Interfaces';
 
 interface HabitsSchema {
     habitLoading:boolean,
@@ -27,37 +27,32 @@ const habitsSlice = createSlice({
             state.habitLoading = action.payload
         },
         addHabit(state,action) {
-            state.habitList.push(action.payload)
+            state.habitList.push(action.payload);
         },
         deleteHabit(state,action) {
-            state.habitList = state.habitList.filter(item=>{
+            state.habitList = state.habitList.filter((item:HabitInterface)=>{
                 return item._id !== action.payload
             })
         },
         changeHabitStatus(state,action) {
-            state.habitList = state.habitList.map(habitListItem=>{
+            state.habitList = state.habitList.map((habitListItem:HabitInterface)=>{
                 if(habitListItem._id === action.payload.habitId) {
-                    habitListItem.entries.map(habitEntry=>{
-                        if(habitEntry._id === action.payload.habitEntryId) {
-                            habitEntry.status = habitEntry.status === 'Pending'?'Complete':'Pending'
-                            habitEntry.dateCompleted = action.payload.dateCompleted
-                        }
-                        return habitEntry
-                    })
+                    habitListItem.entries[action.payload.weekday].status = action.payload.dateCompleted ? "Complete" : "Pending";
+                    habitListItem.entries[action.payload.weekday].dateCompleted = action.payload.dateCompleted;
                 }
-                return habitListItem
+                return habitListItem;
             })
         },
         updateHabit(state,action) {
             const newHabit = action.payload.newHabit;
             if(typeof(action.payload.newHabitEntries) !== 'string') {
-                newHabit.habitEntries = [...action.payload.newHabitEntries];
+                newHabit.entries = [...action.payload.newHabitEntries];
             }
-            state.habitList = state.habitList.map(item=>{
+            state.habitList = state.habitList.map((item:HabitInterface)=>{
                 if(item._id === newHabit._id) {
-                    item = newHabit
+                    item = newHabit;
                 }
-                return item
+                return item;
             })
         },
         populateHabit(state,action) {
@@ -92,20 +87,7 @@ const habitsSlice = createSlice({
             }
         },
         setHabits(state,action) {
-            const habitEntries = action.payload.habitEntries;
-            state.habitList = action.payload.habitList.map((habitListItem:any)=>{
-                if(!habitListItem.entries) {
-                    habitListItem.entries = [];
-                }
-                for(let i = 0; i < habitEntries.length; i++) {
-                    if(habitListItem._id === habitEntries[i].habitId) {
-                        habitListItem.entries.push(habitEntries[i]);
-                        habitEntries.splice(i,1);
-                        i--;
-                    }
-                }
-                return habitListItem
-            })
+            state.habitList = action.payload.habitList;
             state.habitListLoaded = true;
             state.datepickerDate = action.payload.date;
         },

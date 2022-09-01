@@ -17,13 +17,13 @@ const useHabitHooks = () => {
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
-            const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
+            const habitsResponse:{data:{habitList:any[]}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/getHabits`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:selectedDate.toISOString()}))
+            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,date:new Date(selectedDate).toISOString()}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
@@ -87,7 +87,7 @@ const useHabitHooks = () => {
                 }
                 updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
             }
-            updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data)) ;
+            updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
@@ -120,7 +120,7 @@ const useHabitHooks = () => {
         dispatch(habitsActions.setHabitLoading(false))   
     }
     // Change habit entry status
-    const changeHabitStatus = async (habitId:string,habitEntryId:string,status:string) => {
+    const changeHabitStatus = async (habitId:string,habitEntryId:string,status:string,weekday:number) => {
         const dateCompleted = status==="Pending" ? new Date().getTime() : null;
         try {
             await axios.request({
@@ -129,7 +129,7 @@ const useHabitHooks = () => {
                 data:{_id:habitEntryId,status:status==="Pending"?"Complete":"Pending",dateCompleted},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId,dateCompleted}))
+            dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId,dateCompleted,weekday}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

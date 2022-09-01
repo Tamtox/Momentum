@@ -39,13 +39,13 @@ const useMiscHooks = () => {
             })
             dispatch(goalActions.setGoalList(goalListResponse.data))
             // Preload habit data
-            const habitsResponse:{data:{habitList:any[],habitEntries:any[]}} = await axios.request({
+            const habitsResponse:{data:{habitList:any[]}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/getHabits`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,habitEntries:habitsResponse.data.habitEntries,date:new Date().toString()}))
+            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,date:new Date().toISOString()}))
             // Preload todo data
             const todoList = await axios.request({
                 method:'GET',

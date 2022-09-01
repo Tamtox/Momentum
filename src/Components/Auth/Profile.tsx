@@ -1,15 +1,15 @@
 // Styles
 import './Profile.scss';
-//Components
+//Dependencies
 import React,{useState} from 'react';
+import { useSelector } from 'react-redux';
+import { Container,TextField,Button,Typography,Card} from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+//Components
 import type {RootState} from '../../Store/Store';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 import Loading from '../Misc/Loading';
 import type { UserInterface } from '../../Misc/Interfaces';
-//Dependencies
-import { Container,TextField,Button,Typography,Card} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import { useSelector } from 'react-redux';
 
 
 const Profile:React.FC = () => {

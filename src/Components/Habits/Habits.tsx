@@ -1,8 +1,8 @@
 //Styles
 import './Habits.scss';
 //Dependencies
-import {useSelector} from 'react-redux';
 import React,{ useState,useEffect } from 'react';
+import {useSelector} from 'react-redux';
 import {Container,TextField,Button,Typography,Card} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { CgArrowLeft, CgArrowRight } from 'react-icons/cg';
@@ -19,8 +19,8 @@ const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) =>
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
         if (sortQuery === 'dateDesc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
-        if (sortQuery === 'noEntries') { list = list.filter((item:HabitInterface)=>item.entries.length<1) };
-        if (sortQuery === 'hasEntries') { list = list.filter((item:HabitInterface)=>item.entries.length>0) };
+        // if (sortQuery === 'noEntries') { list = list.filter((item:HabitInterface)=>item.entries.length<1) };
+        // if (sortQuery === 'hasEntries') { list = list.filter((item:HabitInterface)=>item.entries.length>0) };
     }
     if(searchQuery) {
         list = list.filter((item:HabitInterface)=>{
@@ -43,6 +43,7 @@ const Habits:React.FC = () => {
     const datepickerDate = new Date(useSelector<RootState,string>(state=>state.habitsSlice.datepickerDate));
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
+    console.log(habitList);
     // Sorting by query params
     const location = useLocation();
     const navigate = useNavigate();
@@ -56,6 +57,7 @@ const Habits:React.FC = () => {
     const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart)));
     const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart+86400000*6)));
     // Weekday list for labels 
+    const weekdays = [1,2,3,4,5,6,0];
     const weekdaysList:{[key:string|number]:string} = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
     // Load selected date's data
     const loadSelectedDateData = async (newDate:Date|null) => {
@@ -98,28 +100,33 @@ const Habits:React.FC = () => {
                 </div>
             {habitLoading ? <Loading height='80vh'/> :
             <div className={`habit-list scale-in`}>
-                {filteredList.map((habitListItem:HabitInterface)=>{
+                {filteredList.map((habitListItem:HabitInterface,habitIndex:number)=>{
                     return(
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
                             <div className={`habit-list-item-title`} onClick={()=>{navigate(`${location.pathname}/${habitListItem._id}`)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
                             </div>
-                            {habitListItem.entries.length < 1 ? 
-                            <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> :
+                            {/* {habitListItem.entries.length < 1 ? 
+                            <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> : */}
                             <div className={`habit-weekdays`}>
-                                {habitListItem.entries.map((habitEntry:HabitEntryInterface)=>{
-                                    const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
-                                    return (
-                                        <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.status)}}>
-                                            <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[new Date(habitEntry.date).getDay()]}</Typography>
-                                            {habitEntry.status === 'Complete' ? 
-                                            <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} /> : 
-                                            <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} />}
-                                        </div>
-                                    )
+                                {weekdays.map((weekday:number)=>{
+                                    const habitEntry:HabitEntryInterface = habitListItem.entries[weekday];
+                                    if(habitEntry) {
+                                        const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
+                                        return (
+                                            <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.status,weekday )}}>
+                                                <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[new Date(habitEntry.date).getDay()]}</Typography>
+                                                {habitEntry.status === 'Complete' ? 
+                                                <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} /> : 
+                                                <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} />}
+                                            </div>
+                                        )
+                                    } else {
+                                        return null;
+                                    }
                                 })}
                             </div>
-                            }
+                            {/* } */}
                         </Card>
                     )
                 })}
