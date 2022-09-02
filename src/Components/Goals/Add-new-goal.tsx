@@ -109,7 +109,7 @@ const AddNewGoal:React.FC = () => {
             time: goalInputs.timePickerUsed ? new Date(new Date(goalInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedHabit?.time || null),
             creationDate:detailedHabit?.creationDate || new Date().toISOString(),
             weekdays:activeDays,
-            entries:detailedHabit?.entries || [],
+            entries:detailedHabit?.entries || {1:null,2:null,3:null,4:null,5:null,6:null,0:null},
             isArchived:detailedHabit?.isArchived || false,
             goalId:detailedHabit?.goalId || null, 
             goalTargetDate:goalInputs.datePickerUsed ? new Date(goalInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedHabit?.goalTargetDate || null) ,

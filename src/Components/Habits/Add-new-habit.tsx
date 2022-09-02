@@ -100,7 +100,7 @@ const AddNewHabit:React.FC = () => {
             creationDate:detailedHabit?.creationDate || new Date().toISOString(),
             isArchived:detailedHabit?.isArchived || false,
             weekdays:activeDays,
-            entries: detailedHabit?.entries || [],
+            entries: detailedHabit?.entries || {1:null,2:null,3:null,4:null,5:null,6:null,0:null},
             goalId:detailedHabit?.goalId || null, 
             goalTargetDate:habitInputs.datePickerUsed ? new Date(habitInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedHabit?.goalTargetDate || null) ,
             creationUTCOffset: habitInputs.habitCreationUTCOffset,
@@ -176,7 +176,7 @@ const AddNewHabit:React.FC = () => {
                 </FormControl>
                 <div className="add-new-habit-buttons">
                     <Button variant="outlined" type='button' className='button' onClick={()=>{navigate(-1)}}>Back</Button>
-                    <Button variant="outlined" type='submit' className='button' >Submit</Button>
+                    <Button variant="outlined" type='submit' className='button' >{detailedHabit ? 'Update' : 'Submit'}</Button>
                 </div>
             </Card>
         </div>

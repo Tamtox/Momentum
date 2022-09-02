@@ -55,7 +55,7 @@ interface HabitInterface {
     creationUTCOffset:number,
     alarmUsed:boolean,
     _id:string,
-    entries:{[key:number]:HabitEntryInterface},
+    entries:{[key:number]:HabitEntryInterface|null},
 }
 
 interface ScheduleInterface {

@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { goalActions,habitsActions } from "../Store/Store";
-import type {HabitInterface,GoalInterface} from '../Misc/Interfaces';
+import type {HabitInterface,GoalInterface, HabitEntryInterface} from '../Misc/Interfaces';
 
 const httpAddress = `http://localhost:3001`;
 
@@ -51,7 +51,7 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
+            const newHabitResponse:{data:{newHabit:HabitInterface,newEntries:{}}} = await axios.request({
                 method:updateHabit ? 'PATCH' : 'POST',
                 url:`${httpAddress}/habits/${updateHabit ? 'updateHabit' : 'addNewHabit'}`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
@@ -87,7 +87,7 @@ const useHabitHooks = () => {
                 }
                 updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
             }
-            updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
+            updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newEntries:newHabitResponse.data.newEntries})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
@@ -120,16 +120,18 @@ const useHabitHooks = () => {
         dispatch(habitsActions.setHabitLoading(false))   
     }
     // Change habit entry status
-    const changeHabitStatus = async (habitId:string,habitEntryId:string,status:string,weekday:number) => {
-        const dateCompleted = status==="Pending" ? new Date().getTime() : null;
+    const changeHabitStatus = async (habitEntry:HabitEntryInterface,weekday:number) => {
+        const newEntry = {...habitEntry};
+        newEntry.dateCompleted = newEntry.status === "Pending" ? new Date().toISOString() : null;
+        newEntry.status = newEntry.status === "Pending"?"Complete":"Pending";
         try {
             await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabitEntryStatus`,
-                data:{_id:habitEntryId,status:status==="Pending"?"Complete":"Pending",dateCompleted},
+                data:{...newEntry},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.changeHabitStatus({habitEntryId,habitId,dateCompleted,weekday}));
+            dispatch(habitsActions.changeHabitStatus({...newEntry,weekday}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
@@ -141,13 +143,13 @@ const useHabitHooks = () => {
         const clientTimezoneOffset  = new Date().getTimezoneOffset();      
         const isArchived = habitItem.isArchived ? false : true
         try {
-            const habitsResponse:{data:{habitEntries:any[]}} = await axios.request({
+            const habitsResponse:{data:{newEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabitArchiveStatus`,
                 data:{...habitItem,isArchived:isArchived,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            isArchived ? dispatch(habitsActions.toggleArchiveStatus({...habitItem,isArchived:true})) : dispatch(habitsActions.toggleArchiveStatus({habitItem:{...habitItem,isArchived:false},habitEntries:habitsResponse.data.habitEntries}))
+            isArchived ? dispatch(habitsActions.toggleArchiveStatus({...habitItem,isArchived:true})) : dispatch(habitsActions.toggleArchiveStatus({habitItem:{...habitItem,isArchived:false},habitEntries:habitsResponse.data.newEntries}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
@@ -159,13 +161,13 @@ const useHabitHooks = () => {
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
-            const habitsResponse:{data:{newPopulatedEntries:any[]}} = await axios.request({
+            const habitsResponse:{data:{populatedHabit:HabitInterface}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/populateHabit`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset,_id},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.populateHabit({newPopulatedEntries:habitsResponse.data.newPopulatedEntries,_id}))
+            dispatch(habitsActions.populateHabit({populatedHabit:habitsResponse.data.populatedHabit}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

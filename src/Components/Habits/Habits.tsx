@@ -19,8 +19,8 @@ const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) =>
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
         if (sortQuery === 'dateDesc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
-        // if (sortQuery === 'noEntries') { list = list.filter((item:HabitInterface)=>item.entries.length<1) };
-        // if (sortQuery === 'hasEntries') { list = list.filter((item:HabitInterface)=>item.entries.length>0) };
+        if (sortQuery === 'noEntries') { list = list.filter((item:HabitInterface)=>Object.values(item.entries).every(item => item === null))};
+        if (sortQuery === 'hasEntries') { list = list.filter((item:HabitInterface)=>Object.values(item.entries).some(item => item !== null))};
     }
     if(searchQuery) {
         list = list.filter((item:HabitInterface)=>{
@@ -43,7 +43,6 @@ const Habits:React.FC = () => {
     const datepickerDate = new Date(useSelector<RootState,string>(state=>state.habitsSlice.datepickerDate));
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
-    console.log(habitList);
     // Sorting by query params
     const location = useLocation();
     const navigate = useNavigate();
@@ -106,15 +105,15 @@ const Habits:React.FC = () => {
                             <div className={`habit-list-item-title`} onClick={()=>{navigate(`${location.pathname}/${habitListItem._id}`)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
                             </div>
-                            {/* {habitListItem.entries.length < 1 ? 
-                            <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> : */}
+                            {Object.values(habitListItem.entries).every(entry=> entry === null) ? 
+                            <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> :
                             <div className={`habit-weekdays`}>
                                 {weekdays.map((weekday:number)=>{
-                                    const habitEntry:HabitEntryInterface = habitListItem.entries[weekday];
+                                    const habitEntry:HabitEntryInterface | null = habitListItem.entries[weekday];
                                     if(habitEntry) {
                                         const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
                                         return (
-                                            <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitListItem._id,habitEntry._id,habitEntry.status,weekday )}}>
+                                            <div key={habitEntry._id} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitEntry,weekday)}}>
                                                 <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[new Date(habitEntry.date).getDay()]}</Typography>
                                                 {habitEntry.status === 'Complete' ? 
                                                 <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} /> : 
@@ -126,7 +125,7 @@ const Habits:React.FC = () => {
                                     }
                                 })}
                             </div>
-                            {/* } */}
+                            }
                         </Card>
                     )
                 })}

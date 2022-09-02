@@ -70,7 +70,7 @@ const useGoalHooks = () => {
                 headers:{Authorization: `Bearer ${token}`}
             })
             if(newHabit) {
-                const newHabitResponse:{data:{newHabit:{_id:string,goalId:string|null|undefined,goalTargetDate:string|null|undefined},newHabitEntries:[]}} = await axios.request({
+                const newHabitResponse:{data:{newHabit:HabitInterface,newEntries:{}}} = await axios.request({
                     method:newGoal.habitId ? 'PATCH' : 'POST',
                     url:`${httpAddress}/habits/${newGoal.habitId ? 'updateHabit' : 'addNewHabit'}`,
                     data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
@@ -97,7 +97,7 @@ const useGoalHooks = () => {
                     updateHabit ? newHabit.goalId = goalId :  newHabitResponse.data.newHabit.goalId = goalId
                     updateHabit ? newHabit.goalTargetDate = goalTargetDate  : newHabitResponse.data.newHabit.goalTargetDate = goalTargetDate
                 }
-                updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newHabitEntries:newHabitResponse.data})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
+                updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newEntries:newHabitResponse.data.newEntries})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
             } 
             updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data)) ;
         } catch (error) {

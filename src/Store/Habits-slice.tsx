@@ -37,19 +37,21 @@ const habitsSlice = createSlice({
         changeHabitStatus(state,action) {
             state.habitList = state.habitList.map((habitListItem:HabitInterface)=>{
                 if(habitListItem._id === action.payload.habitId) {
-                    habitListItem.entries[action.payload.weekday].status = action.payload.dateCompleted ? "Complete" : "Pending";
-                    habitListItem.entries[action.payload.weekday].dateCompleted = action.payload.dateCompleted;
+                    habitListItem.entries[action.payload.weekday]!.status = action.payload.dateCompleted ? "Complete" : "Pending";
+                    habitListItem.entries[action.payload.weekday]!.dateCompleted = action.payload.dateCompleted;
                 }
                 return habitListItem;
             })
         },
         updateHabit(state,action) {
             const newHabit = action.payload.newHabit;
-            if(typeof(action.payload.newHabitEntries) !== 'string') {
-                newHabit.entries = [...action.payload.newHabitEntries];
-            }
             state.habitList = state.habitList.map((item:HabitInterface)=>{
                 if(item._id === newHabit._id) {
+                    if(typeof(action.payload.newHabitEntries) !== 'string') {
+                        newHabit.entries = action.payload.newEntries;
+                    } else {
+                        newHabit.entries = item.entries;
+                    }
                     item = newHabit;
                 }
                 return item;
@@ -58,17 +60,17 @@ const habitsSlice = createSlice({
         populateHabit(state,action) {
             state.habitList = state.habitList.map(item=>{
                 if(item._id === action.payload._id) {
-                    item.entries = action.payload.newPopulatedEntries
+                    item = action.payload;
                 }
-                return item
+                return item;
             })
         },
         updateGoalId(state,action) {
             state.habitList = state.habitList.map(item=>{
                 if(item._id === action.payload._id) {
-                    item.goalId = action.payload.goalId
+                    item.goalId = action.payload.goalId;
                 }
-                return item
+                return item;
             })
         },
         toggleArchiveStatus(state,action) {
