@@ -21,7 +21,7 @@ const useScheduleHooks = () => {
                 data:{clientSelectedDayStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(scheduleActions.setScheduleList(scheduleResponse.data.scheduleList));
+            dispatch(scheduleActions.setScheduleList({scheduleList:scheduleResponse.data.scheduleList,date:date.toISOString()}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   

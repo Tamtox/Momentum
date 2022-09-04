@@ -83,7 +83,7 @@ const AddNewTodo:React.FC = () => {
             alarmUsed: todoInputs.alarmUsed,
             _id: detailedTodo?._id || "",
         }
-        todoHooks.updateTodo(newTodo,!!detailedTodo);
+        detailedTodo ? todoHooks.updateTodo(newTodo) : todoHooks.addTodo(newTodo);
         // Return to todo list
         navigate("/todo");
     }

@@ -56,22 +56,32 @@ const useTodoHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
-    // Update or add todo
-    const updateTodo = async (newTodo:TodoInterface,update:boolean) => {
+    // Add todo 
+    const addTodo = async (newTodo:TodoInterface) => {
         try {
             const newTodoResponse = await axios.request({
-                method:update ? 'PATCH' : 'POST',
-                url:`${httpAddress}/todo/${update ? 'updateTodo' : 'addNewTodo'}`,
+                method:'POST',
+                url:`${httpAddress}/todo/addNewTodo`,
                 data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            if(update) {
-                dispatch(todoActions.updateToDo(newTodo));
-                dispatch(scheduleActions.updateScheduleItem(newTodo));
-            } else {
-                dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));    
-                dispatch(scheduleActions.addScheduleItem(newTodoResponse.data.scheduleItem));
-            }
+            dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));    
+            dispatch(scheduleActions.addScheduleItem(newTodoResponse.data.scheduleItem));
+        } catch (error) {
+            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        }   
+    }
+    // Update or add todo
+    const updateTodo = async (newTodo:TodoInterface) => {
+        try {
+            const newTodoResponse = await axios.request({
+                method:'PATCH',
+                url:`${httpAddress}/todo/updateTodo`,
+                data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            dispatch(todoActions.updateToDo(newTodo));
+            dispatch(scheduleActions.updateScheduleItem(newTodo));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
@@ -110,7 +120,7 @@ const useTodoHooks = () => {
         }   
         dispatch(todoActions.setTodoLoading(false))   
     }
-    return {loadTodoData,loadArchivedTodoData,changeTodoStatus,updateTodo,toggleTodoArchiveStatus,deleteToDo}
+    return {loadTodoData,loadArchivedTodoData,changeTodoStatus,addTodo,updateTodo,toggleTodoArchiveStatus,deleteToDo}
 }
 
 export default useTodoHooks

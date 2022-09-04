@@ -54,8 +54,9 @@ const scheduleSlice = createSlice({
             })
         },  
         setScheduleList(state,action) {
-            state.scheduleList = action.payload;
+            state.scheduleList = action.payload.scheduleList;
             state.scheduleListLoaded = true;
+            state.scheduleDate = action.payload.date
         },
         clearScheduleList(state) {
             state.scheduleDate = new Date().toISOString();

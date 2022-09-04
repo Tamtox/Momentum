@@ -5,6 +5,7 @@ import axios from "axios";
 // Components
 import { goalActions,habitsActions } from "../Store/Store";
 import type {HabitInterface,GoalInterface, HabitEntryInterface} from '../Misc/Interfaces';
+import { StringOptionsWithImporter } from "sass";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -121,17 +122,20 @@ const useHabitHooks = () => {
     }
     // Change habit entry status
     const changeHabitStatus = async (habitEntry:HabitEntryInterface,weekday:number) => {
-        const newEntry = {...habitEntry};
+        let newEntry = {...habitEntry};
         newEntry.dateCompleted = newEntry.status === "Pending" ? new Date().toISOString() : null;
         newEntry.status = newEntry.status === "Pending"?"Complete":"Pending";
         try {
-            await axios.request({
+            const habitResponse:{data:{_id:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabitEntryStatus`,
                 data:{...newEntry},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.changeHabitStatus({...newEntry,weekday}));
+            if(newEntry._id === '') {
+                newEntry._id = habitResponse.data._id;
+            }
+            dispatch(habitsActions.changeHabitStatus({newEntry,weekday}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }
@@ -161,13 +165,13 @@ const useHabitHooks = () => {
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
-            const habitsResponse:{data:{populatedHabit:HabitInterface}} = await axios.request({
+            const habitsResponse:{data:{populatedEntries:HabitInterface}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/populateHabit`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset,_id},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.populateHabit({populatedHabit:habitsResponse.data.populatedHabit}))
+            dispatch(habitsActions.populateHabit({populatedEntries:habitsResponse.data.populatedEntries,_id}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

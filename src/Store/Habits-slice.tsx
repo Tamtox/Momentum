@@ -16,7 +16,6 @@ const initialHabitsState:HabitsSchema = {
     habitListLoaded:false,
     archivedHabitList:[],
     archivedHabitListLoaded:false,
-    // habitEntries:[],
     datepickerDate: new Date().toISOString()
 };
 const habitsSlice = createSlice({
@@ -36,9 +35,8 @@ const habitsSlice = createSlice({
         },
         changeHabitStatus(state,action) {
             state.habitList = state.habitList.map((habitListItem:HabitInterface)=>{
-                if(habitListItem._id === action.payload.habitId) {
-                    habitListItem.entries[action.payload.weekday]!.status = action.payload.dateCompleted ? "Complete" : "Pending";
-                    habitListItem.entries[action.payload.weekday]!.dateCompleted = action.payload.dateCompleted;
+                if(habitListItem._id === action.payload.newEntry.habitId) {
+                    habitListItem.entries[action.payload.weekday]! = action.payload.newEntry;
                 }
                 return habitListItem;
             })
@@ -60,7 +58,7 @@ const habitsSlice = createSlice({
         populateHabit(state,action) {
             state.habitList = state.habitList.map(item=>{
                 if(item._id === action.payload._id) {
-                    item = action.payload;
+                    item.entries = action.payload.populatedEntries;
                 }
                 return item;
             })

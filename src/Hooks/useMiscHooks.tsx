@@ -30,7 +30,7 @@ const useMiscHooks = () => {
                 data:{clientSelectedDayStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(scheduleActions.setScheduleList(scheduleResponse.data.scheduleList));
+            dispatch(scheduleActions.setScheduleList({scheduleList:scheduleResponse.data.scheduleList,date:new Date().toISOString()}));
             // Preload goal data
             const goalListResponse = await axios.request({
                 method:'GET',
@@ -63,7 +63,7 @@ const useMiscHooks = () => {
             if(journalEntryResponse.data.length > 0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
             } else if (journalEntryResponse.data.length === 0) {
-                dispatch(journalActions.setEntry({date:'',entry:'',id:''}));
+                dispatch(journalActions.setEntry({date:new Date().toISOString(),entry:'',id:''}));
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
