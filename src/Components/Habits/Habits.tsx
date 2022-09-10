@@ -49,9 +49,6 @@ const Habits:React.FC = () => {
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] 
     const filteredList = filterList([...habitList],sortQuery,searchQuery);
-    // Date selection and max date for datepicker
-    const currentWeekStartTime = new Date().getTime() + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
-    const currentWeekEnd = new Date(new Date(currentWeekStartTime+86400000*6).setHours(23,59,59,999));
     const datepickerDateWeekStart = datepickerDate.getTime() + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6);
     const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart)));
     const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart+86400000*6)));
@@ -70,8 +67,14 @@ const Habits:React.FC = () => {
         setSelectedDate(new Date(newWeekStartTime));
         setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
     }
+    if(!habitListLoaded) {
+        console.log(habitList);
+    }
     useEffect(() => {
-        habitListLoaded || habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
+        if(habitListLoaded === false) {
+            console.log(123);
+            habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
+        }
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
@@ -82,7 +85,7 @@ const Habits:React.FC = () => {
                         <Typography className='habit-date-button-text'>Prev Week</Typography>
                     </Button> 
                     <DatePicker 
-                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)' maxDate={currentWeekEnd}
+                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
                     renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
                     value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}}
                     />
@@ -92,7 +95,7 @@ const Habits:React.FC = () => {
                     renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
                     value={selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
                     />
-                    <Button variant='outlined' disabled={selectedDate.getTime() + 86400000 * 7 >= currentWeekEnd.getTime() ? true : false} className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
+                    <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
                         <Typography className='habit-date-button-text'>Next Week</Typography>
                         <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
                     </Button> 

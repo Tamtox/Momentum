@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import type {HabitEntryInterface, HabitInterface,} from '../Misc/Interfaces';
+import type {HabitInterface} from '../Misc/Interfaces';
 
 interface HabitsSchema {
     habitLoading:boolean,
@@ -84,6 +84,7 @@ const habitsSlice = createSlice({
                     return item._id !== habitItem._id;
                 })
                 state.habitList = state.habitList.concat(habitItem);
+                state.datepickerDate = new Date().toISOString();
             }
         },
         setHabits(state,action) {

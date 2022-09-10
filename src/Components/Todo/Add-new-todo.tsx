@@ -97,7 +97,7 @@ const AddNewTodo:React.FC = () => {
                         </div>
                     </Tooltip>}
                     <DatePicker 
-                    inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)'
+                    inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
                     renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                     value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
                     />

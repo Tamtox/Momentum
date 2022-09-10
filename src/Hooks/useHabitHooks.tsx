@@ -5,7 +5,6 @@ import axios from "axios";
 // Components
 import { goalActions,habitsActions } from "../Store/Store";
 import type {HabitInterface,GoalInterface, HabitEntryInterface} from '../Misc/Interfaces';
-import { StringOptionsWithImporter } from "sass";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -39,6 +38,7 @@ const useHabitHooks = () => {
                 url:`${httpAddress}/habits/getArchivedHabits`,
                 headers:{Authorization: `Bearer ${token}`}
             })
+            console.log(habitsResponse.data.archivedHabitList)
             dispatch(habitsActions.setArchiveHabits(habitsResponse.data.archivedHabitList))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;

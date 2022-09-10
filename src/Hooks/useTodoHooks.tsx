@@ -74,7 +74,7 @@ const useTodoHooks = () => {
     // Update or add todo
     const updateTodo = async (newTodo:TodoInterface) => {
         try {
-            const newTodoResponse = await axios.request({
+            await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/todo/updateTodo`,
                 data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},

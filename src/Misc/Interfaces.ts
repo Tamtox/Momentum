@@ -59,12 +59,13 @@ interface HabitInterface {
 }
 
 interface ScheduleInterface {
-    date:string /* Date format : .toIsoString() */
+    date:Date /* Date format : .toLocaleString() */
     time:string|null,
     parentId:string, 
     parentTitle:string,
     parentType:string,
-    dateCompleted:string | null, /* Date format : .toIsoString() */
+    status:String,
+    dateCompleted:Date | null,
     alarmUsed:boolean,
     utcOffset:string,
     isArchived:boolean,

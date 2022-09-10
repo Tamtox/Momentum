@@ -21,7 +21,7 @@ const scheduleSlice = createSlice({
     initialState:initialScheduleState,
     reducers: {
         setScheduleLoading(state,action) {
-            state.scheduleLoading = action.payload
+            state.scheduleLoading = action.payload;
         },
         addScheduleItem(state,action) {
             if(new Date(action.payload.date).toLocaleDateString() === new Date(state.scheduleDate).toLocaleDateString()) {
@@ -36,10 +36,10 @@ const scheduleSlice = createSlice({
         updateScheduleItem(state,action) {
             state.scheduleList = state.scheduleList.map((item:ScheduleInterface)=>{
                 if(action.payload._id === item.parentId) {
-                    item.alarmUsed = action.payload.alarmUsed
-                    item.date = action.payload.date
+                    item.date = action.payload.targetDate
                     item.time = action.payload.time
                     item.parentTitle = action.payload.title
+                    item.alarmUsed = action.payload.alarmUsed
                     item.isArchived = action.payload.isArchived
                 }
                 return item;
@@ -48,7 +48,8 @@ const scheduleSlice = createSlice({
         updateScheduleItemStatus(state,action) {
             state.scheduleList = state.scheduleList.map((item:ScheduleInterface)=>{
                 if(action.payload._id === item.parentId) {
-                    item.dateCompleted = action.payload.dateCompleted
+                    item.dateCompleted = action.payload.dateCompleted;
+                    item.status = action.payload.dateCompleted ? "Complete" : "Pending";
                 }
                 return item;
             })
