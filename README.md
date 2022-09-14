@@ -16,3 +16,4 @@ Planned Features :
     Data Visualization
     Mobile design
     Error handling
+    Subgoals
