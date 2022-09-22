@@ -3,14 +3,13 @@ import Cookies from "js-cookie";
 import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { authActions,scheduleActions,goalActions,habitsActions,todoActions,journalActions } from "../Store/Store";
+import { authActions,goalActions,habitsActions,todoActions } from "../Store/Store";
 
 const httpAddress = `http://localhost:3001`;
 
 const useMiscHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
-    const clientSelectedDayStartTime = new Date().setHours(0,0,0,0);
     const clientSelectedWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
     const clientTimezoneOffset = new Date().getTimezoneOffset();
     const preloadData = async (newToken?:string) => {
@@ -23,14 +22,6 @@ const useMiscHooks = () => {
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(authActions.setUsetData(userDataResponse.data))
-            // Preload schedule
-            const scheduleResponse = await axios.request({
-                method:'POST',
-                url:`${httpAddress}/schedule/getSchedule`,
-                data:{clientSelectedDayStartTime,clientTimezoneOffset},
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(scheduleActions.setScheduleList({scheduleList:scheduleResponse.data.scheduleList,date:new Date().toISOString()}));
             // Preload goal data
             const goalListResponse = await axios.request({
                 method:'GET',
@@ -53,18 +44,6 @@ const useMiscHooks = () => {
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(todoActions.setToDoList(todoList.data))
-            //Preload Journal Data
-            const journalEntryResponse:{data:any[]} = await axios.request({
-                method:'POST',
-                url:`${httpAddress}/journal/getJournalEntry`,
-                headers:{Authorization: `Bearer ${token}`},
-                data:{clientSelectedDayStartTime,clientTimezoneOffset}
-            })
-            if(journalEntryResponse.data.length > 0) {
-                dispatch(journalActions.setEntry(journalEntryResponse.data[0]))
-            } else if (journalEntryResponse.data.length === 0) {
-                dispatch(journalActions.setEntry({date:new Date().toISOString(),entry:'',id:''}));
-            }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

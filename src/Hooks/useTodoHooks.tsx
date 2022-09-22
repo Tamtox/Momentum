@@ -5,6 +5,7 @@ import axios from "axios";
 // Components
 import { todoActions,scheduleActions } from "../Store/Store";
 import type {TodoInterface} from '../Misc/Interfaces';
+import {createPairedScheduleItem} from './Helper-functions';
 
 const httpAddress = `http://localhost:3001`;
 
@@ -59,14 +60,19 @@ const useTodoHooks = () => {
     // Add todo 
     const addTodo = async (newTodo:TodoInterface) => {
         try {
-            const newTodoResponse = await axios.request({
+            const newTodoResponse:{data:{todoId:string,scheduleId:string}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/todo/addNewTodo`,
                 data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(todoActions.addToDo(newTodoResponse.data.newTodoItem));    
-            dispatch(scheduleActions.addScheduleItem(newTodoResponse.data.scheduleItem));
+            const {todoId,scheduleId} = newTodoResponse.data;
+            if (newTodo.targetDate) {
+                const {targetTime,targetDate,title,alarmUsed,creationUTCOffset} = newTodo;
+                const scheduleItem = createPairedScheduleItem(targetTime,targetDate,title,'todo',todoId,alarmUsed,creationUTCOffset,scheduleId);       
+                dispatch(scheduleActions.addScheduleItem(scheduleItem));
+            }
+            dispatch(todoActions.addToDo({...newTodo,_id:todoId}));    
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   

@@ -67,12 +67,8 @@ const Habits:React.FC = () => {
         setSelectedDate(new Date(newWeekStartTime));
         setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
     }
-    if(!habitListLoaded) {
-        console.log(habitList);
-    }
     useEffect(() => {
         if(habitListLoaded === false) {
-            console.log(123);
             habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
         }
     }, [])

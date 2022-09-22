@@ -32,7 +32,7 @@ const Schedule:React.FC = () => {
     // const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     // console.log(sortedList);
     useEffect(() => {
-        scheduleListLoaded || scheduleHooks.loadScheduleItems(new Date());
+        scheduleListLoaded || scheduleHooks.loadScheduleItems(new Date(scheduleDate));
     }, [])
     return(
         <div className={`schedule`}>
