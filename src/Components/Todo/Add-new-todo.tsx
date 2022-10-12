@@ -108,7 +108,7 @@ const AddNewTodo:React.FC = () => {
                     />}
                     {detailedTodo && <Tooltip title="Delete Item">
                         <div>
-                            <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(detailedTodo!._id);navigate("/todo")}}/>
+                            <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>
                         </div>
                     </Tooltip>}
                 </div>

@@ -117,8 +117,8 @@ const AddNewGoal:React.FC = () => {
             alarmUsed:goalInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''
         }
-        const newHabitArgument = (detailedHabit || goalInputs.habitMode) ? newHabit : null
-        goalHooks.updateGoal(newGoal,!!detailedGoal,newHabitArgument,!!detailedHabit)
+        const newHabitArgument = (detailedHabit || goalInputs.habitMode) ? newHabit : null;
+        goalHooks.updateGoal(newGoal,!!detailedGoal,newHabitArgument,!!detailedHabit);
         // Return to goal list
         navigate("/goals");
     }

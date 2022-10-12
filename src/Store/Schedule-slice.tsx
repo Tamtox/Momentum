@@ -4,14 +4,14 @@ import type {ScheduleInterface} from "../Misc/Interfaces";
 
 interface ScheduleSchema {
     scheduleLoading:boolean,
-    scheduleList:ScheduleInterface[],
+    scheduleList:{[date:string]:ScheduleInterface[]}, // toLocaleDateString('en-Gb')
     scheduleListLoaded:boolean,
     scheduleDate:string
 }
 
 const initialScheduleState:ScheduleSchema = {
     scheduleLoading:false,
-    scheduleList:[],
+    scheduleList:{},
     scheduleListLoaded:false,
     scheduleDate: new Date().toISOString(),
 }
@@ -24,18 +24,28 @@ const scheduleSlice = createSlice({
             state.scheduleLoading = action.payload;
         },
         addScheduleItem(state,action) {
-            if(new Date(action.payload.date).toLocaleDateString() === new Date(state.scheduleDate).toLocaleDateString()) {
-                state.scheduleList.push(action.payload);
-            }
+            const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
+            state.scheduleList[date].push(action.payload);
         },
         deleteScheduleItem(state,action) {
-            state.scheduleList = state.scheduleList.filter((item:ScheduleInterface)=>{
-                return item.parentId !== action.payload;
-            })
+            if (action.payload.parentType === 'habit') {
+                const dates = Object.keys(state.scheduleList);
+                dates.forEach((date:string) => {
+                    state.scheduleList[date] = state.scheduleList[date].filter((item:ScheduleInterface)=>{
+                        return item.parentId !== action.payload._id;
+                    })
+                });
+            } else {
+                const date = new Date(action.payload.targetDate).toLocaleDateString('en-Gb');
+                state.scheduleList[date] = state.scheduleList[date].filter((item:ScheduleInterface)=>{
+                    return item.parentId !== action.payload._id;
+                })
+            }
         },
         updateScheduleItem(state,action) {
-            state.scheduleList = state.scheduleList.map((item:ScheduleInterface)=>{
-                if(action.payload._id === item.parentId) {
+            const date = new Date(action.payload.targetDate).toLocaleDateString('en-Gb');
+            state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
+                if (action.payload._id === item.parentId) {
                     item.date = action.payload.targetDate
                     item.time = action.payload.time
                     item.parentTitle = action.payload.title
@@ -46,8 +56,9 @@ const scheduleSlice = createSlice({
             })
         },  
         updateScheduleItemStatus(state,action) {
-            state.scheduleList = state.scheduleList.map((item:ScheduleInterface)=>{
-                if(action.payload._id === item.parentId) {
+            const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
+            state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
+                if (action.payload._id === item.parentId) {
                     item.dateCompleted = action.payload.dateCompleted;
                     item.status = action.payload.dateCompleted ? "Complete" : "Pending";
                 }
@@ -55,13 +66,14 @@ const scheduleSlice = createSlice({
             })
         },  
         setScheduleList(state,action) {
-            state.scheduleList = action.payload.scheduleList;
+            const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
+            state.scheduleList[date] = action.payload.scheduleList;
             state.scheduleListLoaded = true;
             state.scheduleDate = action.payload.date
         },
         clearScheduleList(state) {
             state.scheduleDate = new Date().toISOString();
-            state.scheduleList = [];
+            state.scheduleList = {};
             state.scheduleListLoaded = false;
         }
     }

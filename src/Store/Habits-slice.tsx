@@ -45,12 +45,7 @@ const habitsSlice = createSlice({
             const newHabit = action.payload.newHabit;
             state.habitList = state.habitList.map((item:HabitInterface)=>{
                 if(item._id === newHabit._id) {
-                    if(typeof(action.payload.newHabitEntries) !== 'string') {
-                        newHabit.entries = action.payload.newEntries;
-                    } else {
-                        newHabit.entries = item.entries;
-                    }
-                    item = newHabit;
+                    item = action.payload;
                 }
                 return item;
             })

@@ -59,7 +59,7 @@ interface HabitInterface {
 }
 
 interface ScheduleInterface {
-    date:Date /* Date format : .toLocaleString() */
+    date:string /* Date format : .toLocaleString() */
     time:string|null,
     parentId:string, 
     parentTitle:string,

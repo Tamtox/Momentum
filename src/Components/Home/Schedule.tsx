@@ -19,8 +19,8 @@ const Schedule:React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const scheduleLoading = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleLoading);
-    const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList);
     const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
+    const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
      // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState(new Date(scheduleDate));

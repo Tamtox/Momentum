@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { goalActions,habitsActions,scheduleActions } from "../Store/Store";
-import type {HabitInterface, HabitEntryInterface} from '../Misc/Interfaces';
+import type {HabitInterface, HabitEntryInterface, GoalInterface} from '../Misc/Interfaces';
 import {createPairedScheduleItem} from './Helper-functions';
 
 const httpAddress = `http://localhost:3001`;
@@ -45,98 +45,57 @@ const useHabitHooks = () => {
         }
         dispatch(habitsActions.setHabitLoading(false))   
     }
-    // Add habit
-    const addHabit = async (newHabit:HabitInterface) =>{
+    // Update or add habit 
+    const updateHabit = async (newHabit:HabitInterface,updateHabit:boolean,newGoal:GoalInterface|null,updateGoal:boolean) =>{
         dispatch(habitsActions.setHabitLoading(true));
+        newGoal && dispatch(goalActions.setGoalLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string}} = await axios.request({
-                method:'POST',
-                url:`${httpAddress}/habits/addNewHabit`,
+            const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string,newEntries:{}}} = await axios.request({
+                method:updateHabit ? 'PATCH' : 'POST',
+                url:`${httpAddress}/habits/${updateHabit ? 'updateHabit' : 'addNewHabit'}`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            newHabit = newHabitResponse.data.newHabit;
-            const scheduleId = newHabitResponse.data.scheduleId;
-            const {time,creationDate,title,alarmUsed,creationUTCOffset,_id:habitId} = newHabit;
-            const scheduleItem = createPairedScheduleItem(time,creationDate,title,'habit',habitId,alarmUsed,creationUTCOffset,scheduleId);       
-            dispatch(scheduleActions.addScheduleItem(scheduleItem));
-            dispatch(habitsActions.addHabit(newHabit)) ;
+            const {scheduleId:habitScheduleId,newEntries} = newHabitResponse.data;
+            const habitId = updateHabit ? newHabit._id : newHabitResponse.data.newHabit._id;
+            updateHabit ? newHabit.entries = newEntries : newHabit = newHabitResponse.data.newHabit;
+            if(newGoal) {
+                const newGoalResponse:{data:{goalId:string,scheduleId:string}}  = await axios.request({
+                    method:newHabit.goalId ? 'PATCH' : 'POST',
+                    url:`${httpAddress}/goals/${newHabit.goalId ?  'updateGoal' : 'addNewGoal'}`,
+                    data:newGoal,
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                const {goalId,scheduleId:goalScheduleId} = newGoalResponse.data;
+                newGoal._id = goalId;
+                // Update goal and habit ids
+                if(!newHabit.goalId) {
+                    await axios.request({
+                        method:'PATCH',
+                        url:`${httpAddress}/goals/updateGoal`,
+                        data:{_id:goalId,habitId},
+                        headers:{Authorization: `Bearer ${token}`}
+                    });
+                    await axios.request({
+                        method:'PATCH',
+                        url:`${httpAddress}/habits/updateHabit`,
+                        data:{_id:habitId,goalId},
+                        headers:{Authorization: `Bearer ${token}`}
+                    });
+                    newGoal.habitId = habitId;
+                    newHabit.goalId = goalId;
+                }
+                updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal({...newGoal,_id:goalId}));
+            }
+            updateHabit ? dispatch(habitsActions.updateHabit({newHabit})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
         dispatch(habitsActions.setHabitLoading(false));
-        return newHabit;
+        newGoal && dispatch(goalActions.setGoalLoading(false));   
     }
-    // Update habit
-    const updateHabit = async (newHabit:HabitInterface) =>{
-        dispatch(habitsActions.setHabitLoading(true));
-        const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
-        const clientTimezoneOffset = new Date().getTimezoneOffset();   
-        try {
-            const newHabitResponse:{data:{newHabit:HabitInterface,newEntries:{}}} = await axios.request({
-                method:'PATCH',
-                url:`${httpAddress}/habits/updateHabit`,
-                data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
-                headers:{Authorization: `Bearer ${token}`}
-            })
-            dispatch(habitsActions.updateHabit({newHabit,newEntries:newHabitResponse.data.newEntries}));
-        } catch (error) {
-            axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-        dispatch(habitsActions.setHabitLoading(false));  
-    }
-    // Update or add habit 
-    // const updateHabit = async (newHabit:HabitInterface,updateHabit:boolean,newGoal:GoalInterface|null,updateGoal:boolean) =>{
-    //     dispatch(habitsActions.setHabitLoading(true));
-    //     newGoal && dispatch(goalActions.setGoalLoading(true));
-    //     const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
-    //     const clientTimezoneOffset = new Date().getTimezoneOffset();   
-    //     try {
-    //         const newHabitResponse:{data:{newHabit:HabitInterface,newEntries:{}}} = await axios.request({
-    //             method:updateHabit ? 'PATCH' : 'POST',
-    //             url:`${httpAddress}/habits/${updateHabit ? 'updateHabit' : 'addNewHabit'}`,
-    //             data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
-    //             headers:{Authorization: `Bearer ${token}`}
-    //         })
-    //         if(newGoal) {
-    //             const newGoalResponse = await axios.request({
-    //                 method:newHabit.goalId ? 'PATCH' : 'POST',
-    //                 url:`${httpAddress}/goals/${newHabit.goalId ?  'updateGoal' : 'addNewGoal'}`,
-    //                 data:newGoal,
-    //                 headers:{Authorization: `Bearer ${token}`}
-    //             })
-    //             // Update goal and habit ids
-    //             const habitId = updateHabit ? newHabit._id : newHabitResponse.data.newHabit._id
-    //             const goalId = updateGoal ? newGoal._id : newGoalResponse.data._id
-    //             const goalTargetDate = updateGoal ? newGoal.targetDate : newGoalResponse.data.goalTargetDate
-    //             if(!newHabit.goalId) {
-    //                 await axios.request({
-    //                     method:'PATCH',
-    //                     url:`${httpAddress}/goals/updateGoal`,
-    //                     data:{_id:goalId,habitId},
-    //                     headers:{Authorization: `Bearer ${token}`}
-    //                 });
-    //                 await axios.request({
-    //                     method:'PATCH',
-    //                     url:`${httpAddress}/habits/updateHabit`,
-    //                     data:{_id:habitId,goalId,goalTargetDate},
-    //                     headers:{Authorization: `Bearer ${token}`}
-    //                 });
-    //                 updateGoal ? newGoal.habitId = habitId : newGoalResponse.data.habitId = habitId;
-    //                 updateHabit ? newHabit.goalId = goalId :  newHabitResponse.data.newHabit.goalId = goalId;
-    //                 updateHabit ? newHabit.goalTargetDate = goalTargetDate  : newHabitResponse.data.newHabit.goalTargetDate = goalTargetDate;
-    //             }
-    //             updateGoal ? dispatch(goalActions.updateGoal(newGoal)) : dispatch(goalActions.addGoal(newGoalResponse.data));
-    //         }
-    //         updateHabit ? dispatch(habitsActions.updateHabit({newHabit,newEntries:newHabitResponse.data.newEntries})) : dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit)) ;
-    //     } catch (error) {
-    //         axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-    //     }   
-    //     dispatch(habitsActions.setHabitLoading(false));
-    //     newGoal && dispatch(goalActions.setGoalLoading(false));   
-    // }
     // Delete habit
     const deleteHabit = async (habitId:string,pairedGoalId:string|null) => {
         dispatch(habitsActions.setHabitLoading(true))   
@@ -219,7 +178,7 @@ const useHabitHooks = () => {
         }
         dispatch(habitsActions.setHabitLoading(false))   
     }
-    return {loadHabitsData,loadArchivedHabitsData,deleteHabit,addHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus,populateHabit}
+    return {loadHabitsData,loadArchivedHabitsData,deleteHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus,populateHabit}
 }
 
 export default useHabitHooks

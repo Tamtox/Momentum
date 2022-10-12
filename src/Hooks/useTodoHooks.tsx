@@ -69,7 +69,7 @@ const useTodoHooks = () => {
             const {todoId,scheduleId} = newTodoResponse.data;
             if (newTodo.targetDate) {
                 const {targetTime,targetDate,title,alarmUsed,creationUTCOffset} = newTodo;
-                const scheduleItem = createPairedScheduleItem(targetTime,targetDate,title,'todo',todoId,alarmUsed,creationUTCOffset,scheduleId);       
+                const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',todoId,alarmUsed,creationUTCOffset,scheduleId);  
                 dispatch(scheduleActions.addScheduleItem(scheduleItem));
             }
             dispatch(todoActions.addToDo({...newTodo,_id:todoId}));    
@@ -110,17 +110,17 @@ const useTodoHooks = () => {
         dispatch(todoActions.setTodoLoading(false))   
     }
     // Delete Todo
-    const deleteToDo = async (_id:string) => {
+    const deleteToDo = async (todo:TodoInterface) => {
         dispatch(todoActions.setTodoLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
                 url:`${httpAddress}/todo/deleteTodo`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id:_id}
+                data:{_id:todo._id}
             })
-            dispatch(todoActions.deleteToDo(_id));
-            dispatch(scheduleActions.deleteScheduleItem(_id));
+            dispatch(todoActions.deleteToDo(todo._id));
+            todo.targetDate && dispatch(scheduleActions.deleteScheduleItem({_id:todo._id,targetDate:todo.targetDate,parentType:"todo"}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
