@@ -1,6 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
 import type {ScheduleInterface} from "../Misc/Interfaces";
 
+const currentDate = new Date().getDate() - 1;
+const monthStart = new Date().setHours(0,0,0,0) - currentDate * 86400000;
 
 interface ScheduleSchema {
     scheduleLoading:boolean,
@@ -25,6 +27,9 @@ const scheduleSlice = createSlice({
         },
         addScheduleItem(state,action) {
             const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
+            if (!state.scheduleList[date]) {
+                state.scheduleList[date] = [];
+            }
             state.scheduleList[date].push(action.payload);
         },
         deleteScheduleItem(state,action) {
@@ -44,6 +49,9 @@ const scheduleSlice = createSlice({
         },
         updateScheduleItem(state,action) {
             const date = new Date(action.payload.targetDate).toLocaleDateString('en-Gb');
+            if (!state.scheduleList[date]) {
+                state.scheduleList[date] = [];
+            }
             state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
                 if (action.payload._id === item.parentId) {
                     item.date = action.payload.targetDate

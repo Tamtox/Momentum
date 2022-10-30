@@ -70,6 +70,16 @@ const useHabitHooks = () => {
                 })
                 const {goalId,scheduleId:goalScheduleId} = newGoalResponse.data;
                 newGoal._id = goalId;
+                // Add or update goal schedule item
+                if (updateGoal) {
+                    dispatch(scheduleActions.updateScheduleItem(newGoal));
+                } else {
+                    if (newGoal.targetDate) {
+                        const {targetDate,title,alarmUsed,creationUTCOffset} = newGoal;
+                        const goalScheduleItem = createPairedScheduleItem(null,targetDate,title,"goal",goalId,alarmUsed,creationUTCOffset,goalScheduleId);
+                        dispatch(scheduleActions.addScheduleItem(goalScheduleItem));
+                    }
+                }
                 // Update goal and habit ids
                 if(!newHabit.goalId) {
                     await axios.request({

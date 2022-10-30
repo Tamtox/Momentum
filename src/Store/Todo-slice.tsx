@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { keyboard } from '@testing-library/user-event/dist/types/setup/directApi';
 import type {TodoInterface} from '../Misc/Interfaces';
 
 interface TodoSchema {
@@ -33,7 +34,7 @@ const todoSlice = createSlice({
         },
         changeToDoStatus(state,action) {
             state.todoList = state.todoList.map(item=>{
-                if(item._id === action.payload._id) {
+                if (item._id === action.payload._id) {
                     item.status = item.status === 'Pending'?'Complete':'Pending';
                     item.dateCompleted = action.payload.dateCompleted
                 }
@@ -49,9 +50,10 @@ const todoSlice = createSlice({
             state.archivedTodoListLoaded = true
         },
         updateToDo(state,action) {
-            state.todoList = state.todoList.map(item=>{
-                if(item._id === action.payload._id) {
-                    item = action.payload
+            const updatedTodo:TodoInterface = {...action.payload};
+            state.todoList = state.todoList.map((item:TodoInterface) => {
+                if (item._id === updatedTodo._id) {
+                    item = updatedTodo;
                 }
                 return item
             })

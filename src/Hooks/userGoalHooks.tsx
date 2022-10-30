@@ -72,6 +72,16 @@ const useGoalHooks = () => {
             });
             const {goalId,scheduleId:goalScheduleId} = newGoalResponse.data;
             newGoal._id = goalId;
+            // Add or update goal schedule item
+            if (updateGoal) {
+                dispatch(scheduleActions.updateScheduleItem(newGoal));
+            } else {
+                if (newGoal.targetDate) {
+                    const {targetDate,title,alarmUsed,creationUTCOffset} = newGoal;
+                    const goalScheduleItem = createPairedScheduleItem(null,targetDate,title,"goal",goalId,alarmUsed,creationUTCOffset,goalScheduleId);
+                    dispatch(scheduleActions.addScheduleItem(goalScheduleItem));
+                }
+            }
             if(newHabit) {
                 const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string,newEntries:{}}} = await axios.request({
                     method:newGoal.habitId ? 'PATCH' : 'POST',
@@ -82,6 +92,7 @@ const useGoalHooks = () => {
                 const {scheduleId:habitScheduleId,newEntries} = newHabitResponse.data;
                 const habitId = updateHabit ? newHabit._id : newHabitResponse.data.newHabit._id;
                 updateHabit ? newHabit.entries = newEntries : newHabit = newHabitResponse.data.newHabit;
+                 // Add or update habit schedule item
                 // Update goal and habit ids
                 if(!newGoal.habitId) {
                     await axios.request({

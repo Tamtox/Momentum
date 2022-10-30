@@ -24,4 +24,16 @@ const createPairedScheduleItem = async (time:string|null,targetDate:string,paren
     return scheduleItem;
 };
 
-export {createPairedScheduleItem};
+const determineScheduleAction = (dateNew:string | null,dateOld:string | null):string|null => {
+    let scheduleAction = null;
+    if (dateNew && !dateOld) {
+        scheduleAction = "create";
+    } else if (!dateNew && dateOld) {
+        scheduleAction = "delete";
+    } else if (dateNew && dateOld) {
+        scheduleAction = "update";
+    }
+    return scheduleAction;
+}
+
+export {createPairedScheduleItem,determineScheduleAction};

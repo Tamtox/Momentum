@@ -20,7 +20,7 @@ const AddNewTodo:React.FC = () => {
     const todoList = useSelector<RootState,TodoInterface[]>(state=>state.todoSlice.todoList);
     const todoLoading = useSelector<RootState,boolean>(state=>state.todoSlice.todoLoading);
     const id = location.pathname.split('/')[2];
-    const detailedTodo = todoList.find((todoitem)=> todoitem._id === id);
+    const detailedTodo:TodoInterface | undefined = todoList.find((todoitem)=> todoitem._id === id);
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:any) => {
@@ -67,7 +67,7 @@ const AddNewTodo:React.FC = () => {
             timePickerUsed:true
         }));
     }
-     // Submit or update Todo 
+    // Submit or update Todo 
     const updateTodo = async (event:React.FormEvent) => {
         event.preventDefault();
         const newTodo:TodoInterface = {
@@ -83,8 +83,7 @@ const AddNewTodo:React.FC = () => {
             alarmUsed: todoInputs.alarmUsed,
             _id: detailedTodo?._id || "",
         }
-        detailedTodo ? todoHooks.updateTodo(newTodo) : todoHooks.addTodo(newTodo);
-        // Return to todo list
+        detailedTodo ? todoHooks.updateTodo(newTodo,detailedTodo) : todoHooks.addTodo(newTodo);
         navigate("/todo");
     }
     return(
