@@ -93,7 +93,7 @@ const useTodoHooks = () => {
             const updateTodoResponse:{data:{todoId:string,scheduleId:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/todo/updateTodo`,
-                data:{...updatedFields,timezoneOffset:new Date().getTimezoneOffset()},
+                data:{...updatedFields,timezoneOffset:new Date().getTimezoneOffset(),scheduleAction},
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {todoId,scheduleId} = updateTodoResponse.data;
