@@ -39,7 +39,7 @@ const AddNewTodo:React.FC = () => {
         creationUTCOffset:detailedTodo?.creationUTCOffset || new Date().getTimezoneOffset(),
         alarmUsed: detailedTodo?.alarmUsed || false
     })
-    const todoInputsHandler = (e:any,input:string) => {
+    const todoInputsHandler = (e:React.ChangeEvent<HTMLInputElement>,input:string) => {
         setTodoInputs((prevState)=>({
             ...prevState,
             [input]:e.target.value
@@ -114,8 +114,8 @@ const AddNewTodo:React.FC = () => {
                 {(todoInputs.datePickerUsed || detailedTodo) && <FormGroup className='add-new-todo-alarm-switch'>
                     <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />
                 </FormGroup>}
-                <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
-                <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
+                <TextField value={todoInputs.todoTitle} onChange={(event:React.ChangeEvent<HTMLInputElement>)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
+                <TextField value={todoInputs.todoDescription} onChange={(event:React.ChangeEvent<HTMLInputElement>)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
                 <div className={`add-new-todo-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedTodo?'Update':'Submit'}</Button>

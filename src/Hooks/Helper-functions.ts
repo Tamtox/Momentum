@@ -24,7 +24,7 @@ const createPairedScheduleItem = async (time:string|null,targetDate:string,paren
     return scheduleItem;
 };
 
-const determineScheduleAction = (dateNew:string | null,dateOld:string | null):string|null => {
+const determineScheduleAction = (dateNew:string|null, dateOld:string|null):string|null => {
     let scheduleAction = null;
     if (dateNew && !dateOld) {
         scheduleAction = "create";

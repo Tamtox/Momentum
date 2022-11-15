@@ -80,29 +80,29 @@ const useTodoHooks = () => {
     // Update or add todo
     const updateTodo = async (newTodo:TodoInterface,oldTodo:TodoInterface) => {
         // Compare old and new items and send only updated fields
-        const updatedFields:TodoInterface = {...newTodo};
-        Object.keys(newTodo).forEach((key:string)=> {
-            const key1 = key as keyof TodoInterface;
-            if (key1 !== "_id" && (newTodo[key1] === oldTodo[key1])) {
-                delete updatedFields[key1];
-            }
-        })
+        // const updatedFields:TodoInterface = {...newTodo};
+        // Object.keys(newTodo).forEach((key:string)=> {
+        //     const key1 = key as keyof TodoInterface;
+        //     if (key1 !== "_id" && (newTodo[key1] === oldTodo[key1])) {
+        //         delete updatedFields[key1];
+        //     }
+        // })
         // Determine the schedule action
         let scheduleAction:string|null = determineScheduleAction(newTodo.targetDate,oldTodo.targetDate);
         try {
-            const updateTodoResponse:{data:{todoId:string,scheduleId:string}} = await axios.request({
+            const updateTodoResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/todo/updateTodo`,
-                data:{...updatedFields,timezoneOffset:new Date().getTimezoneOffset(),scheduleAction},
+                data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset(),scheduleAction},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            const {todoId,scheduleId} = updateTodoResponse.data;
+            const {scheduleId} = updateTodoResponse.data;
             dispatch(todoActions.updateToDo(newTodo));
             // Check if schedule item needs to be added, deleted or updated  
             if (scheduleAction === "create") {
                 const {targetTime,targetDate,title,alarmUsed,creationUTCOffset} = newTodo;
                 if (targetDate) {
-                    const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',todoId,alarmUsed,creationUTCOffset,scheduleId);  
+                    const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',newTodo._id,alarmUsed,creationUTCOffset,scheduleId);  
                     dispatch(scheduleActions.addScheduleItem(scheduleItem));
                 }
             } else if (scheduleAction === "update") {

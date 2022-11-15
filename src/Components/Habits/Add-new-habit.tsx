@@ -46,7 +46,7 @@ const AddNewHabit:React.FC = () => {
         goalAlarmUsed:detailedGoal?.alarmUsed || false,
         goalMode:false,
     })
-    const habitInputsHandler = (e:any,input:string) => {
+    const habitInputsHandler = (e:React.ChangeEvent<HTMLInputElement>,input:string) => {
         setHabitInputs((prevState)=>({
             ...prevState,
             [input]:e.target.value
@@ -162,8 +162,8 @@ const AddNewHabit:React.FC = () => {
                         <FormControlLabel control={<Switch checked={habitInputs.goalAlarmUsed} onChange={goalAlarmSwitchHandler} />} label="Goal alarm" />
                     </FormGroup>}
                 </div>
-                <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
-                {(habitInputs.goalMode || detailedHabit?.goalId) && <TextField value={habitInputs.goalTitle} onChange={(event)=>{habitInputsHandler(event,'goalTitle')}} label='Goal Title'  className="add-new-habit-goal-title" multiline required />}
+                <TextField value={habitInputs.habitTitle} onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{habitInputsHandler(e,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
+                {(habitInputs.goalMode || detailedHabit?.goalId) && <TextField value={habitInputs.goalTitle} onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{habitInputsHandler(e,'goalTitle')}} label='Goal Title'  className="add-new-habit-goal-title" multiline required />}
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
                         <Tooltip enterDelay={300} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>
