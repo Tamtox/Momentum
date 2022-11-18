@@ -37,6 +37,10 @@ const Journal:React.FC = () => {
     useEffect(() => {
         journalInputHandler(journalEntry.journalEntry,true)
     }, [journalEntry.journalEntry])
+    // Load journal data on start
+    useEffect(()=>{
+        selectJournalEntryByDate(new Date());
+    },[])
     return (
         <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
             {journalLoading ? <Loading height='100%'/>:

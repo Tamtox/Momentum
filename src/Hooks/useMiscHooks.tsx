@@ -43,7 +43,7 @@ const useMiscHooks = () => {
                 url:`${httpAddress}/todo/getTodos`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            dispatch(todoActions.setToDoList(todoList.data))
+            dispatch(todoActions.setToDoList(todoList.data));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }

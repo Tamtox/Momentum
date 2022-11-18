@@ -22,10 +22,9 @@ const useJournalHooks = () => {
                 headers:{Authorization: `Bearer ${newToken || token}`},
                 data:{clientSelectedDayStartTime,clientTimezoneOffset}
             })
-            if(journalEntryResponse.data.length > 0) {
+            if (journalEntryResponse.data.length > 0) {
                 dispatch(journalActions.setEntry(journalEntryResponse.data[0]));
-            } 
-            if (journalEntryResponse.data.length === 0) {
+            } else if (journalEntryResponse.data.length === 0) {
                 dispatch(journalActions.setEntry({date:selectedDate.toISOString(),journalEntry:'',id:''}));
             }
         } catch (error) {

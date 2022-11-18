@@ -89,7 +89,7 @@ const AddNewGoal:React.FC = () => {
     const weekdaysLabels:{[key:number]:string} = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',0:'Sun'};
     const [checkBoxes,setCheckboxes] = useState<{[key:number]:boolean}>(detailedHabit?.weekdays || {1:false,2:false,3:false,4:false,5:false,6:false,0:false});
     // Submit or update goal 
-    const updateGoal = async (event:React.FormEvent) => {
+    const updateGoal = async (event:any) => {
         event.preventDefault();
         let activeDays = Object.values(checkBoxes).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:checkBoxes;
         const newGoal:GoalInterface = {
@@ -160,8 +160,8 @@ const AddNewGoal:React.FC = () => {
                         <FormControlLabel control={<Switch checked={goalInputs.habitAlarmUsed} onChange={habitAlarmSwitchHandler} />} label="Habit alarm" />
                     </FormGroup>}
                 </div>
-                <TextField value={goalInputs.goalTitle} onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{goalInputsHandler(e,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
-                {(goalInputs.habitMode || detailedGoal?.habitId) && <TextField value={goalInputs.habitTitle} onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{goalInputsHandler(e,'habitTitle')}} className={`add-new-goal-habit-title focus input`} label='Habit Title' multiline required />}
+                <TextField value={goalInputs.goalTitle} onChange={(event:any)=>{goalInputsHandler(event,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
+                {(goalInputs.habitMode || detailedGoal?.habitId) && <TextField value={goalInputs.habitTitle} onChange={(event:any)=>{goalInputsHandler(event,'habitTitle')}} className={`add-new-goal-habit-title focus input`} label='Habit Title' multiline required />}
                 {(goalInputs.habitMode || detailedGoal?.habitId) && 
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
