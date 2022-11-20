@@ -95,16 +95,20 @@ const AddNewTodo:React.FC = () => {
                             <BsArchive className={`icon-interactive archive-todo`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
                         </div>
                     </Tooltip>}
-                    <DatePicker 
-                    inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
-                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                    value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
-                    />
-                    {(todoInputs.datePickerUsed || detailedTodo?.targetTime) && <TimePicker 
-                    inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
-                    value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
-                    />}
+                    <div className='add-new-todo-datepicker-wrapper'>
+                        <DatePicker 
+                            inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
+                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                            value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
+                        />
+                    </div>
+                    {(todoInputs.datePickerUsed || detailedTodo?.targetTime) && <div className='add-new-todo-timepicker-wrapper'>
+                        <TimePicker 
+                            inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
+                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
+                            value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
+                        />
+                    </div>}
                     {detailedTodo && <Tooltip title="Delete Item">
                         <div>
                             <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>

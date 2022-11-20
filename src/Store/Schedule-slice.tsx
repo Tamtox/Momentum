@@ -48,11 +48,17 @@ const scheduleSlice = createSlice({
             }
         },
         updateScheduleItem(state,action) {
-            const date = new Date(action.payload.targetDate).toLocaleDateString('en-Gb');
-            if (!state.scheduleList[date]) {
-                state.scheduleList[date] = [];
+            const newDate = new Date(action.payload.newTodo.targetDate).toLocaleDateString('en-Gb');
+            const oldDate = new Date(action.payload.oldTodo.targetDate).toLocaleDateString('en-Gb');
+            if (!state.scheduleList[newDate]) {
+                state.scheduleList[newDate] = [];
             }
-            state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
+            if (newDate === oldDate) {
+
+            } else {
+                
+            }
+            state.scheduleList[newDate] = state.scheduleList[date].map((item:ScheduleInterface)=>{
                 if (action.payload._id === item.parentId) {
                     item.date = action.payload.targetDate
                     item.time = action.payload.time

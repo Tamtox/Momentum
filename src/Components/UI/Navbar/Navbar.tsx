@@ -71,11 +71,9 @@ const Navbar:React.FC = () => {
                         <BiBell className={`nav-notifications-icon${isDarkMode?'-dark':''} icon`} />
                     </div>
                 </Tooltip>} */}
-                <Tooltip title={`${isDarkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode'}`} enterDelay={3000}>
-                    <div className={`toggle-dark-mode navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={()=>{dispatch(authActions.setDarkMode())}}>
-                        {isDarkMode ? <FaMoon className='icon toggle-dark-mode-moon'/> : <FaSun className='icon toggle-dark-mode-sun' />}
-                    </div>
-                </Tooltip>
+                <div className={`toggle-dark-mode navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={()=>{dispatch(authActions.setDarkMode())}}>
+                    {isDarkMode ? <FaMoon className='icon toggle-dark-mode-moon'/> : <FaSun className='icon toggle-dark-mode-sun' />}
+                </div>  
                 <Tooltip title={`${isLoggedIn ? 'Sign Out' : 'Sign In'}`} enterDelay={3000}>
                     <div className={`sign-buttons navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={signHandler}>
                         {isLoggedIn ? <RiLogoutBoxRLine className={`sign-icon${isDarkMode?'-dark':''} icon`}/> : <RiLoginBoxLine className={`sign-icon${isDarkMode?'-dark':''} icon`}/>}

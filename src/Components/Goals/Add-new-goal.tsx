@@ -141,16 +141,20 @@ const AddNewGoal:React.FC = () => {
                     </Tooltip>}
                 </div>
                 <div className='add-new-goal-datetime'>
-                    <DatePicker 
-                        inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                        value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
-                    />
-                    {(goalInputs.habitMode || detailedGoal?.habitId) && <TimePicker 
-                        inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                        value={goalInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
-                    />}
+                    <div className='add-new-goal-datepicker-wrapper'>
+                        <DatePicker 
+                            inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
+                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                            value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
+                        />
+                    </div>
+                    {(goalInputs.habitMode || detailedGoal?.habitId) && <div className='add-new-goal-timepicker-wrapper'>
+                        <TimePicker 
+                            inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                            value={goalInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
+                        />
+                    </div>}
                 </div>
                 <div className={`add-new-goal-alarm-switches`}>
                     {(goalInputs.datePickerUsed || detailedGoal) && <FormGroup>

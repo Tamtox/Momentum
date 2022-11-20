@@ -52,7 +52,7 @@ const useTodoHooks = () => {
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id,status:status ==="Pending" ? "Complete" : "Pending",dateCompleted}
             })
-            dispatch(todoActions.changeToDoStatus({_id,dateCompleted}))
+            dispatch(todoActions.changeToDoStatus({_id,dateCompleted}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
@@ -106,7 +106,7 @@ const useTodoHooks = () => {
                     dispatch(scheduleActions.addScheduleItem(scheduleItem));
                 }
             } else if (scheduleAction === "update") {
-                dispatch(scheduleActions.updateScheduleItem(newTodo));
+                dispatch(scheduleActions.updateScheduleItem({newTodo,oldTodo}));
             } else if (scheduleAction === "delete") {
                 dispatch(scheduleActions.deleteScheduleItem(newTodo));
             }

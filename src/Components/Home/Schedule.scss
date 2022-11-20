@@ -9,14 +9,15 @@
         font-size: 1.5rem;
     }
     .schedule-date{
-        @include widthAndHeight(calc(min(100%, 40rem)),calc(min(100%,100%))); 
+        @include widthAndHeight(calc(min(100%, 50rem)),calc(min(100%,100%))); 
         @include flex(space-around,center);
         margin: auto;
         padding: 0.5rem;
         gap: 1rem;
-        .schedule-date-picker{}
+        .schedule-datepicker-wrapper{
+            transform: translateY(-2px);
+        }
         .schedule-date-button{
-            width: 10rem;
             @include flex;
             gap: 0.2rem;
         }

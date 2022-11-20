@@ -143,16 +143,20 @@ const AddNewHabit:React.FC = () => {
                     </Tooltip> }
                 </div>
                 <div className='add-new-habit-datetime'>
-                    {(habitInputs.goalMode || detailedHabit?.goalId) && <DatePicker 
-                        inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                        value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
-                    />}
-                    <TimePicker 
-                        inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
-                        value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
-                    />
+                    {(habitInputs.goalMode || detailedHabit?.goalId) && <div className='add-new-habit-datepicker-wrapper'>
+                        <DatePicker 
+                            inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
+                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                            value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
+                        />
+                    </div>}
+                    <div className='add-new-habit-timepicker-wrapper'>
+                        <TimePicker 
+                            inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
+                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
+                            value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
+                        />
+                    </div>
                 </div>
                 <div className={`add-new-habit-alarm-switches`}>
                     {(habitInputs.timePickerUsed || detailedHabit) && <FormGroup>

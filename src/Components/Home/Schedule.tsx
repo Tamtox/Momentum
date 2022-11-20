@@ -42,11 +42,13 @@ const Schedule:React.FC = () => {
                     <CgArrowLeft className='schedule-date-icon icon-interactive nav-icon' />
                     <Typography className='schedule-date-button-text'>Prev Day</Typography>
                 </Button>   
-                <DatePicker 
-                inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
-                renderInput={(props:any) => <TextField size='small' className={`focus date-picker schedule-date-picker`}  {...props} />}
-                value={selectedDate} onChange={(newDate:Date|null)=>{selectScheduleDate(newDate)}}
-                />
+                <div className='schedule-datepicker-wrapper'>
+                    <DatePicker 
+                        inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
+                        renderInput={(props:any) => <TextField size='small' className={`focus date-picker schedule-date-picker`}  {...props} />}
+                        value={selectedDate} onChange={(newDate:Date|null)=>{selectScheduleDate(newDate)}}
+                    />
+                </div>
                 <Button variant='outlined' className={`button schedule-date-button`} onClick={()=>{selectScheduleDate(new Date(selectedDate.getTime() + 86400000))}}>
                     <Typography className='schedule-date-button-text'>Next Day</Typography>
                     <CgArrowRight className='schedule-date-icon icon-interactive nav-icon' />
