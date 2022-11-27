@@ -2,7 +2,17 @@ import {createSlice} from '@reduxjs/toolkit';
 import type {ScheduleInterface} from "../Misc/Interfaces";
 
 const currentDate = new Date().getDate() - 1;
-const monthStart = new Date().setHours(0,0,0,0) - currentDate * 86400000;
+
+const generateMonthHash = (date:Date = new Date()) => {
+    const monthStart:Date = new Date(date.getFullYear(),date.getMonth(),date.getDate() - (date.getDate()  - 1),0,0,0,0);
+    const monthEnd:Date = new Date(new Date(date.getFullYear(),date.getMonth() + 1,1,0,0,0,0).getTime() - 1);
+    const month:{[date:string]:ScheduleInterface[]} = {}
+    for (let i = monthStart.getDate(); i < monthEnd.getDate() + 1; i++) {
+        const monthDate:Date = new Date(date.getFullYear(),date.getMonth(),i,0,0,0,0);
+        month[monthDate.toLocaleDateString('en-Gb')] = []
+    }
+    return month
+}
 
 interface ScheduleSchema {
     scheduleLoading:boolean,
