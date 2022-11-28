@@ -60,41 +60,46 @@ const scheduleSlice = createSlice({
         updateScheduleItem(state,action) {
             const newDate = new Date(action.payload.newTodo.targetDate).toLocaleDateString('en-Gb');
             const oldDate = new Date(action.payload.oldTodo.targetDate).toLocaleDateString('en-Gb');
+            const scheduleItem:ScheduleInterface = {date:'',time:'',parentTitle:'',alarmUsed:false,isArchived:false,parentId:'',parentType:'',status:'',dateCompleted:'',utcOffset:'',_id:''};
             if (state.scheduleList[oldDate]) {
                 state.scheduleList[oldDate] = state.scheduleList[oldDate].filter((item:ScheduleInterface)=>{
+                    if (item.parentId === action.payload.oldTodo._id) {
+                        Object.assign(scheduleItem, item)
+                    }
                     return item.parentId !== action.payload.oldTodo._id;
                 })
             }
-            state.scheduleList[newDate] = state.scheduleList[newDate].map((item:ScheduleInterface)=>{
-                if (action.payload.newTodo._id === item.parentId) {
-                    item.date = action.payload.newTodo.targetDate
-                    item.time = action.payload.newTodo.time
-                    item.parentTitle = action.payload.newTodo.title
-                    item.alarmUsed = action.payload.newTodo.alarmUsed
-                    item.isArchived = action.payload.newTodo.isArchived
-                }
-                return item;
-            })
+            if (state.scheduleList[newDate]) {
+                scheduleItem.date = action.payload.newTodo.targetDate
+                scheduleItem.time = action.payload.newTodo.time
+                scheduleItem.parentTitle = action.payload.newTodo.title
+                scheduleItem.alarmUsed = action.payload.newTodo.alarmUsed
+                scheduleItem.isArchived = action.payload.newTodo.isArchived
+                state.scheduleList[newDate].push(scheduleItem)
+            }
         },  
         updateScheduleItemStatus(state,action) {
             const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
-            state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
-                if (action.payload._id === item.parentId) {
-                    item.dateCompleted = action.payload.dateCompleted;
-                    item.status = action.payload.dateCompleted ? "Complete" : "Pending";
-                }
-                return item;
-            })
+            if (state.scheduleList[date]) {
+                state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
+                    if (action.payload._id === item.parentId) {
+                        item.dateCompleted = action.payload.dateCompleted;
+                        item.status = action.payload.dateCompleted ? "Complete" : "Pending";
+                    }
+                    return item;
+                })
+            }
         },  
         setScheduleList(state,action) {
-            const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
-            state.scheduleList[date] = action.payload.scheduleList;
+            const date:Date = new Date(action.payload.date);
+            state.scheduleList = generateMonth(date);
+            state.scheduleList[date.toLocaleDateString('en-Gb')] = action.payload.scheduleList;
             state.scheduleListLoaded = true;
             state.scheduleDate = action.payload.date
         },
         clearScheduleList(state) {
             state.scheduleDate = new Date().toISOString();
-            state.scheduleList = {};
+            state.scheduleList = generateMonth(new Date());
             state.scheduleListLoaded = false;
         }
     }
