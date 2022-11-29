@@ -79,14 +79,6 @@ const useTodoHooks = () => {
     }
     // Update or add todo
     const updateTodo = async (newTodo:TodoInterface,oldTodo:TodoInterface) => {
-        // Compare old and new items and send only updated fields
-        // const updatedFields:TodoInterface = {...newTodo};
-        // Object.keys(newTodo).forEach((key:string)=> {
-        //     const key1 = key as keyof TodoInterface;
-        //     if (key1 !== "_id" && (newTodo[key1] === oldTodo[key1])) {
-        //         delete updatedFields[key1];
-        //     }
-        // })
         // Determine the schedule action
         let scheduleAction:string|null = determineScheduleAction(newTodo.targetDate,oldTodo.targetDate);
         try {
