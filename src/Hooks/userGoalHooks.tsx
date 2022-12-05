@@ -65,6 +65,7 @@ const useGoalHooks = () => {
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         let goalScheduleAction:string|null = determineScheduleAction(newGoal.targetDate,oldGoal?.targetDate || null);
         try {
+            // Add or update goal
             const newGoalResponse:{data:{goalId:string,scheduleId:string}} = await axios.request({
                 method:!!oldGoal ? 'PATCH' : 'POST',
                 url:`${httpAddress}/goals/${!!oldGoal ? 'updateGoal' : 'addNewGoal'}`,
@@ -79,7 +80,7 @@ const useGoalHooks = () => {
                 if (goalScheduleAction === "create") {
                     const {targetDate,title,alarmUsed,creationUTCOffset} = newGoal;
                     if (targetDate) {
-                        const scheduleItem = await createPairedScheduleItem(null,targetDate,title,'todo',newGoal._id,alarmUsed,creationUTCOffset,goalScheduleId);  
+                        const scheduleItem = await createPairedScheduleItem(null,targetDate,title,'goal',newGoal._id,alarmUsed,creationUTCOffset,goalScheduleId);  
                         dispatch(scheduleActions.addScheduleItem(scheduleItem));
                     }
                 } else if (goalScheduleAction === "update") {
@@ -90,10 +91,11 @@ const useGoalHooks = () => {
             } else {
                 if (newGoal.targetDate) {
                     const {targetDate,title,alarmUsed,creationUTCOffset} = newGoal;
-                    const goalScheduleItem = createPairedScheduleItem(null,targetDate,title,"goal",goalId,alarmUsed,creationUTCOffset,goalScheduleId);
-                    dispatch(scheduleActions.addScheduleItem(goalScheduleItem));
+                    const scheduleItem = createPairedScheduleItem(null,targetDate,title,"goal",goalId,alarmUsed,creationUTCOffset,goalScheduleId);
+                    dispatch(scheduleActions.addScheduleItem(scheduleItem));
                 }
             }
+            // Add or update habit
             if(newHabit) {
                 const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string,newEntries:{}}} = await axios.request({
                     method:newGoal.habitId ? 'PATCH' : 'POST',

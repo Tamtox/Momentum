@@ -54,6 +54,7 @@ const useHabitHooks = () => {
         let goalScheduleAction:string|null = null 
         if (newGoal) goalScheduleAction = determineScheduleAction(newGoal.targetDate,oldGoal?.targetDate || null);
         try {
+            // Add or update habit and habit schedule
             const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string,newEntries:{}}} = await axios.request({
                 method:oldHabit ? 'PATCH' : 'POST',
                 url:`${httpAddress}/habits/${oldHabit ? 'updateHabit' : 'addNewHabit'}`,
@@ -63,7 +64,8 @@ const useHabitHooks = () => {
             const {scheduleId:habitScheduleId,newEntries} = newHabitResponse.data;
             const habitId = oldHabit ? newHabit._id : newHabitResponse.data.newHabit._id;
             oldHabit ? newHabit.entries = newEntries : newHabit = newHabitResponse.data.newHabit;
-            if(newGoal) {
+            if (newGoal) {
+                // Add or update goal
                 const newGoalResponse:{data:{goalId:string,scheduleId:string}}  = await axios.request({
                     method:newHabit.goalId ? 'PATCH' : 'POST',
                     url:`${httpAddress}/goals/${newHabit.goalId ?  'updateGoal' : 'addNewGoal'}`,
@@ -89,8 +91,8 @@ const useHabitHooks = () => {
                 } else if (goalScheduleAction) {
                     if (newGoal.targetDate) {
                         const {targetDate,title,alarmUsed,creationUTCOffset} = newGoal;
-                        const goalScheduleItem = createPairedScheduleItem(null,targetDate,title,"goal",goalId,alarmUsed,creationUTCOffset,goalScheduleId);
-                        dispatch(scheduleActions.addScheduleItem(goalScheduleItem));
+                        const scheduleItem = createPairedScheduleItem(null,targetDate,title,"goal",goalId,alarmUsed,creationUTCOffset,goalScheduleId);
+                        dispatch(scheduleActions.addScheduleItem(scheduleItem));
                     }
                 }
                 // Update goal and habit ids
@@ -156,7 +158,7 @@ const useHabitHooks = () => {
                 data:{...newEntry},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            if(newEntry._id === '') {
+            if (newEntry._id === '') {
                 newEntry._id = habitResponse.data._id;
             }
             dispatch(habitsActions.changeHabitStatus({newEntry,weekday}));
