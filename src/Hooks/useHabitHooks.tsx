@@ -78,7 +78,7 @@ const useHabitHooks = () => {
                     if (goalScheduleAction === "create") {
                         const {targetDate,title,alarmUsed,creationUTCOffset} = newGoal;
                         if (targetDate) {
-                            const scheduleItem = await createPairedScheduleItem(null,targetDate,title,'todo',newGoal._id,alarmUsed,creationUTCOffset,goalScheduleId);  
+                            const scheduleItem = await createPairedScheduleItem(null,targetDate,title,'goal',newGoal._id,alarmUsed,creationUTCOffset,goalScheduleId);  
                             dispatch(scheduleActions.addScheduleItem(scheduleItem));
                         }
                     } else if (goalScheduleAction === "update") {

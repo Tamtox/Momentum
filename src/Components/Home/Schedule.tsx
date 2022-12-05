@@ -22,7 +22,7 @@ const Schedule:React.FC = () => {
     const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
-     // Select Date for Schedule
+    // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
         newDate = newDate || new Date ();

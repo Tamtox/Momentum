@@ -104,7 +104,7 @@ const useGoalHooks = () => {
                 const {scheduleId:habitScheduleId,newEntries} = newHabitResponse.data;
                 const habitId = !!oldHabit ? newHabit._id : newHabitResponse.data.newHabit._id;
                 !!oldHabit ? newHabit.entries = newEntries : newHabit = newHabitResponse.data.newHabit;
-                 // Add or update habit schedule item
+                // Add or update habit schedule item
                 // Update goal and habit ids
                 if(!newGoal.habitId) {
                     await axios.request({
