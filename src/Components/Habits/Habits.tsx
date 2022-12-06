@@ -15,7 +15,7 @@ import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {HabitInterface,HabitEntryInterface} from '../../Misc/Interfaces';
 
-const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
+const filterList = (list:HabitInterface[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
         if (sortQuery === 'dateDesc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
@@ -81,15 +81,15 @@ const Habits:React.FC = () => {
                         <Typography className='habit-date-button-text'>Prev Week</Typography>
                     </Button> 
                     <DatePicker 
-                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                    value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}}
+                        inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
+                        renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
+                        value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}}
                     />
-                    to
+                    -
                     <DatePicker 
-                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
-                    renderInput={(props:any) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                    value={selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
+                        inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
+                        renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
+                        value={selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
                     />
                     <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
                         <Typography className='habit-date-button-text'>Next Week</Typography>
@@ -133,8 +133,8 @@ const Habits:React.FC = () => {
                                         } else {
                                             return null;
                                         }
-                            })}
-                            </div>
+                                    })}
+                                </div>
                             }
                         </Card>
                     )

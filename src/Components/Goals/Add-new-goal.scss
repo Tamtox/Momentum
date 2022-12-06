@@ -6,20 +6,21 @@
     flex-direction: column;
     border-radius: 5px;
     padding: 1rem;
-    gap: 1.5rem;
+    gap: 2rem;
     .add-new-goal-controls{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        @include flex(space-around,center);
-        gap: 1rem;       
+        @include flex(space-between,center);
+        gap: 1rem;      
         .archive-goal{
-            grid-area: 1 / 1 / span 1 / span 1;
+            justify-self: start;
+            @include flex(center,center);
             .archive-goal-icon{
                 font-size: 2rem;
                 color: orange;
             }
-        }
+        }   
         .delete-goal{
-            grid-area: 1 / 3 / span 1 / span 1;
+            @include flex(center,center);
             .delete-goal-icon{
                 font-size: 2rem;
                 color: red;
@@ -33,8 +34,12 @@
     .add-new-goal-title{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
     }
+    .add-new-goal-paired-habit{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+    }
     .add-new-goal-buttons{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
         @include flex(space-around,center);
+        padding: 1rem;
     }
 }

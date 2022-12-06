@@ -22,12 +22,12 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
         navigate(`/${props.mode}${(props.mode === 'goal' || props.mode === 'habit') && 's'}${sortQueryString}${searchQueryString}`);
     }
     const [queries,setNewQueries] = useState({sortQuery:sortQuery || '',searchQuery:searchQuery || ''}) ;
-    const sortQueryHandler = (e:any) => {
+    const sortQueryHandler = (newSortQuery:string) => {
         setNewQueries((prevState)=>({
             ...prevState,
-            sortQuery:e.target.value
+            sortQuery:newSortQuery
         }))
-        setQueries(e.target.value,queries.searchQuery);
+        setQueries(newSortQuery,queries.searchQuery);
     }
     const searchQueryHandler = (searchString:string) => {
         setNewQueries((prevState)=>({
@@ -40,7 +40,7 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
         <div className={`toolbar${isDarkMode?'-dark':''} scale-in`}>
             <FormControl className='toolbar-sort select' size='small' >
                 <InputLabel id="toolbar-sort-label">Sort</InputLabel>
-                <Select labelId="toolbar-sort-label" value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
+                <Select labelId="toolbar-sort-label" value={queries.sortQuery} onChange={(event)=>{sortQueryHandler(event.target.value)}} size='small' label="Sort">
                     <MenuItem value="">All Items</MenuItem>
                     <MenuItem value="dateAsc">Creation Date Ascending</MenuItem>
                     <MenuItem value="dateDesc">Creation Date Descending</MenuItem>

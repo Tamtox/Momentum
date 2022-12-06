@@ -89,8 +89,8 @@ const AddNewTodo:React.FC = () => {
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
                 <div className={`add-new-todo-controls`}>
                     {detailedTodo && <Tooltip title="Archive Item">
-                        <div>
-                            <BsArchive className={`icon-interactive archive-todo`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
+                        <div className='archive-todo'>
+                            <BsArchive className={`icon-interactive archive-todo-icon`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
                         </div>
                     </Tooltip>}
                     <div className='add-new-todo-datepicker-wrapper'>
@@ -108,8 +108,8 @@ const AddNewTodo:React.FC = () => {
                         />
                     </div>}
                     {detailedTodo && <Tooltip title="Delete Item">
-                        <div>
-                            <BsTrash className={`icon-interactive delete-todo`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>
+                        <div className='delete-todo'>
+                            <BsTrash className={`icon-interactive delete-todo-icon`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>
                         </div>
                     </Tooltip>}
                 </div>

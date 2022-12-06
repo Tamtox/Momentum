@@ -4,7 +4,7 @@ import './Add-new-goal.scss';
 import React,{useState,useRef} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip} from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Autocomplete } from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 // Components
@@ -104,6 +104,9 @@ const AddNewGoal:React.FC = () => {
                     </FormGroup>}
                 </div>
                 <TextField value={goalInputs.goalTitle} onChange={(event)=>{goalInputsHandler(event.target.value,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
+                <div className={`add-new-goal-paired-habit`}>
+                <Autocomplete getOptionLabel={(option) => option.title} disablePortal options={habitList}  renderInput={(params) => <TextField {...params} label="Paired Habit" />}  />
+                </div>
                 <div className={`add-new-goal-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedGoal ? 'Update' : 'Submit'}</Button>

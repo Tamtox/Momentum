@@ -9,17 +9,15 @@
     gap: 1.5rem;
     .add-new-habit-controls{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        @include flex(space-around,center);
+        @include flex(space-between,center);
         gap: 1rem;  
         .archive-habit{
-            grid-area: 1 / 1 / span 1 / span 1;
             .archive-habit-icon{
                 font-size: 2rem;
                 color: orange;
             }
         }
         .delete-habit{
-            grid-area: 1 / 3 / span 1 / span 1;
             .delete-habit-icon{
                 font-size: 2rem;
                 color: red;
@@ -49,5 +47,6 @@
     .add-new-habit-buttons{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
         @include flex(space-around,center);
+        padding: 1rem;
     }
 } 
