@@ -2,16 +2,16 @@
 import './Add-new-habit.scss';
 //Dependencies
 import React,{ useState,useRef } from 'react';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch} from '@mui/material';
-import { DatePicker,TimePicker } from '@mui/x-date-pickers';
-import {BsTrash,BsArchive} from 'react-icons/bs';
+import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch } from '@mui/material';
+import { TimePicker } from '@mui/x-date-pickers';
+import { BsTrash,BsArchive } from 'react-icons/bs';
 //Components
 import { RootState } from "../../Store/Store";
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import useGoalHooks from '../../Hooks/userGoalHooks';
-import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
+import type { GoalInterface,HabitInterface } from '../../Misc/Interfaces';
 
 const AddNewHabit:React.FC = () => {
     const location = useLocation();
@@ -21,7 +21,7 @@ const AddNewHabit:React.FC = () => {
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const id = location.pathname.split('/')[2];
     const detailedHabit = habitList.find((habititem)=> habititem._id === id);      
-     // Close menu if click is on backdrop
+    // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if(event.target === backdropRef.current) {
@@ -35,16 +35,9 @@ const AddNewHabit:React.FC = () => {
     const habitTime = detailedHabit?.time ? detailedHabit?.time.split(':') : null ;
     const [habitInputs,setHabitInputs] = useState({
         habitTitle:detailedHabit?.title || '',
-        goalTitle:detailedGoal?.title || '',
-        timePickerUsed:false,
-        selectedTime: habitTime ? new Date(new Date().setHours(Number(habitTime[0]),Number(habitTime[1]))) : new Date(),
-        datePickerUsed:false,
-        selectedDate:new Date(detailedGoal?.targetDate || new Date()),
+        selectedTime: habitTime ? new Date(new Date().setHours(Number(habitTime[0]),Number(habitTime[1]))) : null,
         habitCreationUTCOffset:detailedHabit?.creationUTCOffset || new Date().getTimezoneOffset(),
-        goalCreationUTCOffset:detailedGoal?.creationUTCOffset || new Date().getTimezoneOffset(),
         habitAlarmUsed:detailedHabit?.alarmUsed || false,
-        goalAlarmUsed:detailedGoal?.alarmUsed || false,
-        goalMode:false,
     })
     const habitInputsHandler = (newValue:string,input:string) => {
         setHabitInputs((prevState)=>({
@@ -52,23 +45,11 @@ const AddNewHabit:React.FC = () => {
             [input]:newValue
         }))
     }
-    const goalAlarmSwitchHandler = () => {
-        setHabitInputs((prevState)=>({
-            ...prevState,
-            goalAlarmUsed:!prevState.goalAlarmUsed
-        }));
-    }
     const habitAlarmSwitchHandler = () => {
         setHabitInputs((prevState)=>({
             ...prevState,
             habitAlarmUsed:!prevState.habitAlarmUsed
         }));
-    }
-    const goalModeHandler = () => {
-        setHabitInputs((prevState)=>({
-            ...prevState,
-            goalMode:!habitInputs.goalMode
-        }))
     }
     const habitTimePick =(newTime:Date | null) => {
         const newTimeFixed = new Date(newTime || new Date());
@@ -76,14 +57,6 @@ const AddNewHabit:React.FC = () => {
             ...prevState,
             timePickerUsed:true,
             selectedTime:newTimeFixed
-        }))
-    }
-    const goalDatePick = (newDate:Date | null) => {
-        const newDateFixed = new Date(newDate || new Date());
-        setHabitInputs((prevState)=>({
-            ...prevState,
-            datePickerUsed:true,
-            selectedDate:newDateFixed
         }))
     }
     // Set Active weekdays
@@ -96,31 +69,18 @@ const AddNewHabit:React.FC = () => {
         let activeDays = Object.values(weekdays).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:weekdays;
         const newHabit:HabitInterface = {
             title: habitInputs.habitTitle ,
-            time: habitInputs.timePickerUsed ? new Date(new Date(habitInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedHabit?.time || null),
+            time: habitInputs.selectedTime ? new Date(new Date(habitInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedHabit?.time || null),
             creationDate:detailedHabit?.creationDate || new Date().toISOString(),
             isArchived:detailedHabit?.isArchived || false,
             weekdays:activeDays,
             entries: detailedHabit?.entries || {1:null,2:null,3:null,4:null,5:null,6:null,0:null},
             goalId:detailedHabit?.goalId || null, 
-            goalTargetDate:habitInputs.datePickerUsed ? new Date(habitInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedHabit?.goalTargetDate || null) ,
+            goalTargetDate:detailedHabit?.goalTargetDate || null ,
             creationUTCOffset: habitInputs.habitCreationUTCOffset,
             alarmUsed:habitInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''
         }
-        const newGoal:GoalInterface = {
-            title:habitInputs.goalTitle,
-            creationDate:detailedGoal?.creationDate || new Date().toISOString(),
-            targetDate:habitInputs.datePickerUsed ? new Date(habitInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedGoal?.targetDate || null),
-            status:detailedGoal?.status || 'Pending',
-            dateCompleted: detailedGoal?.dateCompleted || '',
-            isArchived: detailedGoal?.isArchived || false,
-            habitId:detailedGoal?.habitId  || null ,
-            creationUTCOffset: habitInputs.goalCreationUTCOffset,
-            alarmUsed:habitInputs.goalAlarmUsed,
-            _id: detailedGoal?._id || ''
-        }
-        const newGoalArgument = (detailedGoal || habitInputs.goalMode) ? newGoal : null;
-        habitHooks.updateHabit(newHabit,detailedHabit,newGoalArgument,detailedGoal);
+        detailedHabit ? habitHooks.updateHabit(newHabit,detailedHabit) : habitHooks.addHabit(newHabit);
         // Return to habits
         navigate("/habits");
     }
@@ -133,23 +93,6 @@ const AddNewHabit:React.FC = () => {
                             <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitHooks.toggleHabitArchiveStatus(detailedHabit!);detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal!);navigate("/habits")}}/>
                         </div>
                     </Tooltip> }
-                    {detailedHabit?.goalId ? null : <FormGroup className={`add-new-habit-switch`}>
-                        <FormControlLabel control={<Switch onChange={goalModeHandler} />} label="Add paired goal" />
-                    </FormGroup>}
-                    {detailedHabit && <Tooltip title="Delete Item">
-                        <div className='delete-habit'>
-                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(detailedHabit!._id,detailedHabit!.goalId);navigate("/habits")}}/>
-                        </div>
-                    </Tooltip> }
-                </div>
-                <div className='add-new-habit-datetime'>
-                    {(habitInputs.goalMode || detailedHabit?.goalId) && <div className='add-new-habit-datepicker-wrapper'>
-                        <DatePicker 
-                            inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
-                            value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
-                        />
-                    </div>}
                     <div className='add-new-habit-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
@@ -157,17 +100,18 @@ const AddNewHabit:React.FC = () => {
                             value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
                         />
                     </div>
+                    {detailedHabit && <Tooltip title="Delete Item">
+                        <div className='delete-habit'>
+                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(detailedHabit!._id,detailedHabit!.goalId);navigate("/habits")}}/>
+                        </div>
+                    </Tooltip> }
                 </div>
                 <div className={`add-new-habit-alarm-switches`}>
-                    {(habitInputs.timePickerUsed || detailedHabit) && <FormGroup>
+                    {(habitInputs.selectedTime) && <FormGroup>
                         <FormControlLabel control={<Switch checked={habitInputs.habitAlarmUsed} onChange={habitAlarmSwitchHandler} />} label="Habit alarm" />
-                    </FormGroup>}
-                    {(habitInputs.datePickerUsed || detailedGoal) && <FormGroup>
-                        <FormControlLabel control={<Switch checked={habitInputs.goalAlarmUsed} onChange={goalAlarmSwitchHandler} />} label="Goal alarm" />
                     </FormGroup>}
                 </div>
                 <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event.target.value,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
-                {(habitInputs.goalMode || detailedHabit?.goalId) && <TextField value={habitInputs.goalTitle} onChange={(event)=>{habitInputsHandler(event.target.value,'goalTitle')}} label='Goal Title'  className="add-new-habit-goal-title" multiline required />}
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
                         <Tooltip enterDelay={300} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>

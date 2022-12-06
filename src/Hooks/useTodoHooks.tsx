@@ -67,12 +67,13 @@ const useTodoHooks = () => {
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {todoId,scheduleId} = newTodoResponse.data;
+            newTodo._id = todoId
             if (newTodo.targetDate) {
-                const {targetTime,targetDate,title,alarmUsed,creationUTCOffset} = newTodo;
-                const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',todoId,alarmUsed,creationUTCOffset,scheduleId);  
+                const {targetTime,targetDate,title,alarmUsed,creationUTCOffset,_id} = newTodo;
+                const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',_id,alarmUsed,creationUTCOffset,scheduleId);  
                 dispatch(scheduleActions.addScheduleItem(scheduleItem));
             }
-            dispatch(todoActions.addToDo({...newTodo,_id:todoId}));    
+            dispatch(todoActions.addToDo(newTodo));    
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
@@ -85,20 +86,20 @@ const useTodoHooks = () => {
             const updateTodoResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/todo/updateTodo`,
-                data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset(),scheduleAction},
+                data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {scheduleId} = updateTodoResponse.data;
             dispatch(todoActions.updateToDo(newTodo));
             // Check if schedule item needs to be added, deleted or updated  
             if (scheduleAction === "create") {
-                const {targetTime,targetDate,title,alarmUsed,creationUTCOffset} = newTodo;
+                const {targetTime,targetDate,title,alarmUsed,creationUTCOffset,_id} = newTodo;
                 if (targetDate) {
-                    const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',newTodo._id,alarmUsed,creationUTCOffset,scheduleId);  
+                    const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',_id,alarmUsed,creationUTCOffset,scheduleId);  
                     dispatch(scheduleActions.addScheduleItem(scheduleItem));
                 }
             } else if (scheduleAction === "update") {
-                dispatch(scheduleActions.updateScheduleItem({newTodo,oldTodo}));
+                dispatch(scheduleActions.updateScheduleItem({newItem:newTodo,oldItem:oldTodo}));
             } else if (scheduleAction === "delete") {
                 dispatch(scheduleActions.deleteScheduleItem(newTodo));
             }

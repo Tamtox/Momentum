@@ -58,23 +58,23 @@ const scheduleSlice = createSlice({
             }
         },
         updateScheduleItem(state,action) {
-            const newDate = new Date(action.payload.newTodo.targetDate).toLocaleDateString('en-Gb');
-            const oldDate = new Date(action.payload.oldTodo.targetDate).toLocaleDateString('en-Gb');
+            const newDate = new Date(action.payload.newItem.targetDate).toLocaleDateString('en-Gb');
+            const oldDate = new Date(action.payload.oldItem.targetDate).toLocaleDateString('en-Gb');
             const scheduleItem:ScheduleInterface = {date:'',time:'',parentTitle:'',alarmUsed:false,isArchived:false,parentId:'',parentType:'',status:'',dateCompleted:'',utcOffset:'',_id:''};
             if (state.scheduleList[oldDate]) {
                 state.scheduleList[oldDate] = state.scheduleList[oldDate].filter((item:ScheduleInterface)=>{
-                    if (item.parentId === action.payload.oldTodo._id) {
+                    if (item.parentId === action.payload.oldItem._id) {
                         Object.assign(scheduleItem, item)
                     }
-                    return item.parentId !== action.payload.oldTodo._id;
+                    return item.parentId !== action.payload.oldItem._id;
                 })
             }
             if (state.scheduleList[newDate]) {
-                scheduleItem.date = action.payload.newTodo.targetDate
-                scheduleItem.time = action.payload.newTodo.time
-                scheduleItem.parentTitle = action.payload.newTodo.title
-                scheduleItem.alarmUsed = action.payload.newTodo.alarmUsed
-                scheduleItem.isArchived = action.payload.newTodo.isArchived
+                scheduleItem.date = action.payload.newItem.targetDate
+                scheduleItem.time = action.payload.newItem.time
+                scheduleItem.parentTitle = action.payload.newItem.title
+                scheduleItem.alarmUsed = action.payload.newItem.alarmUsed
+                scheduleItem.isArchived = action.payload.newItem.isArchived
                 state.scheduleList[newDate].push(scheduleItem)
             }
         },  

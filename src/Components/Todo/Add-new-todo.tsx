@@ -10,7 +10,7 @@ import {useSelector} from 'react-redux';
 import React,{useState,useRef} from 'react';
 import { TextField,Button,Card,Tooltip,FormControlLabel,FormGroup,Switch} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/x-date-pickers';
-import {BsTrash,BsArchive} from 'react-icons/bs';
+import { BsTrash,BsArchive } from 'react-icons/bs';
 import { useLocation,useNavigate } from 'react-router-dom';
 
 const AddNewTodo:React.FC = () => {
@@ -32,10 +32,8 @@ const AddNewTodo:React.FC = () => {
     const [todoInputs,setTodoInputs] = useState({
         todoTitle:detailedTodo?.title || '',
         todoDescription:detailedTodo?.description || '',
-        datePickerUsed:false,
-        selectedDate:new Date(detailedTodo?.targetDate || new Date()),
-        timePickerUsed:false,
-        selectedTime:todoTime ? new Date(new Date().setHours(Number(todoTime[0]),Number(todoTime[1]))) : new Date(),
+        selectedDate:detailedTodo?.targetDate ? new Date(detailedTodo.targetDate) : null,
+        selectedTime:todoTime ? new Date(new Date().setHours(Number(todoTime[0]),Number(todoTime[1]))) : null,
         creationUTCOffset:detailedTodo?.creationUTCOffset || new Date().getTimezoneOffset(),
         alarmUsed: detailedTodo?.alarmUsed || false
     })
@@ -74,8 +72,8 @@ const AddNewTodo:React.FC = () => {
             title:todoInputs.todoTitle,
             description:todoInputs.todoDescription,
             creationDate:detailedTodo?.creationDate || new Date().toISOString(),
-            targetDate:todoInputs.datePickerUsed ? todoInputs.selectedDate.toISOString() : (detailedTodo?.targetDate || null),
-            targetTime:todoInputs.timePickerUsed ? new Date(new Date(todoInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedTodo?.targetTime || null),
+            targetDate:todoInputs.selectedDate ? todoInputs.selectedDate.toISOString() : (detailedTodo?.targetDate || null),
+            targetTime:todoInputs.selectedTime ? new Date(new Date(todoInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedTodo?.targetTime || null),
             status:detailedTodo?.status || 'Pending',
             dateCompleted:detailedTodo?.dateCompleted || null,
             isArchived:detailedTodo?.isArchived || false,
@@ -102,7 +100,7 @@ const AddNewTodo:React.FC = () => {
                             value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
                         />
                     </div>
-                    {(todoInputs.datePickerUsed || detailedTodo?.targetTime) && <div className='add-new-todo-timepicker-wrapper'>
+                    {(todoInputs.selectedDate) && <div className='add-new-todo-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
@@ -115,7 +113,7 @@ const AddNewTodo:React.FC = () => {
                         </div>
                     </Tooltip>}
                 </div>
-                {(todoInputs.datePickerUsed || detailedTodo) && <FormGroup className='add-new-todo-alarm-switch'>
+                {(todoInputs.selectedDate && todoInputs.selectedTime) && <FormGroup className='add-new-todo-alarm-switch'>
                     <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />
                 </FormGroup>}
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event.target.value,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
