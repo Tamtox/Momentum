@@ -23,7 +23,7 @@ const AddNewTodo:React.FC = () => {
     const detailedTodo:TodoInterface | undefined = todoList.find((todoitem)=> todoitem._id === id);
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
-    const backdropClickHandler = (event:any) => {
+    const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if(event.target === backdropRef.current) {
             navigate("/todo");
         }   
@@ -39,10 +39,10 @@ const AddNewTodo:React.FC = () => {
         creationUTCOffset:detailedTodo?.creationUTCOffset || new Date().getTimezoneOffset(),
         alarmUsed: detailedTodo?.alarmUsed || false
     })
-    const todoInputsHandler = (e:any,input:string) => {
+    const todoInputsHandler = (newValue:string,input:string) => {
         setTodoInputs((prevState)=>({
             ...prevState,
-            [input]:e.target.value
+            [input]:newValue
         }));
     }
     const alarmSwitchHandler = () => {
@@ -87,7 +87,7 @@ const AddNewTodo:React.FC = () => {
         navigate("/todo");
     }
     return(
-        <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={backdropClickHandler}>
+        <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
                 <div className={`add-new-todo-controls`}>
                     {detailedTodo && <Tooltip title="Archive Item">
@@ -98,14 +98,14 @@ const AddNewTodo:React.FC = () => {
                     <div className='add-new-todo-datepicker-wrapper'>
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
-                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                             value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
                         />
                     </div>
                     {(todoInputs.datePickerUsed || detailedTodo?.targetTime) && <div className='add-new-todo-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
                             value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
                         />
                     </div>}
@@ -118,8 +118,8 @@ const AddNewTodo:React.FC = () => {
                 {(todoInputs.datePickerUsed || detailedTodo) && <FormGroup className='add-new-todo-alarm-switch'>
                     <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />
                 </FormGroup>}
-                <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
-                <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
+                <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event.target.value,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
+                <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event.target.value,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
                 <div className={`add-new-todo-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedTodo?'Update':'Submit'}</Button>

@@ -23,7 +23,7 @@ const AddNewHabit:React.FC = () => {
     const detailedHabit = habitList.find((habititem)=> habititem._id === id);      
      // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
-    const backdropClickHandler = (event:any) => {
+    const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if(event.target === backdropRef.current) {
             navigate(`${location.pathname}/habits`)
         }   
@@ -46,10 +46,10 @@ const AddNewHabit:React.FC = () => {
         goalAlarmUsed:detailedGoal?.alarmUsed || false,
         goalMode:false,
     })
-    const habitInputsHandler = (e:any,input:string) => {
+    const habitInputsHandler = (newValue:string,input:string) => {
         setHabitInputs((prevState)=>({
             ...prevState,
-            [input]:e.target.value
+            [input]:newValue
         }))
     }
     const goalAlarmSwitchHandler = () => {
@@ -91,7 +91,7 @@ const AddNewHabit:React.FC = () => {
     const weekdaysLabels:{[key:number]:string} = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',0:'Sun'};
     const [weekdays,setWeekdays] = useState<{[key:number]:boolean}>(detailedHabit?.weekdays || {1:false,2:false,3:false,4:false,5:false,6:false,0:false});
     // Update or add habit
-    const addOrUpdateHabit = async (event:React.FormEvent) => {
+    const updateHabit = async (event:React.FormEvent) => {
         event.preventDefault();
         let activeDays = Object.values(weekdays).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:weekdays;
         const newHabit:HabitInterface = {
@@ -125,8 +125,8 @@ const AddNewHabit:React.FC = () => {
         navigate("/habits");
     }
     return (
-        <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={backdropClickHandler}>
-            <Card component="form" onSubmit={addOrUpdateHabit} className={`add-new-habit-form scale-in`}>
+        <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
+            <Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
                 <div className={`add-new-habit-controls`}>
                     {detailedHabit && <Tooltip title="Archive Item">
                         <div className='archive-habit'>
@@ -146,14 +146,14 @@ const AddNewHabit:React.FC = () => {
                     {(habitInputs.goalMode || detailedHabit?.goalId) && <div className='add-new-habit-datepicker-wrapper'>
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                             value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
                         />
                     </div>}
                     <div className='add-new-habit-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props:any) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
                             value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
                         />
                     </div>
@@ -166,8 +166,8 @@ const AddNewHabit:React.FC = () => {
                         <FormControlLabel control={<Switch checked={habitInputs.goalAlarmUsed} onChange={goalAlarmSwitchHandler} />} label="Goal alarm" />
                     </FormGroup>}
                 </div>
-                <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
-                {(habitInputs.goalMode || detailedHabit?.goalId) && <TextField value={habitInputs.goalTitle} onChange={(event)=>{habitInputsHandler(event,'goalTitle')}} label='Goal Title'  className="add-new-habit-goal-title" multiline required />}
+                <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event.target.value,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
+                {(habitInputs.goalMode || detailedHabit?.goalId) && <TextField value={habitInputs.goalTitle} onChange={(event)=>{habitInputsHandler(event.target.value,'goalTitle')}} label='Goal Title'  className="add-new-habit-goal-title" multiline required />}
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
                         <Tooltip enterDelay={300} {...{ 'title':'Select active weekdays for habit. Leave unchecked to select all weekdays.','children':<Typography>Habit Active Weekdays</Typography> }}/>

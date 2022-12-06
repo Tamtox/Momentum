@@ -12,7 +12,7 @@ const httpAddress = `http://localhost:3001`;
 const useGoalHooks = () => {
     const token = Cookies.get('token');
     const dispatch = useDispatch();
-     // Load goal data
+    // Load goal data
     const loadGoalData = async (newToken?:string) => {
         dispatch(goalActions.setGoalLoading(true))
         try {
