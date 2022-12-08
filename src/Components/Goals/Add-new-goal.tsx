@@ -32,7 +32,7 @@ const AddNewGoal:React.FC = () => {
     const detailedGoal = goalList.find((goalitem:GoalInterface)=> goalitem._id === id);
     // Get paired habit if one exists
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
-    const detailedHabit = habitList.find((item:HabitInterface)=>item.goalId === detailedGoal?._id);
+    const detailedHabit = habitList.find((habititem:HabitInterface)=>habititem.goalId === detailedGoal?._id);
     const [goalInputs,setGoalInputs] = useState({
         addNewGoalHeader: "",
         goalTitle:detailedGoal?.title || '',
@@ -74,6 +74,7 @@ const AddNewGoal:React.FC = () => {
             }))
         }
     }
+    console.log(detailedGoal)
     // Submit or update goal 
     const updateGoal = async (event:React.FormEvent) => {
         event.preventDefault();

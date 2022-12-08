@@ -4,7 +4,7 @@ import './Add-new-habit.scss';
 import React,{ useState,useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch } from '@mui/material';
+import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { BsTrash,BsArchive } from 'react-icons/bs';
 //Components
@@ -19,8 +19,8 @@ const AddNewHabit:React.FC = () => {
     const navigate = useNavigate();
     const habitHooks = useHabitHooks();
     const goalHooks = useGoalHooks(); 
-    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const id = location.pathname.split('/')[2];
+    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.find((habititem)=> habititem._id === id);      
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
@@ -32,10 +32,11 @@ const AddNewHabit:React.FC = () => {
     const habitLoading = useSelector<RootState,boolean>(state=>state.habitsSlice.habitLoading);
     // Get paired goal if one exists
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
-    const detailedGoal = goalList.filter((item)=>item.habitId === detailedHabit?._id)[0];
+    const detailedGoal = goalList.find((goalitem:GoalInterface)=> goalitem.habitId === id);
     // Habit inputs and handlers
     const habitTime = detailedHabit?.time ? detailedHabit?.time.split(':') : null ;
     const [habitInputs,setHabitInputs] = useState({
+        addNewHabitHeader:"",
         habitTitle:detailedHabit?.title || '',
         selectedTime: habitTime ? new Date(new Date().setHours(Number(habitTime[0]),Number(habitTime[1]))) : null,
         habitCreationUTCOffset:detailedHabit?.creationUTCOffset || new Date().getTimezoneOffset(),
@@ -61,6 +62,21 @@ const AddNewHabit:React.FC = () => {
             selectedTime:newTimeFixed
         }))
     }
+    const pairedGoalSelect = (newPairedGoal:GoalInterface|null) => {
+        if (newPairedGoal?.habitId) {
+            setHabitInputs((prevState)=>({
+                ...prevState,
+                addNewHabitHeader:"Habit is already paired"
+            }))
+        } else {
+            setHabitInputs((prevState)=>({
+                ...prevState,
+                pairedGoal:newPairedGoal,
+                addNewHabitHeader:"Habit successfully paired"
+            }))
+        }
+    }
+    console.log(detailedHabit)
     // Set Active weekdays
     const weekdaysArr = [1,2,3,4,5,6,0];
     const weekdaysLabels:{[key:number]:string} = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',0:'Sun'};
@@ -82,13 +98,20 @@ const AddNewHabit:React.FC = () => {
             alarmUsed:habitInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''
         }
-        detailedHabit ? habitHooks.updateHabit(newHabit,detailedHabit,null,null) : habitHooks.addHabit(newHabit,null);
+        let newPairedGoal = null;
+        let oldPairedGoal = null;
+        if(habitInputs.pairedGoal) newPairedGoal = Object.assign({},habitInputs.pairedGoal);
+        if(detailedGoal) oldPairedGoal = Object.assign({}, detailedGoal);
+        detailedHabit ? habitHooks.updateHabit(newHabit,detailedHabit,newPairedGoal,oldPairedGoal) : habitHooks.addHabit(newHabit,newPairedGoal);
         // Return to habits
         navigate("/habits");
     }
     return (
         <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
+                {habitInputs.addNewHabitHeader.length > 0 ? <div className={`add-new-habit-header`}>
+                    <Typography variant='h6' >{habitInputs.addNewHabitHeader}</Typography>
+                </div> : null}
                 <div className={`add-new-habit-controls`}>
                     {detailedHabit ? <Tooltip title="Archive Item">
                         <div className='archive-habit'>
@@ -124,6 +147,14 @@ const AddNewHabit:React.FC = () => {
                         })}
                     </FormGroup>
                 </FormControl>
+                <div className={`add-new-habit-paired-goal`}>
+                    <Autocomplete
+                        value={habitInputs.pairedGoal} defaultValue={habitInputs.pairedGoal}
+                        onChange={(event: any, newValue: GoalInterface|null) => {pairedGoalSelect(newValue)}}
+                        options={goalList} getOptionLabel={(option) => option.title}
+                        renderInput={(params) => <TextField {...params} label="Paired Goal" />}
+                    />
+                </div>
                 <div className="add-new-habit-buttons">
                     <Button variant="outlined" type='button' className='button' onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className='button' >{detailedHabit ? 'Update' : 'Submit'}</Button>

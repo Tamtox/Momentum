@@ -44,6 +44,9 @@
             }
         }
     }
+    .add-new-habit-paired-goal{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+    }
     .add-new-habit-buttons{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
         @include flex(space-around,center);

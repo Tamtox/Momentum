@@ -54,21 +54,32 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string,newEntries:{}}} = await axios.request({
+            const newHabitResponse:{data:{habitId:string,scheduleEntries:string,habitEntries:{}}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/addNewHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            const {scheduleId:habitScheduleId,newEntries} = newHabitResponse.data;
-            const habitId = newHabitResponse.data.newHabit._id;
-            newHabit = newHabitResponse.data.newHabit;
-            dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit));
+            const {habitId,scheduleEntries,habitEntries} = newHabitResponse.data;
+            newHabit._id = habitId;
+            newHabit.entries = habitEntries;
+            // Update paired goal
+            if(newPairedGoal) {
+                newPairedGoal.habitId = habitId;
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/goals/updateGoal`,
+                    data:{...newPairedGoal,timezoneOffset:new Date().getTimezoneOffset()},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(goalActions.updateGoal(newPairedGoal))
+            }
+            dispatch(habitsActions.addHabit(newHabit));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {
-            dispatch(habitsActions.setHabitLoading(true)); 
-            newPairedGoal && dispatch(goalActions.setGoalLoading(true));
+            dispatch(habitsActions.setHabitLoading(false)); 
+            newPairedGoal && dispatch(goalActions.setGoalLoading(false));
         }
     }
     // Update habit 
@@ -79,20 +90,42 @@ const useHabitHooks = () => {
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
             // Add or update habit and habit schedule
-            const newHabitResponse:{data:{newHabit:HabitInterface,scheduleId:string,newEntries:{}}} = await axios.request({
+            const newHabitResponse:{data:{habitEntries:{}}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            const {newEntries} = newHabitResponse.data;
-            newHabit.entries = newEntries
+            const {habitEntries} = newHabitResponse.data;
+            if(habitEntries) newHabit.entries = habitEntries
+            // Determine if paired goal needs to be updated
+            if (newPairedGoal && (newHabit.goalId !== oldHabit.goalId || !oldPairedGoal)) {
+                newPairedGoal.habitId = newHabit._id
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/goals/updateGoal`,
+                    data:{...newPairedGoal,timezoneOffset:new Date().getTimezoneOffset()},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.updateHabit(newPairedGoal))
+            }
+            // Delete pairing if one existed
+            if (!newPairedGoal && oldPairedGoal) {
+                oldPairedGoal.habitId = null
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/goals/updateGoal`,
+                    data:{...oldPairedGoal,timezoneOffset:new Date().getTimezoneOffset()},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.updateHabit(oldPairedGoal))
+            }
             dispatch(habitsActions.updateHabit(newHabit))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {
-            dispatch(habitsActions.setHabitLoading(true)); 
-            newPairedGoal && dispatch(goalActions.setGoalLoading(true));
+            dispatch(habitsActions.setHabitLoading(false)); 
+            newPairedGoal && dispatch(goalActions.setGoalLoading(false));
         }   
     }
     // Delete habit
