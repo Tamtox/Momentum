@@ -24,8 +24,9 @@ const useGoalHooks = () => {
             dispatch(goalActions.setGoalList(goalListResponse.data))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(goalActions.setGoalLoading(false))   
+        } finally {
+            dispatch(goalActions.setGoalLoading(false))   
+        } 
     }
 
      // Load archived goal data
@@ -40,8 +41,9 @@ const useGoalHooks = () => {
             dispatch(goalActions.setArchivedGoalList(goalListResponse.data))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(goalActions.setGoalLoading(false))   
         }
-        dispatch(goalActions.setGoalLoading(false))   
     }
 
     // Toggle Goal status
@@ -62,6 +64,8 @@ const useGoalHooks = () => {
 
     // Add goal
     const addGoal = async (newGoal:GoalInterface,newPairedHabit:HabitInterface|null) => {
+        dispatch(goalActions.setGoalLoading(true))   
+        newPairedHabit && dispatch(habitsActions.setHabitLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
@@ -93,11 +97,16 @@ const useGoalHooks = () => {
             dispatch(goalActions.addGoal(newGoal));    
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
+        } finally {
+            dispatch(goalActions.setGoalLoading(false))   
+            newPairedHabit && dispatch(habitsActions.setHabitLoading(false)); 
+        }
     }
 
     // Update goal
     const updateGoal = async (newGoal:GoalInterface,oldGoal:GoalInterface,newPairedHabit:HabitInterface|null,oldPairedHabit:HabitInterface|null) => {
+        dispatch(goalActions.setGoalLoading(true))   
+        newPairedHabit && dispatch(habitsActions.setHabitLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         // Determine the schedule action
@@ -149,6 +158,9 @@ const useGoalHooks = () => {
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(goalActions.setGoalLoading(false))   
+            newPairedHabit && dispatch(habitsActions.setHabitLoading(false));
         }   
     }
 
@@ -171,8 +183,10 @@ const useGoalHooks = () => {
     }
 
     // Delete Goal
-    const deleteGoal = async (_id:string,pairedHabitId:string|null) => {
+    const deleteGoal = async (_id:string,pairedHabit:HabitInterface|null) => {
         dispatch(goalActions.setGoalLoading(true))   
+        const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
             await axios.request({
                 method:'DELETE',
@@ -180,15 +194,18 @@ const useGoalHooks = () => {
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:_id}
             })
-            if(pairedHabitId) {
+            // Unpair deleted goal from habit
+            if (pairedHabit) {
+                const pairedHabitCopy = Object.assign({},pairedHabit);
+                pairedHabitCopy.goalId = null;
+                pairedHabitCopy.goalTargetDate = null;
                 await axios.request({
-                    method:'DELETE',
-                    url:`${httpAddress}/habits/deleteHabit`,
-                    data:{_id:pairedHabitId},
+                    method:'PATCH',
+                    url:`${httpAddress}/habits/updateHabit`,
+                    data:{...pairedHabitCopy,clientCurrentWeekStartTime,clientTimezoneOffset},
                     headers:{Authorization: `Bearer ${token}`}
                 })
-                dispatch(habitsActions.deleteHabit(pairedHabitId));
-                dispatch(scheduleActions.deleteScheduleItem({_id:pairedHabitId,parentType:"habit"}));
+                dispatch(habitsActions.updateHabit(pairedHabitCopy))
             }
             dispatch(goalActions.deleteGoal(_id));
             dispatch(scheduleActions.deleteScheduleItem({_id,parentType:"goal"}));

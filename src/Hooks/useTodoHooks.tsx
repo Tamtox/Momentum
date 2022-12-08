@@ -24,8 +24,9 @@ const useTodoHooks = () => {
             dispatch(todoActions.setToDoList(todoList.data))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(todoActions.setTodoLoading(false))   
+        } finally {
+            dispatch(todoActions.setTodoLoading(false))   
+        }  
     }
     // Load archived todo data
     const loadArchivedTodoData = async () => {
@@ -39,8 +40,9 @@ const useTodoHooks = () => {
             dispatch(todoActions.setArchivedToDoList(todoList.data))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(todoActions.setTodoLoading(false))   
         }
-        dispatch(todoActions.setTodoLoading(false))   
     }
     // Toggle Todo status
     const changeTodoStatus = async (_id:string,status:string) => {
@@ -59,6 +61,7 @@ const useTodoHooks = () => {
     }
     // Add todo 
     const addTodo = async (newTodo:TodoInterface) => {
+        dispatch(todoActions.setTodoLoading(true))
         try {
             const newTodoResponse:{data:{todoId:string,scheduleId:string}} = await axios.request({
                 method:'POST',
@@ -76,10 +79,13 @@ const useTodoHooks = () => {
             dispatch(todoActions.addToDo(newTodo));    
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
+        } finally {
+            dispatch(todoActions.setTodoLoading(false))
+        }
     }
     // Update or add todo
     const updateTodo = async (newTodo:TodoInterface,oldTodo:TodoInterface) => {
+        dispatch(todoActions.setTodoLoading(true))
         // Determine the schedule action
         let scheduleAction:string|null = determineScheduleAction(newTodo.targetDate,oldTodo.targetDate);
         try {
@@ -105,6 +111,8 @@ const useTodoHooks = () => {
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(todoActions.setTodoLoading(false))
         }   
     }
     // Toggle archive status

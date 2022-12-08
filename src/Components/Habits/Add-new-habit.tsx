@@ -12,6 +12,7 @@ import { RootState } from "../../Store/Store";
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import type { GoalInterface,HabitInterface } from '../../Misc/Interfaces';
+import Loading from '../Misc/Loading';
 
 const AddNewHabit:React.FC = () => {
     const location = useLocation();
@@ -28,6 +29,7 @@ const AddNewHabit:React.FC = () => {
             navigate(`${location.pathname}/habits`)
         }   
     }
+    const habitLoading = useSelector<RootState,boolean>(state=>state.habitsSlice.habitLoading);
     // Get paired goal if one exists
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const detailedGoal = goalList.filter((item)=>item.habitId === detailedHabit?._id)[0];
@@ -38,6 +40,7 @@ const AddNewHabit:React.FC = () => {
         selectedTime: habitTime ? new Date(new Date().setHours(Number(habitTime[0]),Number(habitTime[1]))) : null,
         habitCreationUTCOffset:detailedHabit?.creationUTCOffset || new Date().getTimezoneOffset(),
         habitAlarmUsed:detailedHabit?.alarmUsed || false,
+        pairedGoal: detailedGoal ? detailedGoal : null
     })
     const habitInputsHandler = (newValue:string,input:string) => {
         setHabitInputs((prevState)=>({
@@ -79,19 +82,19 @@ const AddNewHabit:React.FC = () => {
             alarmUsed:habitInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''
         }
-        detailedHabit ? habitHooks.updateHabit(newHabit,detailedHabit) : habitHooks.addHabit(newHabit);
+        detailedHabit ? habitHooks.updateHabit(newHabit,detailedHabit,null,null) : habitHooks.addHabit(newHabit,null);
         // Return to habits
         navigate("/habits");
     }
     return (
         <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            <Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
+            {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
                 <div className={`add-new-habit-controls`}>
-                    {detailedHabit && <Tooltip title="Archive Item">
+                    {detailedHabit ? <Tooltip title="Archive Item">
                         <div className='archive-habit'>
                             <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitHooks.toggleHabitArchiveStatus(detailedHabit!);detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal!);navigate("/habits")}}/>
                         </div>
-                    </Tooltip> }
+                    </Tooltip> : null}
                     <div className='add-new-habit-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
@@ -99,17 +102,17 @@ const AddNewHabit:React.FC = () => {
                             value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
                         />
                     </div>
-                    {detailedHabit && <Tooltip title="Delete Item">
+                    {detailedHabit ? <Tooltip title="Delete Item">
                         <div className='delete-habit'>
-                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(detailedHabit!._id,detailedHabit!.goalId);navigate("/habits")}}/>
+                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(detailedHabit!._id,habitInputs.pairedGoal);navigate("/habits")}}/>
                         </div>
-                    </Tooltip> }
+                    </Tooltip> : null}
                 </div>
-                <div className={`add-new-habit-alarm-switches`}>
-                    {(habitInputs.selectedTime) && <FormGroup>
+                {habitInputs.selectedTime ? <div className={`add-new-habit-alarm-switches`}>
+                    <FormGroup>
                         <FormControlLabel control={<Switch checked={habitInputs.habitAlarmUsed} onChange={habitAlarmSwitchHandler} />} label="Habit alarm" />
-                    </FormGroup>}
-                </div>
+                    </FormGroup>
+                </div> : null}
                 <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event.target.value,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
@@ -125,7 +128,7 @@ const AddNewHabit:React.FC = () => {
                     <Button variant="outlined" type='button' className='button' onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className='button' >{detailedHabit ? 'Update' : 'Submit'}</Button>
                 </div>
-            </Card>
+            </Card>}
         </div>
     )
 }

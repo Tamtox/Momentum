@@ -88,11 +88,11 @@ const AddNewTodo:React.FC = () => {
         <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
                 <div className={`add-new-todo-controls`}>
-                    {detailedTodo && <Tooltip title="Archive Item">
+                    {detailedTodo ? <Tooltip title="Archive Item">
                         <div className='archive-todo'>
                             <BsArchive className={`icon-interactive archive-todo-icon`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
                         </div>
-                    </Tooltip>}
+                    </Tooltip> : null}
                     <div className='add-new-todo-datepicker-wrapper'>
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
@@ -100,22 +100,22 @@ const AddNewTodo:React.FC = () => {
                             value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
                         />
                     </div>
-                    {(todoInputs.selectedDate) && <div className='add-new-todo-timepicker-wrapper'>
+                    {todoInputs.selectedDate ? <div className='add-new-todo-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
                             value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
                         />
-                    </div>}
-                    {detailedTodo && <Tooltip title="Delete Item">
+                    </div> : null}
+                    {detailedTodo ? <Tooltip title="Delete Item">
                         <div className='delete-todo'>
                             <BsTrash className={`icon-interactive delete-todo-icon`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>
                         </div>
-                    </Tooltip>}
+                    </Tooltip> : null}
                 </div>
-                {(todoInputs.selectedDate && todoInputs.selectedTime) && <FormGroup className='add-new-todo-alarm-switch'>
+                {(todoInputs.selectedDate && todoInputs.selectedTime) ? <FormGroup className='add-new-todo-alarm-switch'>
                     <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />
-                </FormGroup>}
+                </FormGroup> : null}
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event.target.value,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
                 <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event.target.value,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
                 <div className={`add-new-todo-buttons`}>

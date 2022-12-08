@@ -27,8 +27,9 @@ const useHabitHooks = () => {
             dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,date:new Date(selectedDate).toISOString()}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(habitsActions.setHabitLoading(false))   
+        } finally {
+            dispatch(habitsActions.setHabitLoading(false))   
+        } 
     }
     // Load habits archive
     const loadArchivedHabitsData = async () => {
@@ -42,11 +43,14 @@ const useHabitHooks = () => {
             dispatch(habitsActions.setArchiveHabits(habitsResponse.data.archivedHabitList))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(habitsActions.setHabitLoading(false))   
         }
-        dispatch(habitsActions.setHabitLoading(false))   
     }
     // Add habit
-    const addHabit = async (newHabit:HabitInterface) => {
+    const addHabit = async (newHabit:HabitInterface,newPairedGoal:GoalInterface|null) => {
+        dispatch(habitsActions.setHabitLoading(true)); 
+        newPairedGoal && dispatch(goalActions.setGoalLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
@@ -62,10 +66,15 @@ const useHabitHooks = () => {
             dispatch(habitsActions.addHabit(newHabitResponse.data.newHabit));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }  
+        } finally {
+            dispatch(habitsActions.setHabitLoading(true)); 
+            newPairedGoal && dispatch(goalActions.setGoalLoading(true));
+        }
     }
     // Update habit 
-    const updateHabit = async (newHabit:HabitInterface,oldHabit:HabitInterface,) =>{
+    const updateHabit = async (newHabit:HabitInterface,oldHabit:HabitInterface,newPairedGoal:GoalInterface|null,oldPairedGoal:GoalInterface|null) =>{
+        dispatch(habitsActions.setHabitLoading(true)); 
+        newPairedGoal && dispatch(goalActions.setGoalLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
@@ -81,10 +90,13 @@ const useHabitHooks = () => {
             dispatch(habitsActions.updateHabit(newHabit))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(habitsActions.setHabitLoading(true)); 
+            newPairedGoal && dispatch(goalActions.setGoalLoading(true));
         }   
     }
     // Delete habit
-    const deleteHabit = async (habitId:string,pairedGoalId:string|null) => {
+    const deleteHabit = async (habitId:string,pairedGoal:GoalInterface|null) => {
         dispatch(habitsActions.setHabitLoading(true))   
         try {
             await axios.request({
@@ -93,14 +105,17 @@ const useHabitHooks = () => {
                 data:{_id:habitId},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            if(pairedGoalId) {
+            // Unpair deleted habit from goal
+            if(pairedGoal) {
+                const pairedGoalCopy = Object.assign({},pairedGoal);
+                pairedGoalCopy.habitId = null;
                 await axios.request({
-                    method:'DELETE',
-                    url:`${httpAddress}/goals/deleteGoal`,
-                    headers:{Authorization: `Bearer ${token}`},
-                    data:{_id:pairedGoalId}
+                    method:'PATCH',
+                    url:`${httpAddress}/goals/updateGoal`,
+                    data:{...pairedGoalCopy,timezoneOffset:new Date().getTimezoneOffset()},
+                    headers:{Authorization: `Bearer ${token}`}
                 })
-                dispatch(goalActions.deleteGoal(pairedGoalId))
+                dispatch(goalActions.updateGoal(pairedGoalCopy))
             }
             dispatch(habitsActions.deleteHabit(habitId))
         } catch (error) {

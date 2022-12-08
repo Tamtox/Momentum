@@ -12,6 +12,7 @@ import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
+import Loading from '../Misc/Loading';
 
 const AddNewGoal:React.FC = () => {
     const location = useLocation();
@@ -25,6 +26,7 @@ const AddNewGoal:React.FC = () => {
             navigate("/goals");
         } 
     }
+    const goalLoading = useSelector<RootState,boolean>(state=>state.goalSlice.goalLoading);
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const id = location.pathname.split('/')[2];
     const detailedGoal = goalList.find((goalitem:GoalInterface)=> goalitem._id === id);
@@ -32,7 +34,7 @@ const AddNewGoal:React.FC = () => {
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.find((item:HabitInterface)=>item.goalId === detailedGoal?._id);
     const [goalInputs,setGoalInputs] = useState({
-        addNewGoalHeader: detailedGoal ? `Id:${detailedGoal._id}` : "Add New Goal",
+        addNewGoalHeader: "",
         goalTitle:detailedGoal?.title || '',
         selectedDate:detailedGoal?.targetDate ? new Date(detailedGoal.targetDate) : null,
         goalCreationUTCOffset:detailedGoal?.creationUTCOffset || new Date().getTimezoneOffset(),
@@ -67,7 +69,8 @@ const AddNewGoal:React.FC = () => {
         } else {
             setGoalInputs((prevState)=>({
                 ...prevState,
-                pairedHabit:newPairedHabit
+                pairedHabit:newPairedHabit,
+                addNewGoalHeader:"Habit successfully paired"
             }))
         }
     }
@@ -86,26 +89,25 @@ const AddNewGoal:React.FC = () => {
             alarmUsed:goalInputs.goalAlarmUsed,
             _id: detailedGoal?._id || ''
         }
-        console.log(newGoal)
-        // let pairedHabit = null;
-        // let oldPairedHabit = null;
-        // if (goalInputs.pairedHabit) pairedHabit = Object.assign({},goalInputs.pairedHabit);
-        // if (detailedHabit) oldPairedHabit = Object.assign({},detailedHabit);
-        // detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal,pairedHabit,oldPairedHabit) : goalHooks.addGoal(newGoal,pairedHabit);
-        // navigate("/goals");
+        let pairedHabit = null;
+        let oldPairedHabit = null;
+        if (goalInputs.pairedHabit) pairedHabit = Object.assign({},goalInputs.pairedHabit);
+        if (detailedHabit) oldPairedHabit = Object.assign({},detailedHabit);
+        detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal,pairedHabit,oldPairedHabit) : goalHooks.addGoal(newGoal,pairedHabit);
+        navigate("/goals");
     }
     return(
         <div className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
-                <div className={`add-new-goal-header`}>
+            {goalLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
+                {goalInputs.addNewGoalHeader.length > 0 ? <div className={`add-new-goal-header`}>
                     <Typography variant='h6' >{goalInputs.addNewGoalHeader}</Typography>
-                </div>
+                </div> : null}
                 <div className={`add-new-goal-controls`}>
-                    {detailedGoal && <Tooltip title="Archive Item">
+                    {detailedGoal ? <Tooltip title="Archive Item">
                         <div className='archive-goal'>
                             <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(detailedGoal!);detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit!);navigate("/goals")}}/>
                         </div>
-                    </Tooltip>}
+                    </Tooltip> : null}
                     <div className='add-new-goal-datepicker-wrapper'>
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
@@ -114,17 +116,17 @@ const AddNewGoal:React.FC = () => {
                             componentsProps={{actionBar: { actions: ['clear'] },}}
                         />
                     </div>
-                    {detailedGoal && <Tooltip title="Delete Item">
+                    {detailedGoal ? <Tooltip title="Delete Item">
                         <div className='delete-goal'>
-                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(detailedGoal!._id,detailedGoal!.habitId);navigate("/goals")}}/>
+                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(detailedGoal!._id,goalInputs.pairedHabit);navigate("/goals")}}/>
                         </div>
-                    </Tooltip>}
+                    </Tooltip> : null}
                 </div>
-                <div className={`add-new-goal-alarm-switches`}>
-                    {(goalInputs.selectedDate) && <FormGroup>
+                {goalInputs.selectedDate ? <div className={`add-new-goal-alarm-switches`}>
+                    <FormGroup>
                         <FormControlLabel control={<Switch checked={goalInputs.goalAlarmUsed} onChange={goalAlarmSwitchHandler} />} label="Goal alarm" />
-                    </FormGroup>}
-                </div>
+                    </FormGroup>
+                </div> : null}
                 <TextField value={goalInputs.goalTitle} onChange={(event)=>{goalInputsHandler(event.target.value,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
                 <div className={`add-new-goal-paired-habit`}>
                     <Autocomplete
@@ -138,7 +140,7 @@ const AddNewGoal:React.FC = () => {
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedGoal ? 'Update' : 'Submit'}</Button>
                 </div>
-            </Card>
+            </Card>}
         </div>
     )
 }
