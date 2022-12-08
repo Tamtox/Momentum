@@ -4,7 +4,7 @@ import './Add-new-goal.scss';
 import React,{useState,useRef} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Autocomplete } from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Autocomplete } from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 // Components
@@ -27,15 +27,17 @@ const AddNewGoal:React.FC = () => {
     }
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const id = location.pathname.split('/')[2];
-    const detailedGoal = goalList.find((goalitem)=> goalitem._id === id);
+    const detailedGoal = goalList.find((goalitem:GoalInterface)=> goalitem._id === id);
     // Get paired habit if one exists
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
-    const detailedHabit = habitList.filter((item)=>item.goalId === detailedGoal?._id)[0];
+    const detailedHabit = habitList.find((item:HabitInterface)=>item.goalId === detailedGoal?._id);
     const [goalInputs,setGoalInputs] = useState({
+        addNewGoalHeader: detailedGoal ? `Id:${detailedGoal._id}` : "Add New Goal",
         goalTitle:detailedGoal?.title || '',
         selectedDate:detailedGoal?.targetDate ? new Date(detailedGoal.targetDate) : null,
         goalCreationUTCOffset:detailedGoal?.creationUTCOffset || new Date().getTimezoneOffset(),
         goalAlarmUsed:detailedGoal?.alarmUsed || false,
+        pairedHabit:detailedHabit ? detailedHabit : null
     })
     const goalInputsHandler = (newValue:string,input:string) => {
         setGoalInputs((prevState)=>({
@@ -53,9 +55,21 @@ const AddNewGoal:React.FC = () => {
         const newDateFixed = new Date(newDate || new Date());
         setGoalInputs((prevState)=>({
             ...prevState,
-            datePickerUsed:true,
             selectedDate:newDateFixed
         }))
+    }
+    const pairedHabitSelect = (newPairedHabit:HabitInterface|null) => {
+        if (newPairedHabit?.goalId) {
+            setGoalInputs((prevState)=>({
+                ...prevState,
+                addNewGoalHeader:"Habit is already paired"
+            }))
+        } else {
+            setGoalInputs((prevState)=>({
+                ...prevState,
+                pairedHabit:newPairedHabit
+            }))
+        }
     }
     // Submit or update goal 
     const updateGoal = async (event:React.FormEvent) => {
@@ -67,18 +81,25 @@ const AddNewGoal:React.FC = () => {
             status:detailedGoal?.status || 'Pending',
             dateCompleted:detailedGoal?.dateCompleted || '',
             isArchived:detailedGoal?.isArchived || false,
-            habitId:detailedGoal?.habitId  || null ,
+            habitId:goalInputs.pairedHabit?._id || null ,
             creationUTCOffset: goalInputs.goalCreationUTCOffset,
             alarmUsed:goalInputs.goalAlarmUsed,
             _id: detailedGoal?._id || ''
         }
-        detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal) : goalHooks.addGoal(newGoal);
-        // Return to goal list
-        navigate("/goals");
+        console.log(newGoal)
+        // let pairedHabit = null;
+        // let oldPairedHabit = null;
+        // if (goalInputs.pairedHabit) pairedHabit = Object.assign({},goalInputs.pairedHabit);
+        // if (detailedHabit) oldPairedHabit = Object.assign({},detailedHabit);
+        // detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal,pairedHabit,oldPairedHabit) : goalHooks.addGoal(newGoal,pairedHabit);
+        // navigate("/goals");
     }
     return(
         <div className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
+                <div className={`add-new-goal-header`}>
+                    <Typography variant='h6' >{goalInputs.addNewGoalHeader}</Typography>
+                </div>
                 <div className={`add-new-goal-controls`}>
                     {detailedGoal && <Tooltip title="Archive Item">
                         <div className='archive-goal'>
@@ -89,7 +110,8 @@ const AddNewGoal:React.FC = () => {
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
-                            value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate);}}
+                            value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate)}}
+                            componentsProps={{actionBar: { actions: ['clear'] },}}
                         />
                     </div>
                     {detailedGoal && <Tooltip title="Delete Item">
@@ -105,7 +127,12 @@ const AddNewGoal:React.FC = () => {
                 </div>
                 <TextField value={goalInputs.goalTitle} onChange={(event)=>{goalInputsHandler(event.target.value,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
                 <div className={`add-new-goal-paired-habit`}>
-                <Autocomplete getOptionLabel={(option) => option.title} disablePortal options={habitList}  renderInput={(params) => <TextField {...params} label="Paired Habit" />}  />
+                    <Autocomplete
+                        value={goalInputs.pairedHabit} defaultValue={goalInputs.pairedHabit}
+                        onChange={(event: any, newValue: HabitInterface|null) => {pairedHabitSelect(newValue)}}
+                        options={habitList} getOptionLabel={(option) => option.title}
+                        renderInput={(params) => <TextField {...params} label="Paired Habit" />}
+                    />
                 </div>
                 <div className={`add-new-goal-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>

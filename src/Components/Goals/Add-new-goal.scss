@@ -9,7 +9,7 @@
     gap: 2rem;
     .add-new-goal-controls{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        @include flex(space-between,center);
+        @include flex(space-around,center);
         gap: 1rem;      
         .archive-goal{
             justify-self: start;

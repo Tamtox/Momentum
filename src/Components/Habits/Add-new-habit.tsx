@@ -55,7 +55,6 @@ const AddNewHabit:React.FC = () => {
         const newTimeFixed = new Date(newTime || new Date());
         setHabitInputs((prevState)=>({
             ...prevState,
-            timePickerUsed:true,
             selectedTime:newTimeFixed
         }))
     }

@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { goalActions,habitsActions,scheduleActions } from "../Store/Store";
-import type {GoalInterface} from '../Misc/Interfaces';
+import type {GoalInterface, HabitInterface} from '../Misc/Interfaces';
 import {createPairedScheduleItem, determineScheduleAction} from './Helper-functions';
 
 const httpAddress = `http://localhost:3001`;
@@ -27,6 +27,7 @@ const useGoalHooks = () => {
         }
         dispatch(goalActions.setGoalLoading(false))   
     }
+
      // Load archived goal data
     const loadArchivedGoalData = async (newToken?:string) => {
         dispatch(goalActions.setGoalLoading(true))
@@ -42,6 +43,7 @@ const useGoalHooks = () => {
         }
         dispatch(goalActions.setGoalLoading(false))   
     }
+
     // Toggle Goal status
     const changeGoalStatus = async (_id:string,status:string) => {
         const dateCompleted = status ==="Pending" ? new Date().toISOString() : '';
@@ -57,8 +59,11 @@ const useGoalHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
+
     // Add goal
-    const addGoal = async (newGoal:GoalInterface) => {
+    const addGoal = async (newGoal:GoalInterface,newPairedHabit:HabitInterface|null) => {
+        const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
             const newGoalResponse:{data:{goalId:string,scheduleId:string}} = await axios.request({
                 method:'POST',
@@ -73,13 +78,28 @@ const useGoalHooks = () => {
                 const scheduleItem = await createPairedScheduleItem(null,targetDate,title,'goal',_id,alarmUsed,creationUTCOffset,scheduleId);  
                 dispatch(scheduleActions.addScheduleItem(scheduleItem));
             }
+            // Update paired habit
+            if (newPairedHabit) {
+                newPairedHabit.goalId = goalId
+                newPairedHabit.goalTargetDate = newGoal.targetDate
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/habits/updateHabit`,
+                    data:{...newPairedHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.updateHabit(newPairedHabit))
+            }
             dispatch(goalActions.addGoal(newGoal));    
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
+
     // Update goal
-    const updateGoal = async (newGoal:GoalInterface,oldGoal:GoalInterface) => {
+    const updateGoal = async (newGoal:GoalInterface,oldGoal:GoalInterface,newPairedHabit:HabitInterface|null,oldPairedHabit:HabitInterface|null) => {
+        const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();   
         // Determine the schedule action
         let scheduleAction:string|null = determineScheduleAction(newGoal.targetDate,oldGoal.targetDate);
         try {
@@ -89,6 +109,30 @@ const useGoalHooks = () => {
                 data:{...newGoal,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
+            // Determine if paired habit needs to be updated
+            if (newPairedHabit && (newGoal.habitId !== oldGoal.habitId || newGoal.targetDate !== oldGoal.targetDate || !oldPairedHabit)) {
+                newPairedHabit.goalId = newGoal._id
+                newPairedHabit.goalTargetDate = newGoal.targetDate
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/habits/updateHabit`,
+                    data:{...newPairedHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.updateHabit(newPairedHabit))
+            }
+            // Delete pairing if one existed
+            if (!newPairedHabit && oldPairedHabit) {
+                oldPairedHabit.goalId = null
+                oldPairedHabit.goalTargetDate = null
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/habits/updateHabit`,
+                    data:{...oldPairedHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.updateHabit(oldPairedHabit))
+            }
             const {scheduleId} = updateGoalResponse.data;
             dispatch(goalActions.updateGoal(newGoal));
             // Check if schedule item needs to be added, deleted or updated  
@@ -107,6 +151,7 @@ const useGoalHooks = () => {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   
     }
+
     // Toggle archive status
     const toggleGoalArchiveStatus = async (goalItem:GoalInterface) => {
         dispatch(goalActions.setGoalLoading(true))   
@@ -124,6 +169,7 @@ const useGoalHooks = () => {
         }   
         dispatch(goalActions.setGoalLoading(false))   
     }
+
     // Delete Goal
     const deleteGoal = async (_id:string,pairedHabitId:string|null) => {
         dispatch(goalActions.setGoalLoading(true))   

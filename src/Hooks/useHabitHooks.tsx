@@ -65,7 +65,7 @@ const useHabitHooks = () => {
         }  
     }
     // Update habit 
-    const updateHabit = async (newHabit:HabitInterface,oldHabit:HabitInterface|undefined) =>{
+    const updateHabit = async (newHabit:HabitInterface,oldHabit:HabitInterface,) =>{
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
