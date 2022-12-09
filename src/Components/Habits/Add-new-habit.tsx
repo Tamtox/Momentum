@@ -55,7 +55,7 @@ const AddNewHabit:React.FC = () => {
             habitAlarmUsed:!prevState.habitAlarmUsed
         }));
     }
-    const habitTimePick =(newTime:Date | null) => {
+    const habitTimePick = (newTime:Date | null) => {
         const newTimeFixed = new Date(newTime || new Date());
         setHabitInputs((prevState)=>({
             ...prevState,
@@ -91,8 +91,8 @@ const AddNewHabit:React.FC = () => {
             isArchived:detailedHabit?.isArchived || false,
             weekdays:activeDays,
             entries: detailedHabit?.entries || {1:null,2:null,3:null,4:null,5:null,6:null,0:null},
-            goalId:detailedHabit?.goalId || null, 
-            goalTargetDate:detailedHabit?.goalTargetDate || null ,
+            goalId:habitInputs.pairedGoal?._id || null, 
+            goalTargetDate:habitInputs.pairedGoal?.targetDate || null ,
             creationUTCOffset: habitInputs.habitCreationUTCOffset,
             alarmUsed:habitInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''

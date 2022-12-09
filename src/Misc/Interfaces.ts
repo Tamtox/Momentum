@@ -9,6 +9,15 @@ interface UserInterface {
     emailConfirmationStatus:string,
     verificationCode:string
 }   
+
+interface JournalEntryInterface {
+    journalEntry:string,
+    date:string, /* Date format : Date.toISOString() */
+    dateCreated:string, /* Date format : Date.toISOString() */
+    dateEdited:string, /* Date format : Date.toISOString() */
+    _id:string
+}
+
 interface TodoInterface {
     title:string,
     description:string,
@@ -73,4 +82,4 @@ interface ScheduleInterface {
 }
 
 
-export type {UserInterface,TodoInterface,GoalInterface,HabitEntryInterface,HabitInterface,ScheduleInterface}
+export type {UserInterface,JournalEntryInterface,TodoInterface,GoalInterface,HabitEntryInterface,HabitInterface,ScheduleInterface}

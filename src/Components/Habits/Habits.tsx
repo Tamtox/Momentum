@@ -54,7 +54,7 @@ const Habits:React.FC = () => {
     const datepickerDateWeekStart = datepickerDate.setHours(0,0,0,0) + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6);
     const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart)));
     const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart + 86400000 * 6)));
-    const [isCurrentWeek,setIsCurrentWeek] = useState(true);
+    const [isCurrentWeek,setIsCurrentWeek] = useState(datepickerDateWeekStart === currentWeekStart ? true : false);
     // Weekday list for labels 
     const weekdays = [1,2,3,4,5,6,0];
     const weekdaysList:{[key:string|number]:string} = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };

@@ -1,17 +1,16 @@
 import {createSlice} from '@reduxjs/toolkit';
+import type {JournalEntryInterface} from "../Misc/Interfaces"
 
 interface JournalSchema {
     journalLoading:boolean,
-    journalDate:string,
-    journalEntry:string,
-    _id:string
+    journalEntry:JournalEntryInterface|null
+    journalLoaded:boolean
 }
 
 const initialJournalState:JournalSchema = {
     journalLoading:false,
-    journalDate: new Date().toISOString(),
-    journalEntry:"",
-    _id:"",
+    journalEntry:null,
+    journalLoaded:false,
 };
 
 const journalSlice = createSlice({
@@ -22,17 +21,15 @@ const journalSlice = createSlice({
             state.journalLoading = action.payload;
         },
         setEntry(state,action) {
-            state.journalDate = action.payload.date;
-            state.journalEntry = action.payload.journalEntry;
-            state._id = action.payload._id;
+            state.journalEntry = action.payload;
+            state.journalLoaded = true
         },
         updateEntry(state,action) {
             state.journalEntry = action.payload;
         },
         clearEntry(state) {
-            state.journalDate = new Date().toISOString();
-            state.journalEntry = "";
-            state._id = "";
+            state.journalEntry = null;
+            state.journalLoaded = false
         }
     }
 });

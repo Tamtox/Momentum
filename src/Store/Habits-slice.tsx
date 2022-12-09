@@ -26,11 +26,13 @@ const habitsSlice = createSlice({
             state.habitLoading = action.payload
         },
         addHabit(state,action) {
-            const newHabit:HabitInterface = action.payload
-            const selectedDate = new Date(state.datepickerDate)
+            // Check if current week is selected
+            const newHabit:HabitInterface = action.payload;
+            const selectedDate = new Date(state.datepickerDate).getTime();
             const currentWeekStart = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+            const currentWeekEnd = currentWeekStart + 86400000 * 7;
             const blankEntries:{[weekday:number]:null} = {1:null,2:null,3:null,4:null,5:null,6:null,0:null};
-            if (selectedDate.getTime() !== currentWeekStart) newHabit.entries = blankEntries;
+            if(selectedDate < currentWeekStart || selectedDate >= currentWeekEnd) newHabit.entries = blankEntries;
             state.habitList.push(newHabit);
         },
         deleteHabit(state,action) {
@@ -48,12 +50,14 @@ const habitsSlice = createSlice({
         },
         updateHabit(state,action) {
             const newHabit:HabitInterface = action.payload;
-            const selectedDate = new Date(state.datepickerDate)
+            const selectedDate = new Date(state.datepickerDate).getTime();
             const currentWeekStart = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+            const currentWeekEnd = currentWeekStart + 86400000 * 7;
             state.habitList = state.habitList.map((item:HabitInterface)=>{
                 if(item._id === newHabit._id) {
+                    // Check if current week is selected
                     const oldEntries = Object.assign({},item.entries);
-                    if(selectedDate.getTime() !== currentWeekStart) newHabit.entries = oldEntries
+                    if(selectedDate < currentWeekStart || selectedDate >= currentWeekEnd) newHabit.entries = oldEntries
                     item = newHabit;
                 }
                 return item;

@@ -36,7 +36,7 @@ const useMiscHooks = () => {
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,date:new Date().toISOString()}))
+            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,date:new Date(clientSelectedWeekStartTime).toISOString()}))
             // Preload todo data
             const todoList = await axios.request({
                 method:'GET',

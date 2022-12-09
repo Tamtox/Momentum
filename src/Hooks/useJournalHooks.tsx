@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
 import { journalActions } from "../Store/Store";
+import type { JournalEntryInterface } from "../Misc/Interfaces";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -29,26 +30,30 @@ const useJournalHooks = () => {
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(journalActions.setJournalLoading(false));
         }
-        dispatch(journalActions.setJournalLoading(false));
     }
     // Update journal entry if it exists ,create if not
-    const updateJournalEntry = async (selectedDate:Date,newJournalEntry:string) => {
+    const updateJournalEntry = async (newJournalEntry:JournalEntryInterface) => {
         dispatch(journalActions.setJournalLoading(true));
-        const clientSelectedDayStartTime = new Date(selectedDate).setHours(0,0,0,0);
+        const clientSelectedDayStartTime = new Date(newJournalEntry.date).setHours(0,0,0,0);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
-            const journalEntryResponse = await axios.request({
+            const journalEntryResponse:{data:{journalId:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/journal/updateJournalEntry`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{clientSelectedDayStartTime,clientTimezoneOffset,journalEntry:newJournalEntry}
+                data:{...newJournalEntry,clientSelectedDayStartTime,clientTimezoneOffset}
             })
-            Array.isArray(journalEntryResponse.data) ? dispatch(journalActions.setEntry(journalEntryResponse.data[0])) : dispatch(journalActions.updateEntry(newJournalEntry))
+            const {journalId} = journalEntryResponse.data
+            if(journalId) newJournalEntry._id = journalId ;
+            journalId ? dispatch(journalActions.setEntry(newJournalEntry)) : dispatch(journalActions.updateEntry(newJournalEntry))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(journalActions.setJournalLoading(false));
         }
-        dispatch(journalActions.setJournalLoading(false))
     }
     return {loadJournalData,updateJournalEntry}
 }
