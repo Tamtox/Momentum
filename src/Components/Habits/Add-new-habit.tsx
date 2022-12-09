@@ -76,7 +76,6 @@ const AddNewHabit:React.FC = () => {
             }))
         }
     }
-    console.log(detailedHabit)
     // Set Active weekdays
     const weekdaysArr = [1,2,3,4,5,6,0];
     const weekdaysLabels:{[key:number]:string} = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',0:'Sun'};

@@ -16,7 +16,7 @@ const initialHabitsState:HabitsSchema = {
     habitListLoaded:false,
     archivedHabitList:[],
     archivedHabitListLoaded:false,
-    datepickerDate: new Date().toISOString()
+    datepickerDate: new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)).toISOString(),
 };
 const habitsSlice = createSlice({
     name:'habits',
@@ -26,7 +26,12 @@ const habitsSlice = createSlice({
             state.habitLoading = action.payload
         },
         addHabit(state,action) {
-            state.habitList.push(action.payload);
+            const newHabit:HabitInterface = action.payload
+            const selectedDate = new Date(state.datepickerDate)
+            const currentWeekStart = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+            const blankEntries:{[weekday:number]:null} = {1:null,2:null,3:null,4:null,5:null,6:null,0:null};
+            if (selectedDate.getTime() !== currentWeekStart) newHabit.entries = blankEntries;
+            state.habitList.push(newHabit);
         },
         deleteHabit(state,action) {
             state.habitList = state.habitList.filter((item:HabitInterface)=>{
@@ -42,9 +47,13 @@ const habitsSlice = createSlice({
             })
         },
         updateHabit(state,action) {
-            const newHabit = action.payload;
+            const newHabit:HabitInterface = action.payload;
+            const selectedDate = new Date(state.datepickerDate)
+            const currentWeekStart = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
             state.habitList = state.habitList.map((item:HabitInterface)=>{
                 if(item._id === newHabit._id) {
+                    const oldEntries = Object.assign({},item.entries);
+                    if(selectedDate.getTime() !== currentWeekStart) newHabit.entries = oldEntries
                     item = newHabit;
                 }
                 return item;

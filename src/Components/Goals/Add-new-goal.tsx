@@ -74,7 +74,6 @@ const AddNewGoal:React.FC = () => {
             }))
         }
     }
-    console.log(detailedGoal)
     // Submit or update goal 
     const updateGoal = async (event:React.FormEvent) => {
         event.preventDefault();

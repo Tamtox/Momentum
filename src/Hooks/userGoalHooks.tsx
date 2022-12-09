@@ -77,6 +77,7 @@ const useGoalHooks = () => {
             })
             const {goalId,scheduleId} = newGoalResponse.data;
             newGoal._id = goalId
+            // Create schedule item
             if (newGoal.targetDate) {
                 const {targetDate,title,alarmUsed,creationUTCOffset,_id} = newGoal;
                 const scheduleItem = await createPairedScheduleItem(null,targetDate,title,'goal',_id,alarmUsed,creationUTCOffset,scheduleId);  
@@ -86,12 +87,14 @@ const useGoalHooks = () => {
             if (newPairedHabit) {
                 newPairedHabit.goalId = goalId
                 newPairedHabit.goalTargetDate = newGoal.targetDate
-                await axios.request({
+                const newHabitResponse:{data:{habitEntries:{}}} = await axios.request({
                     method:'PATCH',
                     url:`${httpAddress}/habits/updateHabit`,
                     data:{...newPairedHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                     headers:{Authorization: `Bearer ${token}`}
                 })
+                const {habitEntries} = newHabitResponse.data;
+                if(habitEntries) newPairedHabit.entries = habitEntries
                 dispatch(habitsActions.updateHabit(newPairedHabit))
             }
             dispatch(goalActions.addGoal(newGoal));    
@@ -122,26 +125,31 @@ const useGoalHooks = () => {
             if (newPairedHabit && (newGoal.habitId !== oldGoal.habitId || newGoal.targetDate !== oldGoal.targetDate || !oldPairedHabit)) {
                 newPairedHabit.goalId = newGoal._id
                 newPairedHabit.goalTargetDate = newGoal.targetDate
-                await axios.request({
+                const newHabitResponse:{data:{habitEntries:{}}} = await axios.request({
                     method:'PATCH',
                     url:`${httpAddress}/habits/updateHabit`,
                     data:{...newPairedHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                     headers:{Authorization: `Bearer ${token}`}
                 })
+                const {habitEntries} = newHabitResponse.data;
+                if(habitEntries) newPairedHabit.entries = habitEntries
                 dispatch(habitsActions.updateHabit(newPairedHabit))
             }
             // Delete pairing if one existed
             if (!newPairedHabit && oldPairedHabit) {
                 oldPairedHabit.goalId = null
                 oldPairedHabit.goalTargetDate = null
-                await axios.request({
+                const newHabitResponse:{data:{habitEntries:{}}} = await axios.request({
                     method:'PATCH',
                     url:`${httpAddress}/habits/updateHabit`,
                     data:{...oldPairedHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                     headers:{Authorization: `Bearer ${token}`}
                 })
+                const {habitEntries} = newHabitResponse.data;
+                if(habitEntries) oldPairedHabit.entries = habitEntries
                 dispatch(habitsActions.updateHabit(oldPairedHabit))
             }
+            // Add,update,delete schedule item
             const {scheduleId} = updateGoalResponse.data;
             dispatch(goalActions.updateGoal(newGoal));
             // Check if schedule item needs to be added, deleted or updated  

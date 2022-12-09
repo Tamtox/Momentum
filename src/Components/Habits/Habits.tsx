@@ -49,9 +49,12 @@ const Habits:React.FC = () => {
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] 
     const filteredList = filterList([...habitList],sortQuery,searchQuery);
-    const datepickerDateWeekStart = datepickerDate.getTime() + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6);
+    const currentWeekStart = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+    const nextWeekStart = currentWeekStart + 86400000 * 7 - 1;
+    const datepickerDateWeekStart = datepickerDate.setHours(0,0,0,0) + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6);
     const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart)));
-    const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart+86400000*6)));
+    const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart + 86400000 * 6)));
+    const [isCurrentWeek,setIsCurrentWeek] = useState(true);
     // Weekday list for labels 
     const weekdays = [1,2,3,4,5,6,0];
     const weekdaysList:{[key:string|number]:string} = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
@@ -64,11 +67,12 @@ const Habits:React.FC = () => {
         if(newDate.getTime() < selectedWeekStartTime || newDate.getTime() > new Date(selectedWeekStartTime).setHours(23,59,59,999)) {
             habitHooks.loadHabitsData(new Date(newWeekStartTime))
         }
+        newWeekStartTime === currentWeekStart ? setIsCurrentWeek(true) : setIsCurrentWeek(false)
         setSelectedDate(new Date(newWeekStartTime));
         setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
     }
     useEffect(() => {
-        if(habitListLoaded === false) {
+        if(!habitListLoaded) {
             habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
         }
     }, [])
@@ -83,7 +87,7 @@ const Habits:React.FC = () => {
                     <DatePicker 
                         inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
                         renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                        value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}}
+                        value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} maxDate={new Date(nextWeekStart)}
                     />
                     -
                     <DatePicker 
@@ -91,7 +95,7 @@ const Habits:React.FC = () => {
                         renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
                         value={selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
                     />
-                    <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
+                    <Button disabled={isCurrentWeek ? true : false} variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
                         <Typography className='habit-date-button-text'>Next Week</Typography>
                         <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
                     </Button> 
@@ -120,7 +124,8 @@ const Habits:React.FC = () => {
                                                 </div>
                                             )
                                         } else if(habitEntry) {
-                                            const adjustedTime = selectedDate.setHours(12,0,0,0) + (new Date().getTimezoneOffset() * -1 * 60 * 1000);
+                                            // Create empty entry
+                                            const adjustedTime = new Date(selectedDate.getFullYear(),selectedDate.getMonth(),selectedDate.getDate()).setHours(12,0,0,0) + (new Date().getTimezoneOffset() * -1 * 60 * 1000);
                                             const date = weekday ? new Date(adjustedTime + ((weekday - 1) * 86400000)).toISOString() : new Date(adjustedTime + (6 * 86400000)).toISOString();
                                             const blankEntry:HabitEntryInterface = {date,status:"Pending",dateCompleted:null,habitId:habitListItem._id,_id:''};
                                             const isCurrentDay = new Date(blankEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');

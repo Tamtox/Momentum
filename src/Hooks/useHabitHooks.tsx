@@ -1,11 +1,12 @@
 // Dependencies
 import Cookies from "js-cookie";
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import axios from "axios";
 // Components
-import { goalActions,habitsActions,scheduleActions } from "../Store/Store";
+import { goalActions,habitsActions,RootState,scheduleActions } from "../Store/Store";
 import type { HabitInterface, HabitEntryInterface, GoalInterface } from '../Misc/Interfaces';
 import {createPairedScheduleItem,determineScheduleAction} from './Helper-functions';
+import habitsSlice from "../Store/Habits-slice";
 
 const httpAddress = `http://localhost:3001`;
 

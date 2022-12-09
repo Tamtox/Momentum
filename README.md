@@ -11,8 +11,7 @@ Planned Features :
     Overall design improvements
     Calendar
     Notifications and Alarms 
-    Events - recurring events.
-    Tracker - track actions to remember.
+    Events - recurring events, holidays.
     Data Visualization
     Mobile design
     Error handling
