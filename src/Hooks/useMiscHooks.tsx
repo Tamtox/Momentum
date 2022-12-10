@@ -14,6 +14,9 @@ const useMiscHooks = () => {
     const clientTimezoneOffset = new Date().getTimezoneOffset();
     const preloadData = async (newToken?:string) => {
         dispatch(authActions.setLoading(true));
+        dispatch(todoActions.setTodoLoading(true)); 
+        dispatch(goalActions.setGoalLoading(true)); 
+        dispatch(habitsActions.setHabitLoading(true)); 
         try {
             // Preload user data
             const userDataResponse = await axios.request({
@@ -46,8 +49,12 @@ const useMiscHooks = () => {
             dispatch(todoActions.setToDoList(todoList.data));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(authActions.setLoading(false));
+            dispatch(todoActions.setTodoLoading(false)); 
+            dispatch(goalActions.setGoalLoading(false)); 
+            dispatch(habitsActions.setHabitLoading(false)); 
         }
-        dispatch(authActions.setLoading(false));   
     }
     return {preloadData}
 }

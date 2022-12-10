@@ -1,7 +1,7 @@
 // Styles
 import './Add-new-habit.scss';
 //Dependencies
-import React,{ useState,useRef } from 'react';
+import React,{ useState,useRef,useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
 import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete } from '@mui/material';
@@ -26,7 +26,7 @@ const AddNewHabit:React.FC = () => {
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if(event.target === backdropRef.current) {
-            navigate(`${location.pathname}/habits`)
+            navigate(`/habits`)
         }   
     }
     const habitLoading = useSelector<RootState,boolean>(state=>state.habitsSlice.habitLoading);
@@ -105,6 +105,26 @@ const AddNewHabit:React.FC = () => {
         // Return to habits
         navigate("/habits");
     }
+    // Set goal state from store value
+    useEffect(()=>{
+        setHabitInputs((prevState)=>({
+            ...prevState,
+            pairedGoal:detailedGoal ? detailedGoal : null,
+        }))
+    },[detailedGoal])
+    // Set habit state from store value
+    useEffect(()=>{
+        if(detailedHabit) {
+            const {title,time,creationUTCOffset,alarmUsed} = detailedHabit;
+            setHabitInputs((prevState)=>({
+                ...prevState,
+                habitTitle:title || '',
+                selectedTime: time ? new Date(new Date().setHours(Number(time.split(':')[0]),Number(time.split(':')[1]))) : null,
+                habitCreationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
+                habitAlarmUsed:alarmUsed || false,
+            }))
+        }
+    },[detailedHabit])
     return (
         <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>

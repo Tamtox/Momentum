@@ -7,7 +7,7 @@ import {RootState} from '../../Store/Store';
 import Loading from '../Misc/Loading';
 //Dependencies
 import {useSelector} from 'react-redux';
-import React,{useState,useRef} from 'react';
+import React,{useState,useRef, useEffect} from 'react';
 import { TextField,Button,Card,Tooltip,FormControlLabel,FormGroup,Switch} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/x-date-pickers';
 import { BsTrash,BsArchive } from 'react-icons/bs';
@@ -84,6 +84,20 @@ const AddNewTodo:React.FC = () => {
         detailedTodo ? todoHooks.updateTodo(newTodo,detailedTodo) : todoHooks.addTodo(newTodo);
         navigate("/todo");
     }
+    // Set state from store value
+    useEffect(()=>{
+        if (detailedTodo) {
+            const {title,description,targetDate,targetTime,creationUTCOffset,alarmUsed} = detailedTodo
+            setTodoInputs((prevState)=>({
+                todoTitle:title || '',
+                todoDescription:description || '',
+                selectedDate:targetDate ? new Date(targetDate) : null,
+                selectedTime:targetTime ? new Date(new Date().setHours(Number(targetTime.split(":")[0]),Number(targetTime.split(":")[1]))) : null,
+                creationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
+                alarmUsed: alarmUsed || false
+            }));
+        }
+    },[detailedTodo])
     return(
         <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>

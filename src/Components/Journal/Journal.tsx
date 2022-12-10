@@ -15,7 +15,6 @@ import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 const Journal:React.FC = () => {
     const journalHooks = useJournalHooks();
     const journalEntry = useSelector<RootState,JournalEntryInterface|null>(state=>state.journalSlice.journalEntry);
-    console.log(journalEntry)
     const journalLoading = useSelector<RootState,boolean>(state=>state.journalSlice.journalLoading);
     const journalLoaded = useSelector<RootState,boolean>(state=>state.journalSlice.journalLoaded);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
@@ -51,6 +50,11 @@ const Journal:React.FC = () => {
         }
         journalHooks.updateJournalEntry(newJournalEntry);
     }
+    // Update journal entry value 
+    useEffect(() => {
+        const entry = journalEntry? journalEntry?.journalEntry : "";
+        journalInputsHandler(entry,'journalEntry');
+    }, [journalEntry])
     // Load journal data on start
     useEffect(()=>{
         !journalLoaded && selectJournalEntryByDate(new Date());
@@ -76,7 +80,7 @@ const Journal:React.FC = () => {
                     </Button>
                 </div>
                 <TextField value={journalInputs.journalEntry} onChange={(event)=>{journalInputsHandler(event.target.value,'journalEntry')}} className={`focus journal-entry input`} placeholder="Write down what is on you mind." fullWidth multiline required autoFocus />
-                <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry ?'Update':'New Entry'}</Button>
+                <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry?._id ?'Update':'New Entry'}</Button>
             </form>}
         </Container>
     )

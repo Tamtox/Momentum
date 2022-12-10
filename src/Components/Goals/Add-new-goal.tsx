@@ -1,7 +1,7 @@
 // Styles
 import './Add-new-goal.scss';
 // Dependencies
-import React,{useState,useRef} from 'react';
+import React,{useState,useRef, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
 import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Autocomplete } from '@mui/material';
@@ -96,6 +96,26 @@ const AddNewGoal:React.FC = () => {
         detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal,pairedHabit,oldPairedHabit) : goalHooks.addGoal(newGoal,pairedHabit);
         navigate("/goals");
     }
+    // Set goal state from store value
+    useEffect(()=>{
+        if(detailedGoal) {
+            const {title,targetDate,creationUTCOffset,alarmUsed} = detailedGoal;
+            setGoalInputs((prevState)=>({
+                ...prevState,
+                goalTitle:title || '',
+                selectedDate:targetDate ? new Date(targetDate) : null,
+                goalCreationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
+                goalAlarmUsed:alarmUsed || false,
+            }))
+        }
+    },[detailedGoal])
+    // Set habit state from store value
+    useEffect(()=>{
+        setGoalInputs((prevState)=>({
+            ...prevState,
+            pairedHabit:detailedHabit ? detailedHabit : null
+        }))
+    },[detailedHabit])
     return(
         <div className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {goalLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
