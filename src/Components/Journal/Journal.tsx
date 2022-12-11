@@ -43,7 +43,7 @@ const Journal:React.FC = () => {
         event.preventDefault();
         const newJournalEntry:JournalEntryInterface = {
             journalEntry:journalInputs.journalEntry,
-            date:new Date(journalInputs.date.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString(),
+            date:new Date(journalInputs.date.setHours(12 + new Date().getTimezoneOffset()/-60,0,0,0)).toISOString(),
             dateCreated: journalEntry ? journalEntry.dateCreated : new Date().toISOString(),
             dateEdited: new Date().toISOString(),
             _id: journalEntry ? journalEntry._id : ""

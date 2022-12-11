@@ -105,13 +105,6 @@ const AddNewHabit:React.FC = () => {
         // Return to habits
         navigate("/habits");
     }
-    // Set goal state from store value
-    useEffect(()=>{
-        setHabitInputs((prevState)=>({
-            ...prevState,
-            pairedGoal:detailedGoal ? detailedGoal : null,
-        }))
-    },[detailedGoal])
     // Set habit state from store value
     useEffect(()=>{
         if(detailedHabit) {
@@ -125,6 +118,13 @@ const AddNewHabit:React.FC = () => {
             }))
         }
     },[detailedHabit])
+    // Set goal state from store value
+    useEffect(()=>{
+        setHabitInputs((prevState)=>({
+            ...prevState,
+            pairedGoal:detailedGoal ? detailedGoal : null,
+        }))
+    },[detailedGoal])
     return (
         <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>

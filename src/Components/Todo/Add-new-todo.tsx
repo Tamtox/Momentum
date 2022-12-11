@@ -84,7 +84,7 @@ const AddNewTodo:React.FC = () => {
         detailedTodo ? todoHooks.updateTodo(newTodo,detailedTodo) : todoHooks.addTodo(newTodo);
         navigate("/todo");
     }
-    // Set state from store value
+    // Set todo state from store value
     useEffect(()=>{
         if (detailedTodo) {
             const {title,description,targetDate,targetTime,creationUTCOffset,alarmUsed} = detailedTodo
@@ -98,6 +98,7 @@ const AddNewTodo:React.FC = () => {
             }));
         }
     },[detailedTodo])
+    console.log(detailedTodo)
     return(
         <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>

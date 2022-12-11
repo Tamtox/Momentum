@@ -29,10 +29,10 @@ const AddNewGoal:React.FC = () => {
     const goalLoading = useSelector<RootState,boolean>(state=>state.goalSlice.goalLoading);
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const id = location.pathname.split('/')[2];
-    const detailedGoal = goalList.find((goalitem:GoalInterface)=> goalitem._id === id);
+    const detailedGoal = goalList.find((goalitem:GoalInterface)=>goalitem._id === id);
     // Get paired habit if one exists
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
-    const detailedHabit = habitList.find((habititem:HabitInterface)=>habititem.goalId === detailedGoal?._id);
+    const detailedHabit = habitList.find((habititem:HabitInterface)=>habititem.goalId === id);
     const [goalInputs,setGoalInputs] = useState({
         addNewGoalHeader: "",
         goalTitle:detailedGoal?.title || '',
