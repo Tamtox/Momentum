@@ -48,7 +48,7 @@ const determineScheduleAction = (dateNew:string|null, dateOld:string|null):strin
 // Habit Entries generation algorithm | null if no entry , true if placeholder until status change , entry if it exists
 const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:number,populateBeforeCreationDate:boolean,existingHabitEntries:HabitEntryInterface[]|null) => {
     const timezoneOffset = new Date().getTimezoneOffset();
-    const newHabitEntries:{[weekday:number]:HabitEntryInterface|null|boolean} = {1:null,2:null,3:null,4:null,5:null,6:null,0:null};
+    const newHabitEntries:{[weekday:number]:HabitEntryInterface|null} = {1:null,2:null,3:null,4:null,5:null,6:null,0:null};
     const habitId = habitItem._id;
     for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
         const date = new Date(new Date(currentTime).setHours(12,0,0,0) + timezoneOffset * - 60000).toISOString();
@@ -56,6 +56,7 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
         const weekStartTime = new Date(date).setHours(0,0,0,0) + 86400000 * (weekday? 1 - weekday : -6);
         let dateCompleted:string|null = null;
         let status = 'Pending';
+        let entryId = "";
         // Stop creating entries if selected date is before habit creation week's start
         const habitCreationTime = new Date(habitItem.creationDate).getTime() + habitItem.creationUTCOffset * -60000;
         const habitCreationWeekday = new Date(habitCreationTime).getDay();
@@ -69,19 +70,13 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
                 if (new Date(entry.date).getDay() === weekday ) {
                     status = entry.status;
                     dateCompleted = entry.dateCompleted;
+                    entryId = entry._id;
                 }
             })
         }
         if(habitItem.weekdays[weekday]) {
-            newHabitEntries[weekday] = true;
-            if (populateBeforeCreationDate) {
-                const newHabitEntry:HabitEntryInterface = {date,habitId,status,dateCompleted,_id:""};
-                newHabitEntries[weekday] = newHabitEntry;
-            }
-            if (existingHabitEntries && status === "Complete") {
-                const newHabitEntry:HabitEntryInterface = {date,habitId,status,dateCompleted,_id:""};
-                newHabitEntries[weekday] = newHabitEntry;
-            }
+            const newHabitEntry:HabitEntryInterface = {date,habitId,status,dateCompleted,_id:entryId};
+            newHabitEntries[weekday] = newHabitEntry;
         }
     }
     return newHabitEntries;

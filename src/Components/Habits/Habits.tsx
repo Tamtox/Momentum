@@ -71,7 +71,6 @@ const Habits:React.FC = () => {
         setSelectedDate(new Date(newWeekStartTime));
         setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
     }
-    console.log(filteredList)
     useEffect(() => {
         if(!habitListLoaded) {
             habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
@@ -109,11 +108,11 @@ const Habits:React.FC = () => {
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
                             </div>
                             {Object.values(habitListItem.entries).every(entry=> entry === null) ? 
-                                <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem._id)}} className={`populate-week`}>Poplulate with Entries</Button> 
+                                <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem)}} className={`populate-week`}>Poplulate with Entries</Button> 
                                 :<div className={`habit-weekdays`}>
                                     {weekdays.map((weekday:number)=>{
-                                        const habitEntry:HabitEntryInterface | null | boolean = habitListItem.entries[weekday];
-                                        if(habitEntry && typeof(habitEntry) === 'object') {
+                                        const habitEntry:HabitEntryInterface | null = habitListItem.entries[weekday];
+                                        if(habitEntry) {
                                             const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
                                             return (
                                                 <div key={weekday} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitEntry,weekday)}}>
@@ -121,18 +120,6 @@ const Habits:React.FC = () => {
                                                     {habitEntry.status === 'Complete' ? 
                                                     <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} /> : 
                                                     <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} />}
-                                                </div>
-                                            )
-                                        } else if(habitEntry) {
-                                            // Create empty entry
-                                            const adjustedTime = new Date(selectedDate.getFullYear(),selectedDate.getMonth(),selectedDate.getDate()).setHours(12,0,0,0) + (new Date().getTimezoneOffset() * -1 * 60 * 1000);
-                                            const date = weekday ? new Date(adjustedTime + ((weekday - 1) * 86400000)).toISOString() : new Date(adjustedTime + (6 * 86400000)).toISOString();
-                                            const blankEntry:HabitEntryInterface = {date,status:"Pending",dateCompleted:null,habitId:habitListItem._id,_id:''};
-                                            const isCurrentDay = new Date(blankEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
-                                            return (
-                                                <div key={weekday} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(blankEntry,weekday)}}>
-                                                    <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[weekday]}</Typography>
-                                                    <IoSquareOutline className={`icon-interactive habit-weekday-icon Pending`} />
                                                 </div>
                                             )
                                         } else {

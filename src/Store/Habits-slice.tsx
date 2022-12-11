@@ -80,19 +80,18 @@ const habitsSlice = createSlice({
             })
         },
         toggleArchiveStatus(state,action) {
-            if(action.payload.isArchived) {
+            const habitItem = action.payload;
+            if(habitItem.isArchived) {
                 state.habitList = state.habitList.filter(item=>{
-                    return item._id !== action.payload._id
+                    return item._id !== habitItem._id
                 })
-                state.archivedHabitList = state.archivedHabitList.concat({...action.payload})
+                state.archivedHabitList = state.archivedHabitList.concat(habitItem);
             } else {
-                const habitItem = action.payload.habitItem;
-                habitItem.entries = action.payload.habitEntries;
                 state.archivedHabitList = state.archivedHabitList.filter(item=>{
                     return item._id !== habitItem._id;
                 })
                 state.habitList = state.habitList.concat(habitItem);
-                state.datepickerDate = new Date().toISOString();
+                state.datepickerDate = new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)).toISOString();
             }
         },
         setHabits(state,action) {
