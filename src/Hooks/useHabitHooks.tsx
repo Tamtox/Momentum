@@ -5,7 +5,7 @@ import axios from "axios";
 // Components
 import { goalActions,habitsActions,RootState,scheduleActions } from "../Store/Store";
 import type { HabitInterface, HabitEntryInterface, GoalInterface } from '../Misc/Interfaces';
-import {createPairedScheduleItem,determineScheduleAction} from './Helper-functions';
+import {getWeekDates,createPairedScheduleItem,determineScheduleAction,createHabitEntries} from './Helper-functions';
 import habitsSlice from "../Store/Habits-slice";
 
 const httpAddress = `http://localhost:3001`;
@@ -19,13 +19,34 @@ const useHabitHooks = () => {
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         try {
-            const habitsResponse:{data:{habitList:any[]}} = await axios.request({
+            const habitsResponse:{data:{habitList:HabitInterface[],habitEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/getHabits`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
-            dispatch(habitsActions.setHabits({habitList:habitsResponse.data.habitList,date:new Date(selectedDate).toISOString()}))
+            const {habitList,habitEntries} = habitsResponse.data;
+            // Create/attach habit entries to habits
+            let habitEntriesCopy:HabitEntryInterface[] = [...habitEntries];
+            const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
+            const habitListWithEntries = habitList.map((habitItem:HabitInterface) => {
+                // Find entries of current habit
+                const currentHabitEntries:HabitEntryInterface[] = [];
+                let len = habitEntriesCopy.length;
+                for(let i = 0; i < len; i++) {
+                    const habitEntry:HabitEntryInterface = habitEntriesCopy[i];
+                    if (habitItem._id === habitEntry.habitId) {
+                        currentHabitEntries.push(habitEntry);
+                        habitEntriesCopy.splice(i,1);
+                        i--;
+                        len--;
+                    }
+                }
+                const newEntries = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,false,currentHabitEntries);
+                habitItem.entries = newEntries;
+                return habitItem
+            })
+            dispatch(habitsActions.setHabits({habitList,date:new Date(selectedDate).toISOString()}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {

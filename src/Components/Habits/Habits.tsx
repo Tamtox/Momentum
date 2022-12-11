@@ -71,6 +71,7 @@ const Habits:React.FC = () => {
         setSelectedDate(new Date(newWeekStartTime));
         setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
     }
+    console.log(filteredList)
     useEffect(() => {
         if(!habitListLoaded) {
             habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
@@ -100,8 +101,7 @@ const Habits:React.FC = () => {
                         <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
                     </Button> 
                 </div>
-            {habitLoading ? <Loading height='80vh'/> :
-            <div className={`habit-list scale-in`}>
+            {habitLoading ? <Loading height='80vh'/> : <div className={`habit-list scale-in`}>
                 {filteredList.map((habitListItem:HabitInterface)=>{
                     return (
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>

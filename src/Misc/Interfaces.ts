@@ -64,7 +64,7 @@ interface HabitInterface {
     creationUTCOffset:number,
     alarmUsed:boolean,
     _id:string,
-    entries:{[key:number]:HabitEntryInterface|null},
+    entries:{[weekday:number]:HabitEntryInterface|null|boolean},
 }
 
 interface ScheduleInterface {
