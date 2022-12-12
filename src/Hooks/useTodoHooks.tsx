@@ -129,8 +129,9 @@ const useTodoHooks = () => {
             dispatch(todoActions.toggleArchiveStatus({...todoItem,isArchived:isArchived}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-        dispatch(todoActions.setTodoLoading(false))   
+        } finally {
+            dispatch(todoActions.setTodoLoading(false))   
+        }
     }
     // Delete Todo
     const deleteToDo = async (todo:TodoInterface) => {
@@ -146,8 +147,9 @@ const useTodoHooks = () => {
             todo.targetDate && dispatch(scheduleActions.deleteScheduleItem({_id:todo._id,targetDate:todo.targetDate,parentType:"todo"}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }   
-        dispatch(todoActions.setTodoLoading(false))   
+        } finally {
+            dispatch(todoActions.setTodoLoading(false))   
+        }  
     }
     return {loadTodoData,loadArchivedTodoData,changeTodoStatus,addTodo,updateTodo,toggleTodoArchiveStatus,deleteToDo}
 }

@@ -32,17 +32,17 @@ const useHabitHooks = () => {
             const habitListWithEntries = habitList.map((habitItem:HabitInterface) => {
                 // Find entries of current habit
                 const currentHabitEntries:HabitEntryInterface[] = [];
-                let len = habitEntriesCopy.length;
-                for(let i = 0; i < len; i++) {
-                    const habitEntry:HabitEntryInterface = habitEntriesCopy[i];
-                    if (habitItem._id === habitEntry.habitId) {
-                        currentHabitEntries.push(habitEntry);
-                        habitEntriesCopy.splice(i,1);
-                        i--;
-                        len--;
+                const otherHabitEntries:HabitEntryInterface[] = [];
+                habitEntriesCopy.forEach((entry:HabitEntryInterface) => {
+                    if(entry.habitId === habitItem._id) {
+                        currentHabitEntries.push(entry);
+                    } else {
+                        otherHabitEntries.push(entry);
                     }
-                }
-                const newEntries = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,false,currentHabitEntries);
+                });
+                habitEntriesCopy = otherHabitEntries;
+                const populateBeforeCreation = currentHabitEntries.length ? true : false
+                const newEntries = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,populateBeforeCreation,currentHabitEntries);
                 habitItem.entries = newEntries;
                 return habitItem
             })
@@ -114,14 +114,17 @@ const useHabitHooks = () => {
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
             // Add or update habit and habit schedule
-            const newHabitResponse:{data:{habitEntries:{}}} = await axios.request({
+            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {habitEntries} = newHabitResponse.data;
-            if(habitEntries) newHabit.entries = habitEntries
+            if(habitEntries) {
+                const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
+                newHabit.entries = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,habitEntries);
+            }
             // Determine if paired goal needs to be updated
             if (newPairedGoal && (newHabit.goalId !== oldHabit.goalId || !oldPairedGoal)) {
                 newPairedGoal.habitId = newHabit._id
@@ -177,8 +180,9 @@ const useHabitHooks = () => {
             dispatch(habitsActions.deleteHabit(habitId))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(habitsActions.setHabitLoading(false))   
+        } finally {
+            dispatch(habitsActions.setHabitLoading(false))   
+        } 
     }
     // Change habit entry status
     const changeHabitStatus = async (habitEntry:HabitEntryInterface,weekday:number) => {
@@ -223,8 +227,9 @@ const useHabitHooks = () => {
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(habitsActions.setHabitLoading(false))   
+        } finally {
+            dispatch(habitsActions.setHabitLoading(false))   
+        } 
     }
     // Populate habit with entries
     const populateHabit = async (selectedDate:Date,habitItem:HabitInterface) =>{
@@ -232,19 +237,27 @@ const useHabitHooks = () => {
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
         const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
-        const newEntries = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,true,null);
+        const newEntries:{[weekday:number]:HabitEntryInterface|null} = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,true,null);
         try {
-            const habitsResponse:{data:{populatedEntries:HabitInterface}} = await axios.request({
+            const habitsResponse:{data:{populatedEntriesIds:string[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/populateHabit`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset,_id:habitItem._id},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            dispatch(habitsActions.populateHabit({populatedEntries:habitsResponse.data.populatedEntries,_id:habitItem._id}))
+            // Attach ids to populated entries
+            const {populatedEntriesIds} = habitsResponse.data;
+            [1,2,3,4,5,6,0].forEach((weekday:number) => {
+                if (newEntries[weekday]) {
+                    newEntries[weekday]!._id = populatedEntriesIds[weekday];
+                }
+            })
+            dispatch(habitsActions.populateHabit({populatedEntries:newEntries,_id:habitItem._id}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
-        }
-        dispatch(habitsActions.setHabitLoading(false))   
+        } finally {
+            dispatch(habitsActions.setHabitLoading(false))   
+        }  
     }
     return {loadHabitsData,loadArchivedHabitsData,deleteHabit,addHabit,updateHabit,changeHabitStatus,toggleHabitArchiveStatus,populateHabit}
 }

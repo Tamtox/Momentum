@@ -32,8 +32,9 @@ const useAuthHooks = () => {
             dispatch(authActions.setUsetData(userDataResponse.data))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
-        dispatch(authActions.setLoading(false))
     }
     // Sign In / Up
     const signInUp = async (email:string,password:string,isLogin:boolean,name?:string) => {
@@ -55,6 +56,8 @@ const useAuthHooks = () => {
             } else { 
                 console.log(error) ;
             }
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
         if(isLogin && newToken) {
             todoHooks.loadTodoData(newToken);
@@ -63,7 +66,6 @@ const useAuthHooks = () => {
             journalHooks.loadJournalData(new Date(),newToken);
             getUserData(newToken);
         }
-        dispatch(authActions.setLoading(false))
         return message
     }
     // Logout
@@ -96,8 +98,9 @@ const useAuthHooks = () => {
             } else { 
                 console.log(error) ;
             }
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
-        dispatch(authActions.setLoading(false))
         return message
     }
     // Change password
@@ -119,8 +122,9 @@ const useAuthHooks = () => {
             } else { 
                 console.log(error) ;
             }
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
-        dispatch(authActions.setLoading(false))
         return message
     }
     // Reset password
@@ -141,8 +145,9 @@ const useAuthHooks = () => {
             } else { 
                 console.log(error) ;
             }
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
-        dispatch(authActions.setLoading(false));
         return message
     }
     // Send verification letter
@@ -163,8 +168,9 @@ const useAuthHooks = () => {
             } else { 
                 console.log(error) ;
             }
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
-        dispatch(authActions.setLoading(false))
         return message
     }
     // Delete account
@@ -187,8 +193,9 @@ const useAuthHooks = () => {
             } else { 
                 console.log(error) ;
             }
+        } finally {
+            dispatch(authActions.setLoading(false));
         }
-        dispatch(authActions.setLoading(false));
         return message
     }
     return {getUserData,signInUp,logout,verifyAccount,changePassword,resetPassword,sendVerificationLetter,deleteAccount}
