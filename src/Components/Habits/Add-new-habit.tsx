@@ -1,7 +1,7 @@
 // Styles
 import './Add-new-habit.scss';
 //Dependencies
-import React,{ useState,useRef,useEffect } from 'react';
+import React,{ useState,useRef,useEffect,useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
 import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete } from '@mui/material';
@@ -32,6 +32,10 @@ const AddNewHabit:React.FC = () => {
     const habitLoading = useSelector<RootState,boolean>(state=>state.habitsSlice.habitLoading);
     // Get paired goal if one exists
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
+    const [num,setNum] = useState<number>(0);
+    const result = useMemo(()=>{
+        return 
+    },[num]);
     const detailedGoal = goalList.find((goalitem:GoalInterface)=> goalitem.habitId === id);
     // Habit inputs and handlers
     const habitTime = detailedHabit?.time ? detailedHabit?.time.split(':') : null ;

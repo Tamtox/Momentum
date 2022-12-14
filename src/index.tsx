@@ -11,27 +11,13 @@ import store from './Store/Store';
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
-  <React.StrictMode>
-  <Provider store={store}>
-    <BrowserRouter>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <App />
-      </LocalizationProvider>
-    </BrowserRouter>
-  </Provider>
-</React.StrictMode>,
+  <React.StrictMode>  
+    <Provider store={store}>
+      <BrowserRouter>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <App />
+        </LocalizationProvider>
+      </BrowserRouter>
+    </Provider>
+  </React.StrictMode>,
 );
-
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <Provider store={store}>
-//       <BrowserRouter>
-//         <LocalizationProvider dateAdapter={DateAdapter}>
-//           <App />
-//         </LocalizationProvider>
-//       </BrowserRouter>
-//     </Provider>
-//   </React.StrictMode>,
-//   document.getElementById('root')
-// );

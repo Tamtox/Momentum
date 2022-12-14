@@ -133,7 +133,7 @@ const AddNewGoal:React.FC = () => {
                             inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                             value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate)}}
-                            componentsProps={{actionBar: { actions: ['clear'] },}}
+                            componentsProps={{actionBar: { actions: ['clear'],},}}
                         />
                     </div>
                     {detailedGoal ? <Tooltip title="Delete Item">

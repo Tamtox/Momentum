@@ -1,12 +1,11 @@
 // Dependencies
 import Cookies from "js-cookie";
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import axios from "axios";
 // Components
-import { goalActions,habitsActions,RootState,scheduleActions } from "../Store/Store";
-import type { HabitInterface, HabitEntryInterface, GoalInterface } from '../Misc/Interfaces';
+import { goalActions,habitsActions,scheduleActions } from "../Store/Store";
+import type { HabitInterface, HabitEntryInterface, GoalInterface, ScheduleInterface } from '../Misc/Interfaces';
 import {getWeekDates,createPairedScheduleItem,determineScheduleAction,createHabitEntries} from './Helper-functions';
-import habitsSlice from "../Store/Habits-slice";
 
 const httpAddress = `http://localhost:3001`;
 
@@ -76,13 +75,14 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{habitId:string,scheduleEntries:string}} = await axios.request({
+            const newHabitResponse:{data:{habitId:string,scheduleEntries:ScheduleInterface[]}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/addNewHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {habitId,scheduleEntries} = newHabitResponse.data;
+            console.log(scheduleEntries);
             newHabit._id = habitId;
             // Generate new blank entries for new habit
             const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
@@ -97,6 +97,10 @@ const useHabitHooks = () => {
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 dispatch(goalActions.updateGoal(newPairedGoal))
+            }
+            // Add schedule items
+            for (let entry of scheduleEntries) {
+                dispatch(scheduleActions.addScheduleItem(entry));
             }
             dispatch(habitsActions.addHabit(newHabit));
         } catch (error) {
@@ -178,6 +182,7 @@ const useHabitHooks = () => {
                 dispatch(goalActions.updateGoal(pairedGoalCopy))
             }
             dispatch(habitsActions.deleteHabit(habitId))
+            dispatch(scheduleActions.deleteScheduleItem({_id:habitId,parentType:'habit'}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {
