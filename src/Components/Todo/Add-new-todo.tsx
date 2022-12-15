@@ -98,7 +98,6 @@ const AddNewTodo:React.FC = () => {
             }));
         }
     },[detailedTodo])
-    console.log(detailedTodo)
     return(
         <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>

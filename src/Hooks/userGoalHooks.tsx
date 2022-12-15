@@ -182,16 +182,27 @@ const useGoalHooks = () => {
     }
 
     // Toggle archive status
-    const toggleGoalArchiveStatus = async (goalItem:GoalInterface) => {
+    const toggleGoalArchiveStatus = async (goalItem:GoalInterface,pairedHabit:HabitInterface|null) => {
         dispatch(goalActions.setGoalLoading(true))   
         const isArchived = goalItem.isArchived ? false : true
         try {
-            await axios.request({
+            const goalResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/goals/updateGoal`,
-                data:{_id:goalItem._id,isArchived},
+                data:{...goalItem,isArchived},
                 headers:{Authorization: `Bearer ${token}`}
             })
+            const {scheduleId} = goalResponse.data;
+            // Set schedule item
+            if(goalItem.targetDate && scheduleId) {
+                const {targetDate,title,alarmUsed,creationUTCOffset,_id} = goalItem;
+                const scheduleItem = await createPairedScheduleItem(null,targetDate,title,"goal",_id,alarmUsed,creationUTCOffset,scheduleId);  
+                isArchived ? dispatch(scheduleActions.deleteScheduleItem({_id:goalItem._id,targetDate:goalItem.targetDate,parentType:"goal"})) : dispatch(scheduleActions.addScheduleItem(scheduleItem));
+            }
+            // Unpair habit item
+            if(pairedHabit) {
+
+            }
             dispatch(goalActions.toggleArchiveStatus({...goalItem,isArchived:isArchived})) ;
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
@@ -201,7 +212,7 @@ const useGoalHooks = () => {
     }
 
     // Delete Goal
-    const deleteGoal = async (_id:string,pairedHabit:HabitInterface|null) => {
+    const deleteGoal = async (goalItem:GoalInterface,pairedHabit:HabitInterface|null) => {
         dispatch(goalActions.setGoalLoading(true))   
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
@@ -210,7 +221,7 @@ const useGoalHooks = () => {
                 method:'DELETE',
                 url:`${httpAddress}/goals/deleteGoal`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id:_id}
+                data:{_id:goalItem._id}
             })
             // Unpair deleted goal from habit
             if (pairedHabit) {
@@ -225,8 +236,8 @@ const useGoalHooks = () => {
                 })
                 dispatch(habitsActions.updateHabit(pairedHabitCopy))
             }
-            dispatch(goalActions.deleteGoal(_id));
-            dispatch(scheduleActions.deleteScheduleItem({_id,parentType:"goal"}));
+            dispatch(goalActions.deleteGoal(goalItem._id));
+            goalItem.targetDate &&  dispatch(scheduleActions.deleteScheduleItem({_id:goalItem._id,targetDate:goalItem.targetDate,parentType:"goal"}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {

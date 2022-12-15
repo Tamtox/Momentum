@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import type {ScheduleInterface} from "../Misc/Interfaces";
 
 // Generates month with locale date strings in en-Gb format as keys 
-const generateMonth = (date:Date = new Date()) => {
+const generateMonth = (date:Date = new Date()):{[date:string]:ScheduleInterface[]} => {
     const monthStart:Date = new Date(date.getFullYear(),date.getMonth(),date.getDate() - (date.getDate()  - 1),0,0,0,0);
     const monthEnd:Date = new Date(new Date(date.getFullYear(),date.getMonth() + 1,1,0,0,0,0).getTime() - 1);
     const month:{[date:string]:ScheduleInterface[]} = {};

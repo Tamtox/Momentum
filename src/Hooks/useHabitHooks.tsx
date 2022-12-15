@@ -210,7 +210,7 @@ const useHabitHooks = () => {
         }
     }
     // Change habit archive status 
-    const toggleHabitArchiveStatus = async (habitItem:HabitInterface) => {
+    const toggleHabitArchiveStatus = async (habitItem:HabitInterface,pairedGoal:GoalInterface|null) => {
         dispatch(habitsActions.setHabitLoading(true));
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset  = new Date().getTimezoneOffset();      
@@ -244,19 +244,23 @@ const useHabitHooks = () => {
         const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
         const newEntries:{[weekday:number]:HabitEntryInterface|null} = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,true,null);
         try {
-            const habitsResponse:{data:{populatedEntriesIds:string[]}} = await axios.request({
+            const habitsResponse:{data:{populatedEntriesIds:{[weekday:number]:string|null},scheduleEntries:ScheduleInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/populateHabit`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset,_id:habitItem._id},
                 headers:{Authorization: `Bearer ${token}`}
             })
             // Attach ids to populated entries
-            const {populatedEntriesIds} = habitsResponse.data;
+            const {populatedEntriesIds,scheduleEntries} = habitsResponse.data;
             [1,2,3,4,5,6,0].forEach((weekday:number) => {
-                if (newEntries[weekday]) {
-                    newEntries[weekday]!._id = populatedEntriesIds[weekday];
+                if (newEntries[weekday] && populatedEntriesIds[weekday]) {
+                    newEntries[weekday]!._id = populatedEntriesIds[weekday] || "";
                 }
             })
+            // Add schedule items
+            for (let entry of scheduleEntries) {
+                dispatch(scheduleActions.addScheduleItem(entry));
+            }
             dispatch(habitsActions.populateHabit({populatedEntries:newEntries,_id:habitItem._id}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;

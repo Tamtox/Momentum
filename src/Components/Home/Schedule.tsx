@@ -23,16 +23,16 @@ const Schedule:React.FC = () => {
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
     // Select Date for Schedule
-    const [selectedDate, setSelectedDate] = useState(new Date(scheduleDate));
+    const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
-        newDate = newDate || new Date ();
+        newDate = newDate || new Date();
         setSelectedDate(newDate);
         scheduleHooks.loadScheduleItems(newDate);
     }
     // const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     // console.log(sortedList);
     useEffect(() => {
-        scheduleListLoaded || scheduleHooks.loadScheduleItems(new Date(scheduleDate));
+        scheduleHooks.loadScheduleItems(new Date(scheduleDate));
     }, [])
     return(
         <div className={`schedule`}>

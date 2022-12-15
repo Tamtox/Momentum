@@ -78,16 +78,20 @@ const Archive:React.FC = () => {
         if( archiveMode === 'goal') {
             if(item.habitId) {
                 const habitItem:HabitInterface = habitArchive.filter((habitItem)=>habitItem.goalId === item._id)[0];
-                habitHooks.toggleHabitArchiveStatus(habitItem);
+                habitHooks.toggleHabitArchiveStatus(habitItem,item);
+                goalHooks.toggleGoalArchiveStatus(item,habitItem);
+            } else {
+                goalHooks.toggleGoalArchiveStatus(item,null);
             }
-            goalHooks.toggleGoalArchiveStatus(item);
         }
         if(archiveMode === 'habit') {
             if(item.goalId) {
                 const goalItem:GoalInterface = goalArchive.filter((goalItem)=>goalItem.habitId === item._id)[0];
-                goalHooks.toggleGoalArchiveStatus(goalItem);
+                goalHooks.toggleGoalArchiveStatus(goalItem,item);
+                habitHooks.toggleHabitArchiveStatus(item,goalItem);
+            } else {
+                habitHooks.toggleHabitArchiveStatus(item,null);
             }
-            habitHooks.toggleHabitArchiveStatus(item);
         }
     }
     useEffect(() => {

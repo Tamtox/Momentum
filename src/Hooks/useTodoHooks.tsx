@@ -120,12 +120,19 @@ const useTodoHooks = () => {
         dispatch(todoActions.setTodoLoading(true))   
         const isArchived = todoItem.isArchived ? false : true
         try {
-            await axios.request({
+            const todoResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id:todoItem._id,isArchived}
+                data:{...todoItem,isArchived}
             })
+            const {scheduleId} = todoResponse.data;
+            // Set schedule item
+            if (todoItem.targetDate && scheduleId) {
+                const {targetTime,targetDate,title,alarmUsed,creationUTCOffset,_id} = todoItem;
+                const scheduleItem = await createPairedScheduleItem(targetTime,targetDate,title,'todo',_id,alarmUsed,creationUTCOffset,scheduleId);  
+                isArchived ? dispatch(scheduleActions.deleteScheduleItem({_id:todoItem._id,targetDate:todoItem.targetDate,parentType:"todo"})) : dispatch(scheduleActions.addScheduleItem(scheduleItem));
+            }
             dispatch(todoActions.toggleArchiveStatus({...todoItem,isArchived:isArchived}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
@@ -134,17 +141,17 @@ const useTodoHooks = () => {
         }
     }
     // Delete Todo
-    const deleteToDo = async (todo:TodoInterface) => {
+    const deleteToDo = async (todoItem:TodoInterface) => {
         dispatch(todoActions.setTodoLoading(true))   
         try {
             await axios.request({
                 method:'DELETE',
                 url:`${httpAddress}/todo/deleteTodo`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id:todo._id}
+                data:{_id:todoItem._id}
             })
-            dispatch(todoActions.deleteToDo(todo._id));
-            todo.targetDate && dispatch(scheduleActions.deleteScheduleItem({_id:todo._id,targetDate:todo.targetDate,parentType:"todo"}));
+            dispatch(todoActions.deleteToDo(todoItem._id));
+            todoItem.targetDate && dispatch(scheduleActions.deleteScheduleItem({_id:todoItem._id,targetDate:todoItem.targetDate,parentType:"todo"}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {

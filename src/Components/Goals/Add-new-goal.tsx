@@ -10,7 +10,6 @@ import {BsTrash,BsArchive} from 'react-icons/bs';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
-import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 import Loading from '../Misc/Loading';
 
@@ -18,7 +17,6 @@ const AddNewGoal:React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const goalHooks = useGoalHooks();
-    const habitHooks = useHabitHooks();
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -125,7 +123,7 @@ const AddNewGoal:React.FC = () => {
                 <div className={`add-new-goal-controls`}>
                     {detailedGoal ? <Tooltip title="Archive Item">
                         <div className='archive-goal'>
-                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(detailedGoal!);detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit!);navigate("/goals")}}/>
+                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(detailedGoal,goalInputs.pairedHabit);navigate("/goals")}}/>
                         </div>
                     </Tooltip> : null}
                     <div className='add-new-goal-datepicker-wrapper'>
@@ -138,7 +136,7 @@ const AddNewGoal:React.FC = () => {
                     </div>
                     {detailedGoal ? <Tooltip title="Delete Item">
                         <div className='delete-goal'>
-                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(detailedGoal!._id,goalInputs.pairedHabit);navigate("/goals")}}/>
+                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(detailedGoal,goalInputs.pairedHabit);navigate("/goals")}}/>
                         </div>
                     </Tooltip> : null}
                 </div>
