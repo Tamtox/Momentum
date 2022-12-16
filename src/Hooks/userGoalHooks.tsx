@@ -183,7 +183,9 @@ const useGoalHooks = () => {
 
     // Toggle archive status
     const toggleGoalArchiveStatus = async (goalItem:GoalInterface,pairedHabit:HabitInterface|null) => {
-        dispatch(goalActions.setGoalLoading(true))   
+        dispatch(goalActions.setGoalLoading(true));
+        const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
+        const clientTimezoneOffset = new Date().getTimezoneOffset();      
         const isArchived = goalItem.isArchived ? false : true
         try {
             const goalResponse:{data:{scheduleId:string}} = await axios.request({
@@ -200,8 +202,17 @@ const useGoalHooks = () => {
                 isArchived ? dispatch(scheduleActions.deleteScheduleItem({_id:goalItem._id,targetDate:goalItem.targetDate,parentType:"goal"})) : dispatch(scheduleActions.addScheduleItem(scheduleItem));
             }
             // Unpair habit item
-            if(pairedHabit) {
-
+            if (pairedHabit) {
+                const pairedHabitCopy = Object.assign({},pairedHabit);
+                pairedHabitCopy.goalId = null;
+                pairedHabitCopy.goalTargetDate = null;
+                await axios.request({
+                    method:'PATCH',
+                    url:`${httpAddress}/habits/updateHabit`,
+                    data:{...pairedHabitCopy,clientCurrentWeekStartTime,clientTimezoneOffset},
+                    headers:{Authorization: `Bearer ${token}`}
+                })
+                dispatch(habitsActions.updateHabit(pairedHabitCopy))
             }
             dispatch(goalActions.toggleArchiveStatus({...goalItem,isArchived:isArchived})) ;
         } catch (error) {

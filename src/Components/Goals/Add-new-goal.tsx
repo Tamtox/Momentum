@@ -4,12 +4,13 @@ import './Add-new-goal.scss';
 import React,{useState,useRef, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Autocomplete } from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Autocomplete,Dialog,DialogActions,DialogContent,DialogContentText } from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
+import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
 import Loading from '../Misc/Loading';
 
@@ -17,6 +18,7 @@ const AddNewGoal:React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const goalHooks = useGoalHooks();
+    const habitHooks = useHabitHooks();
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -109,21 +111,68 @@ const AddNewGoal:React.FC = () => {
     },[detailedGoal])
     // Set habit state from store value
     useEffect(()=>{
-        setGoalInputs((prevState)=>({
-            ...prevState,
-            pairedHabit:detailedHabit ? detailedHabit : null
-        }))
+        if(detailedHabit) {
+            setGoalInputs((prevState)=>({
+                ...prevState,
+                pairedHabit:detailedHabit ? detailedHabit : null
+            }))
+        }
     },[detailedHabit])
+    // Dialog control and actions 
+    const [openDialog,setOpenDialog] = useState(false);
+    const [dialogMode,setDialogMode] = useState("archive");
+    const openDialogHandler = (newDialogMode:string,goalItem:GoalInterface,pairedHabit:HabitInterface|null) => {
+        if(pairedHabit) {
+            setDialogMode(newDialogMode);
+            setOpenDialog(true);
+        } else {
+            if(newDialogMode === "archive") {
+                goalHooks.toggleGoalArchiveStatus(goalItem,null);
+            } else if (newDialogMode === "delete") {
+                goalHooks.deleteGoal(goalItem,null);
+            }
+            navigate("/goals");
+        }
+    }
+    const goalArchiveDeleteHandler = (mode:string,habitAction:boolean) => {
+        if (mode === "archive") {
+            if(habitAction) {
+                detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal,null);
+                goalInputs.pairedHabit && habitHooks.toggleHabitArchiveStatus(goalInputs.pairedHabit,null);
+            } else {
+                detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal,goalInputs.pairedHabit);
+            }
+        } else if(mode === "delete") {
+            if(habitAction) {
+                detailedGoal && goalHooks.deleteGoal(detailedGoal,null);
+                goalInputs.pairedHabit && habitHooks.deleteHabit(goalInputs.pairedHabit,null)
+            } else {
+                detailedGoal && goalHooks.deleteGoal(detailedGoal,goalInputs.pairedHabit);
+            }
+        }
+        navigate("/goals");
+    }
     return(
         <div className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            {goalLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
+            <Dialog className={`add-new-goal-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {`Selected goal has paired habit. Do you want to ${dialogMode.toLowerCase()} it as well?`}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
+                    <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} goal`}</Button>
+                    <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
+                </DialogActions>
+            </Dialog>
+            {goalLoading ? <Loading height='80vh'/> : <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
                 {goalInputs.addNewGoalHeader.length > 0 ? <div className={`add-new-goal-header`}>
                     <Typography variant='h6' >{goalInputs.addNewGoalHeader}</Typography>
                 </div> : null}
                 <div className={`add-new-goal-controls`}>
                     {detailedGoal ? <Tooltip title="Archive Item">
                         <div className='archive-goal'>
-                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalHooks.toggleGoalArchiveStatus(detailedGoal,goalInputs.pairedHabit);navigate("/goals")}}/>
+                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{openDialogHandler("archive",detailedGoal,goalInputs.pairedHabit)}}/>
                         </div>
                     </Tooltip> : null}
                     <div className='add-new-goal-datepicker-wrapper'>
@@ -136,7 +185,7 @@ const AddNewGoal:React.FC = () => {
                     </div>
                     {detailedGoal ? <Tooltip title="Delete Item">
                         <div className='delete-goal'>
-                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalHooks.deleteGoal(detailedGoal,goalInputs.pairedHabit);navigate("/goals")}}/>
+                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{openDialogHandler("delete",detailedGoal,goalInputs.pairedHabit);}}/>
                         </div>
                     </Tooltip> : null}
                 </div>

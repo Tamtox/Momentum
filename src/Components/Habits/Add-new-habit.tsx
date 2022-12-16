@@ -4,12 +4,13 @@ import './Add-new-habit.scss';
 import React,{ useState,useRef,useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete } from '@mui/material';
+import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete,Dialog,DialogActions,DialogContent,DialogContentText } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { BsTrash,BsArchive } from 'react-icons/bs';
 //Components
 import { RootState } from "../../Store/Store";
 import useHabitHooks from '../../Hooks/useHabitHooks';
+import useGoalHooks from '../../Hooks/userGoalHooks';
 import type { GoalInterface,HabitInterface } from '../../Misc/Interfaces';
 import Loading from '../Misc/Loading';
 
@@ -17,6 +18,7 @@ const AddNewHabit:React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const habitHooks = useHabitHooks();
+    const goalHooks = useGoalHooks();
     const id = location.pathname.split('/')[2];
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const detailedHabit = habitList.find((habititem)=> habititem._id === id);      
@@ -118,13 +120,60 @@ const AddNewHabit:React.FC = () => {
     },[detailedHabit])
     // Set goal state from store value
     useEffect(()=>{
-        setHabitInputs((prevState)=>({
-            ...prevState,
-            pairedGoal:detailedGoal ? detailedGoal : null,
-        }))
+        if(detailedGoal) {
+            setHabitInputs((prevState)=>({
+                ...prevState,
+                pairedGoal:detailedGoal ? detailedGoal : null,
+            }))
+        }
     },[detailedGoal])
+    // Dialog control and actions 
+    const [openDialog,setOpenDialog] = useState(false);
+    const [dialogMode,setDialogMode] = useState("archive");
+    const openDialogHandler = (newDialogMode:string,habitItem:HabitInterface,pairedGoal:GoalInterface|null) => {
+        if(pairedGoal) {
+            setDialogMode(newDialogMode);
+            setOpenDialog(true);
+        } else {
+            if(newDialogMode === "archive") {
+                habitHooks.toggleHabitArchiveStatus(habitItem,null)
+            } else if (newDialogMode === "delete") {
+                habitHooks.deleteHabit(habitItem,null)
+            }
+            navigate("/habits");
+        }
+    }
+    const habitArchiveDeleteHandler = (mode:string,goalAction:boolean) => {
+        if (mode === "archive") {
+            if(goalAction) {
+                detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit,null);
+                habitInputs.pairedGoal && goalHooks.toggleGoalArchiveStatus(habitInputs.pairedGoal,null);
+            } else {
+                detailedHabit && habitHooks.toggleHabitArchiveStatus(detailedHabit,habitInputs.pairedGoal);
+            }
+        } else if(mode === "delete") {
+            if(goalAction) {
+                detailedHabit && habitHooks.deleteHabit(detailedHabit,null);
+                habitInputs.pairedGoal && goalHooks.deleteGoal(habitInputs.pairedGoal,null);
+            } else {
+                detailedHabit && habitHooks.deleteHabit(detailedHabit,habitInputs.pairedGoal);
+            }
+        }
+        navigate("/habits");
+    }
     return (
         <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
+            <Dialog className={`add-new-habit-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {`Selected habit has paired goal. Do you want to ${dialogMode.toLowerCase()} it as well?`}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
+                    <Button onClick={()=>{habitArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} habit`}</Button>
+                    <Button onClick={()=>{habitArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
+                </DialogActions>
+            </Dialog>
             {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
                 {habitInputs.addNewHabitHeader.length > 0 ? <div className={`add-new-habit-header`}>
                     <Typography variant='h6' >{habitInputs.addNewHabitHeader}</Typography>
@@ -132,7 +181,7 @@ const AddNewHabit:React.FC = () => {
                 <div className={`add-new-habit-controls`}>
                     {detailedHabit ? <Tooltip title="Archive Item">
                         <div className='archive-habit'>
-                            <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitHooks.toggleHabitArchiveStatus(detailedHabit,habitInputs.pairedGoal);navigate("/habits")}}/>
+                            <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{openDialogHandler("archive",detailedHabit,habitInputs.pairedGoal)}}/>
                         </div>
                     </Tooltip> : null}
                     <div className='add-new-habit-timepicker-wrapper'>
@@ -144,7 +193,7 @@ const AddNewHabit:React.FC = () => {
                     </div>
                     {detailedHabit ? <Tooltip title="Delete Item">
                         <div className='delete-habit'>
-                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitHooks.deleteHabit(detailedHabit!._id,habitInputs.pairedGoal);navigate("/habits")}}/>
+                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{openDialogHandler("delete",detailedHabit,habitInputs.pairedGoal)}}/>
                         </div>
                     </Tooltip> : null}
                 </div>
