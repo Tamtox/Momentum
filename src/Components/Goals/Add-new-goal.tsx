@@ -96,28 +96,6 @@ const AddNewGoal:React.FC = () => {
         detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal,pairedHabit,oldPairedHabit) : goalHooks.addGoal(newGoal,pairedHabit);
         navigate("/goals");
     }
-    // Set goal state from store value
-    useEffect(()=>{
-        if(detailedGoal) {
-            const {title,targetDate,creationUTCOffset,alarmUsed} = detailedGoal;
-            setGoalInputs((prevState)=>({
-                ...prevState,
-                goalTitle:title || '',
-                selectedDate:targetDate ? new Date(targetDate) : null,
-                goalCreationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
-                goalAlarmUsed:alarmUsed || false,
-            }))
-        }
-    },[detailedGoal])
-    // Set habit state from store value
-    useEffect(()=>{
-        if(detailedHabit) {
-            setGoalInputs((prevState)=>({
-                ...prevState,
-                pairedHabit:detailedHabit ? detailedHabit : null
-            }))
-        }
-    },[detailedHabit])
     // Dialog control and actions 
     const [openDialog,setOpenDialog] = useState(false);
     const [dialogMode,setDialogMode] = useState("archive");
@@ -152,19 +130,45 @@ const AddNewGoal:React.FC = () => {
         }
         navigate("/goals");
     }
+    // Paired habit archive/deletion modal
+    let modal = (
+        <Dialog className={`add-new-goal-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {`Selected goal has paired habit. Do you want to ${dialogMode.toLowerCase()} it as well?`}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
+                <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} goal`}</Button>
+                <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
+            </DialogActions>
+        </Dialog>
+    )
+    // Set goal state from store value
+    useEffect(()=>{
+        if(detailedGoal) {
+            const {title,targetDate,creationUTCOffset,alarmUsed} = detailedGoal;
+            setGoalInputs((prevState)=>({
+                ...prevState,
+                goalTitle:title || '',
+                selectedDate:targetDate ? new Date(targetDate) : null,
+                goalCreationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
+                goalAlarmUsed:alarmUsed || false,
+            }))
+        }
+    },[detailedGoal])
+    // Set habit state from store value
+    useEffect(()=>{
+        if(detailedHabit) {
+            setGoalInputs((prevState)=>({
+                ...prevState,
+                pairedHabit:detailedHabit ? detailedHabit : null
+            }))
+        }
+    },[detailedHabit])
     return(
         <div className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            <Dialog className={`add-new-goal-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {`Selected goal has paired habit. Do you want to ${dialogMode.toLowerCase()} it as well?`}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
-                    <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} goal`}</Button>
-                    <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
-                </DialogActions>
-            </Dialog>
+            modal
             {goalLoading ? <Loading height='80vh'/> : <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
                 {goalInputs.addNewGoalHeader.length > 0 ? <div className={`add-new-goal-header`}>
                     <Typography variant='h6' >{goalInputs.addNewGoalHeader}</Typography>

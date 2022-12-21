@@ -51,11 +51,7 @@ const useAuthHooks = () => {
             message = authResponse.data.message
             newToken = authResponse.data.token
         } catch (error) {
-            if(axios.isAxiosError(error)) {
-                message = error.response?.data || error.message
-            } else { 
-                console.log(error) ;
-            }
+            axios.isAxiosError(error) ? message = error.response?.data || error.message : console.log(error) ;
         } finally {
             dispatch(authActions.setLoading(false));
         }
@@ -69,7 +65,7 @@ const useAuthHooks = () => {
         return message
     }
     // Logout
-    const logout = async() => {
+    const logout = async () => {
         dispatch(authActions.setLoading(true))
         dispatch(todoActions.clearToDoList());
         dispatch(journalActions.clearEntry());
@@ -93,11 +89,7 @@ const useAuthHooks = () => {
             message = verificationResponse.data.message
             dispatch(authActions.verifyAccount('Complete'));
         } catch (error) {
-            if(axios.isAxiosError(error)) {
-                message = error.response?.data || error.message
-            } else { 
-                console.log(error) ;
-            }
+            axios.isAxiosError(error) ? message = error.response?.data || error.message : console.log(error) ;
         } finally {
             dispatch(authActions.setLoading(false));
         }
@@ -117,11 +109,7 @@ const useAuthHooks = () => {
             dispatch(authActions.login(passChangeResponse.data))
             message = passChangeResponse.data.message
         } catch (error) {
-            if(axios.isAxiosError(error)) {
-                message = error.response?.data || error.message
-            } else { 
-                console.log(error) ;
-            }
+            axios.isAxiosError(error) ? message = error.response?.data || error.message : console.log(error) ;
         } finally {
             dispatch(authActions.setLoading(false));
         }
@@ -140,11 +128,7 @@ const useAuthHooks = () => {
             })
             message = passChangeResponse.data.message;
         } catch (error) {
-            if(axios.isAxiosError(error)) {
-                message = error.response?.data || error.message
-            } else { 
-                console.log(error) ;
-            }
+            axios.isAxiosError(error) ? message = error.response?.data || error.message : console.log(error) ;
         } finally {
             dispatch(authActions.setLoading(false));
         }
@@ -163,11 +147,7 @@ const useAuthHooks = () => {
             })
             message = sendVerificationResponse.data.message
         } catch (error) {
-            if(axios.isAxiosError(error)) {
-                message = error.response?.data || error.message
-            } else { 
-                console.log(error) ;
-            }
+            axios.isAxiosError(error) ? message = error.response?.data || error.message : console.log(error) ;
         } finally {
             dispatch(authActions.setLoading(false));
         }
@@ -188,11 +168,7 @@ const useAuthHooks = () => {
             dispatch(authActions.logout());
             logout();
         } catch (error) {
-            if(axios.isAxiosError(error)) {
-                message = error.response?.data || error.message
-            } else { 
-                console.log(error) ;
-            }
+            axios.isAxiosError(error) ? message = error.response?.data || error.message : console.log(error) ;
         } finally {
             dispatch(authActions.setLoading(false));
         }

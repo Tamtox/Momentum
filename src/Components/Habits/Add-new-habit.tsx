@@ -105,28 +105,6 @@ const AddNewHabit:React.FC = () => {
         // Return to habits
         navigate("/habits");
     }
-    // Set habit state from store value
-    useEffect(()=>{
-        if(detailedHabit) {
-            const {title,time,creationUTCOffset,alarmUsed} = detailedHabit;
-            setHabitInputs((prevState)=>({
-                ...prevState,
-                habitTitle:title || '',
-                selectedTime: time ? new Date(new Date().setHours(Number(time.split(':')[0]),Number(time.split(':')[1]))) : null,
-                habitCreationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
-                habitAlarmUsed:alarmUsed || false,
-            }))
-        }
-    },[detailedHabit])
-    // Set goal state from store value
-    useEffect(()=>{
-        if(detailedGoal) {
-            setHabitInputs((prevState)=>({
-                ...prevState,
-                pairedGoal:detailedGoal ? detailedGoal : null,
-            }))
-        }
-    },[detailedGoal])
     // Dialog control and actions 
     const [openDialog,setOpenDialog] = useState(false);
     const [dialogMode,setDialogMode] = useState("archive");
@@ -161,19 +139,45 @@ const AddNewHabit:React.FC = () => {
         }
         navigate("/habits");
     }
+    // Paired goal archive/delete modal
+    let modal = (
+        <Dialog className={`add-new-habit-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {`Selected habit has paired goal. Do you want to ${dialogMode.toLowerCase()} it as well?`}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
+                <Button onClick={()=>{habitArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} habit`}</Button>
+                <Button onClick={()=>{habitArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
+            </DialogActions>
+        </Dialog>
+    )
+    // Set habit state from store value
+    useEffect(()=>{
+        if(detailedHabit) {
+            const {title,time,creationUTCOffset,alarmUsed} = detailedHabit;
+            setHabitInputs((prevState)=>({
+                ...prevState,
+                habitTitle:title || '',
+                selectedTime: time ? new Date(new Date().setHours(Number(time.split(':')[0]),Number(time.split(':')[1]))) : null,
+                habitCreationUTCOffset:creationUTCOffset || new Date().getTimezoneOffset(),
+                habitAlarmUsed:alarmUsed || false,
+            }))
+        }
+    },[detailedHabit])
+    // Set goal state from store value
+    useEffect(()=>{
+        if(detailedGoal) {
+            setHabitInputs((prevState)=>({
+                ...prevState,
+                pairedGoal:detailedGoal ? detailedGoal : null,
+            }))
+        }
+    },[detailedGoal])
     return (
         <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            <Dialog className={`add-new-habit-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {`Selected habit has paired goal. Do you want to ${dialogMode.toLowerCase()} it as well?`}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
-                    <Button onClick={()=>{habitArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} habit`}</Button>
-                    <Button onClick={()=>{habitArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
-                </DialogActions>
-            </Dialog>
+            modal
             {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
                 {habitInputs.addNewHabitHeader.length > 0 ? <div className={`add-new-habit-header`}>
                     <Typography variant='h6' >{habitInputs.addNewHabitHeader}</Typography>
