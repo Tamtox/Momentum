@@ -12,7 +12,7 @@ import {useSelector} from 'react-redux';
 import React,{useState,useEffect} from 'react';
 import {useNavigate,useLocation} from 'react-router-dom';
 import {IoCloseCircleOutline} from 'react-icons/io5';
-import { Container,Button,Typography,FormControl,InputLabel,Select,MenuItem,Card,OutlinedInput,InputAdornment} from '@mui/material';
+import { Container,Button,Typography,FormControl,InputLabel,Select,MenuItem,Card,OutlinedInput,InputAdornment, Box} from '@mui/material';
 
 const filterList = (list:any[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
@@ -103,7 +103,7 @@ const Archive:React.FC = () => {
     }, [archiveMode])
     return (
         <Container component="main" className={`archive ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
-            <div className={`archive-controls${isDarkMode?'-dark':''}`}>
+            <Box className={`archive-controls${isDarkMode?'-dark':''}`}>
                 <FormControl className='sort-archive select select' size='small' >
                     <InputLabel id="archive-sort-label">Sort</InputLabel>
                     <Select labelId="archive-sort-label" value={queries.sortQuery} onChange={sortQueryHandler} size='small' label="Sort">
@@ -128,21 +128,21 @@ const Archive:React.FC = () => {
                         <MenuItem value="goal">Goals</MenuItem>
                     </Select>
                 </FormControl>
-            </div>
+            </Box>
             {loading?
             <Loading height='80vh'/>:
-            <div className="archive-list">
+            <Box className="archive-list">
                 {filteredList.map((archiveItem)=>{
                     return (
                         <Card variant='elevation' className={`archive-item scale-in`} key={archiveItem._id}>
                             <Button className={`restore-item`} onClick={()=>{restoreItem(archiveItem)}}>Restore</Button>
-                            <div  className={`archive-item-title`}>
+                            <Box  className={`archive-item-title`}>
                                 <Typography className='archive-item-title-text'>{archiveItem.title}</Typography>
-                            </div>
+                            </Box>
                         </Card>
                     )
                 })}
-            </div>}
+            </Box>}
         </Container>
     )
 }

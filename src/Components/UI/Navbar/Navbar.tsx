@@ -5,7 +5,7 @@ import React, { useEffect,useState,useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch } from 'react-redux';
 import type {RootState} from '../../../Store/Store';
-import {Typography,Tooltip} from '@mui/material';
+import {Typography,Tooltip, Box} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {RiLoginBoxLine,RiLogoutBoxRLine} from 'react-icons/ri';
 import {FaSun,FaMoon,FaBars} from 'react-icons/fa';
@@ -59,27 +59,27 @@ const Navbar:React.FC = () => {
     return (
         <header className={`navbar ${isDarkMode?'nav-dark':'nav-light'}`}>
             {isLoggedIn && 
-            <div className='navbar-main'>
-                <div className={`toggle-sidebar-icon-container navbar-icon-container${isDarkMode ? '-dark' : ''}`} ref={sidebarIconRef} >
+            <Box className='navbar-main'>
+                <Box className={`toggle-sidebar-icon-container navbar-icon-container${isDarkMode ? '-dark' : ''}`} ref={sidebarIconRef} >
                     <FaBars className={`toggle-sidebar-icon${isDarkMode ? '-dark' : ''}`} />
-                </div>
-            </div>}
+                </Box>
+            </Box>}
             <Typography className={`navbar-title`} component="h6" variant="h6">Momentum</Typography>
-            <div className={`navbar-utility`}>
+            <Box className={`navbar-utility`}>
                 {/* {isLoggedIn &&<Tooltip title="Notifications" enterDelay={3000}>
-                    <div className={`navbar-icon-container${isDarkMode ? '-dark' : ''} nav-notifications-icon-container`} ref={notificationsIconRef}>
+                    <Box className={`navbar-icon-container${isDarkMode ? '-dark' : ''} nav-notifications-icon-container`} ref={notificationsIconRef}>
                         <BiBell className={`nav-notifications-icon${isDarkMode?'-dark':''} icon`} />
-                    </div>
+                    </Box>
                 </Tooltip>} */}
-                <div className={`toggle-dark-mode navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={()=>{dispatch(authActions.setDarkMode())}}>
+                <Box className={`toggle-dark-mode navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={()=>{dispatch(authActions.setDarkMode())}}>
                     {isDarkMode ? <FaMoon className='icon toggle-dark-mode-moon'/> : <FaSun className='icon toggle-dark-mode-sun' />}
-                </div>  
+                </Box>  
                 <Tooltip title={`${isLoggedIn ? 'Sign Out' : 'Sign In'}`} enterDelay={3000}>
-                    <div className={`sign-buttons navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={signHandler}>
+                    <Box className={`sign-buttons navbar-icon-container${isDarkMode ? '-dark' : ''}`} onClick={signHandler}>
                         {isLoggedIn ? <RiLogoutBoxRLine className={`sign-icon${isDarkMode?'-dark':''} icon`}/> : <RiLoginBoxLine className={`sign-icon${isDarkMode?'-dark':''} icon`}/>}
-                    </div>
+                    </Box>
                 </Tooltip>
-            </div>
+            </Box>
             {isLoggedIn && <NavbarSidebar ref={sidebarRef}/>}
             {notificationsVisible && <NavbarNotifications ref={notificationsMenuRef}/>}
         </header>

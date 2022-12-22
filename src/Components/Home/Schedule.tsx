@@ -5,7 +5,7 @@ import React, { useEffect,useState} from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch } from 'react-redux';
 import type {RootState} from '../../Store/Store';
-import {TextField,Button,Typography,Card} from '@mui/material';
+import {TextField,Button,Typography,Card, Box} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 //Components
@@ -35,41 +35,41 @@ const Schedule:React.FC = () => {
         scheduleHooks.loadScheduleItems(new Date(scheduleDate));
     }, [])
     return(
-        <div className={`schedule`}>
+        <Box className={`schedule`}>
             <Typography className='schedule-title'>Schedule</Typography>
-            <div className='schedule-date'>
+            <Box className='schedule-date'>
                 <Button variant='outlined' className={`button schedule-date-button`} onClick={()=>{selectScheduleDate(new Date(selectedDate.getTime() - 86400000))}}>
                     <CgArrowLeft className='schedule-date-icon icon-interactive nav-icon' />
                     <Typography className='schedule-date-button-text'>Prev Day</Typography>
                 </Button>   
-                <div className='schedule-datepicker-wrapper'>
+                <Box className='schedule-datepicker-wrapper'>
                     <DatePicker 
                         inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
                         renderInput={(props:any) => <TextField size='small' className={`focus date-picker schedule-date-picker`}  {...props} />}
                         value={selectedDate} onChange={(newDate:Date|null)=>{selectScheduleDate(newDate)}}
                     />
-                </div>
+                </Box>
                 <Button variant='outlined' className={`button schedule-date-button`} onClick={()=>{selectScheduleDate(new Date(selectedDate.getTime() + 86400000))}}>
                     <Typography className='schedule-date-button-text'>Next Day</Typography>
                     <CgArrowRight className='schedule-date-icon icon-interactive nav-icon' />
                 </Button>
-            </div>
+            </Box>
             {scheduleLoading ? <Loading height='80vh'/>:
-            <div className={`schedule-list`}>
+            <Box className={`schedule-list`}>
                 {scheduleList.map((scheduleItem:ScheduleInterface)=>{
                     return (
                     <Card variant='elevation' className={`schedule-item scale-in schedule-${scheduleItem.parentType}`} key={scheduleItem._id}>
-                        {scheduleItem.time && <div className={`schedule-item-time`}>
+                        {scheduleItem.time && <Box className={`schedule-item-time`}>
                             <Typography className={`schedule-item-time-text`}>{`${scheduleItem.time.split(':')[0]}:${scheduleItem.time.split(':')[1]}`}</Typography>
-                        </div>}
-                        <div className={`schedule-item-title`} onClick={()=>{navigate(`/${scheduleItem.parentType}${scheduleItem.parentType === 'todo' ? '' : 's'}/${scheduleItem.parentId}`)}}>
+                        </Box>}
+                        <Box className={`schedule-item-title`} onClick={()=>{navigate(`/${scheduleItem.parentType}${scheduleItem.parentType === 'todo' ? '' : 's'}/${scheduleItem.parentId}`)}}>
                             <Typography className={`schedule-item-title-text`}>{scheduleItem.parentTitle}</Typography>
-                        </div>
+                        </Box>
                     </Card>
                     )
                 })}
-            </div>}
-        </div>
+            </Box>}
+        </Box>
     )
 }
 

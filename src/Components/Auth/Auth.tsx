@@ -3,7 +3,7 @@ import './Auth.scss';
 //Dependencies
 import React,{useState} from 'react';
 import {useSelector} from 'react-redux';
-import { Container,TextField,Button,Typography,Card} from '@mui/material';
+import { Container,TextField,Button,Typography,Card,Box} from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 //Components
 import {RootState} from '../../Store/Store';
@@ -25,9 +25,9 @@ const Auth:React.FC = () => {
         passwordResetEmail:'',
         passResetLabel:'Reset Password',
     })
-    const authInputsHandler = (e:any,input:string) => {
+    const authInputsHandler = (newInput:string,input:string) => {
         setAuthInputs((prevState)=>({
-            ...prevState,[input]:e.target.value
+            ...prevState,[input]:newInput
         }))
     }
     const passResetModeHandler = (isPassReset:boolean) => {
@@ -45,7 +45,7 @@ const Auth:React.FC = () => {
         // Check if passwords match
         if(!authInputs.isLogin) {
             if(authInputs.password !== authInputs.passwordRepeat) {
-                return alert('Passwords do not match!')
+                return authInputsHandler("Passwords don't match!", "authResponseLabel")
             }
         } 
         const authResponse:string = await authHooks.signInUp(authInputs.email,authInputs.password,authInputs.isLogin,authInputs.username);
@@ -66,37 +66,37 @@ const Auth:React.FC = () => {
         },10000)
     }
     let passResetForm = authInputs.passwordResetMode ? (
-        <div className={`auth-card`}>
+        <Box className={`auth-card`}>
             <Typography className='scale-in' component="h5" variant="h5">{authInputs.passResetLabel}</Typography>
             <form className={`auth-form scale-in`} onSubmit={passResetHandler}>
-                <div className={`auth-inputs`}>
-                    <TextField className={`auth-input`} value={authInputs.passwordResetEmail} onChange={(event)=>{authInputsHandler(event,'passwordResetEmail')}} required fullWidth label="Enter your email" type="email" autoComplete="email" />
-                </div>
-                <div className={`auth-buttons`}>
-                    <Button onClick={(event)=>{authInputsHandler(event,'passwordResetMode')}} variant="outlined" className={`button auth-button`}>Back</Button>
+                <Box className={`auth-inputs`}>
+                    <TextField className={`auth-input`} value={authInputs.passwordResetEmail} onChange={(event)=>{authInputsHandler(event.target.value,'passwordResetEmail')}} required fullWidth label="Enter your email" type="email" autoComplete="email" />
+                </Box>
+                <Box className={`auth-buttons`}>
+                    <Button onClick={(event)=>{passResetModeHandler(false)}} variant="outlined" className={`button auth-button`}>Back</Button>
                     {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>Reset</Button>}
-                </div>
+                </Box>
             </form>
-        </div> 
+        </Box> 
     ) : null
     return (
         <Container component="main" className='auth page'>
-            {passResetForm || <div className={`auth-card scale-in`}>
+            {passResetForm || <Box className={`auth-card scale-in`}>
                 <Typography component="h5" variant="h5">{authInputs.authLabel}</Typography>
                 <form className={`auth-form`} onSubmit={authFormSubmit}>
-                    <div className={`auth-inputs scale-in`}>
-                        <TextField className={`auth-input`} value={authInputs.email} onChange={(event)=>{authInputsHandler(event,'email')}} size="medium" required fullWidth label="Email Address" type="email" autoComplete="email" />
-                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.username} onChange={(event)=>{authInputsHandler(event,'username')}} size="medium" required fullWidth label="Username" type="text"/>}
-                        <TextField className={`auth-input`} value={authInputs.password} onChange={(event)=>{authInputsHandler(event,'password')}} size="medium" required fullWidth label="Password" type="password" autoComplete="current-password" />
-                        {!authInputs.isLogin && <TextField className={`auth-input`} value={authInputs.passwordRepeat} onChange={(event)=>{authInputsHandler(event,'passwordRepeat')}} size="medium" required fullWidth label="Repeat Password" type="password" autoComplete="current-password" />}
-                    </div>
-                    <div className={`auth-buttons`}>
+                    <Box className={`auth-inputs scale-in`}>
+                        <TextField className={`auth-input scale-in`} value={authInputs.email} onChange={(event)=>{authInputsHandler(event.target.value,'email')}} size="medium" required fullWidth label="Email Address" type="email" autoComplete="email" />
+                        {!authInputs.isLogin && <TextField className={`auth-input scale-in`} value={authInputs.username} onChange={(event)=>{authInputsHandler(event.target.value,'username')}} size="medium" required fullWidth label="Username" type="text"/>}
+                        <TextField className={`auth-input scale-in`} value={authInputs.password} onChange={(event)=>{authInputsHandler(event.target.value,'password')}} size="medium" required fullWidth label="Password" type="password" autoComplete="current-password" />
+                        {!authInputs.isLogin && <TextField className={`auth-input scale-in`} value={authInputs.passwordRepeat} onChange={(event)=>{authInputsHandler(event.target.value,'passwordRepeat')}} size="medium" required fullWidth label="Repeat Password" type="password" autoComplete="current-password" />}
+                    </Box>
+                    <Box className={`auth-buttons`}>
                         <Button onClick={()=>{passResetModeHandler(true)}} variant="outlined" className={`button auth-button`} sx={{width:'fit-content'}}>Reset Password</Button>
                         {loading?<LoadingButton className={`button auth-button`} loading variant="contained"></LoadingButton>:<Button type="submit" variant="contained" className={`button auth-button`}>{authInputs.isLogin?'Sign In':'Sign Up'}</Button>}
-                    </div>
+                    </Box>
                 </form>
                 <Card className={`auth-switch`} onClick={isLoginHandler}>{authInputs.isLogin?"Don't have an account ?":"Use existing account"}</Card>
-            </div>}
+            </Box>}
         </Container>
     )
 }

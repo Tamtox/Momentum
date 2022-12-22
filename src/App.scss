@@ -1,6 +1,6 @@
 @import './Misc/mixins';
 
-*{
+html,body{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -18,8 +18,6 @@
 }
 .app {
     text-align: center;
-    @include flex;
-    max-width: 100%;
     .backdrop{
         position: fixed;
         top: 0;

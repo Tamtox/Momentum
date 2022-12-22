@@ -5,7 +5,7 @@ import React, { useEffect,useState} from 'react';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch } from 'react-redux';
 import type {RootState} from '../../../Store/Store';
-import {TextField,Button,Typography} from '@mui/material';
+import {TextField,Button,Typography, Box} from '@mui/material';
 import { DatePicker} from '@mui/lab';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 //Components
@@ -31,13 +31,12 @@ const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((
         scheduleHooks.loadScheduleItems(newDate);
     }
     const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
-    console.log(sortedList);
     useEffect(() => {
         notificationListLoaded || scheduleHooks.loadScheduleItems(new Date());
     }, [])
     return (
-        <div ref={ref} className={`nav-notifications nav-notifications-${isDarkMode?'dark':'light'}`}>
-            <div className='nav-notifications-date-picker'>
+        <Box ref={ref} className={`nav-notifications nav-notifications-${isDarkMode?'dark':'light'}`}>
+            <Box className='nav-notifications-date-picker'>
                 <Button variant='outlined' className={`button notifications-date-button`} onClick={()=>{selectNotificationDate(new Date(selectedDate.getTime() - 86400000))}}>
                     <CgArrowLeft className='notifications-date-icon icon-interactive nav-icon' />
                 </Button>   
@@ -49,18 +48,18 @@ const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((
                 <Button variant='outlined' className={`button notifications-date-button`} onClick={()=>{selectNotificationDate(new Date(selectedDate.getTime() + 86400000))}}>
                     <CgArrowRight className='notifications-date-icon icon-interactive nav-icon' />
                 </Button>
-            </div>
-            {!!notificationList.length && <div className='nav-notifications-list'>
+            </Box>
+            {!!notificationList.length && <Box className='nav-notifications-list'>
                 {notificationList.map((notification:ScheduleInterface)=>{
                     return (
-                    <div className={`nav-notification`} key={notification._id}>
+                    <Box className={`nav-notification`} key={notification._id}>
                         <Typography>{new Date(notification.date).toLocaleTimeString()}</Typography>
                         <Typography>{notification.parentTitle}</Typography>
-                    </div>
+                    </Box>
                     )
                 })}
-            </div>}
-        </div>
+            </Box>}
+        </Box>
     )
 });
 

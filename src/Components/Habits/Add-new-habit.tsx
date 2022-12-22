@@ -4,7 +4,7 @@ import './Add-new-habit.scss';
 import React,{ useState,useRef,useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete,Dialog,DialogActions,DialogContent,DialogContentText } from '@mui/material';
+import { TextField,Button,Typography,FormControl,FormControlLabel,FormGroup,FormLabel,Card,Checkbox,Tooltip,Switch,Autocomplete,Dialog,DialogActions,DialogContent,DialogContentText, Box } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { BsTrash,BsArchive } from 'react-icons/bs';
 //Components
@@ -176,36 +176,36 @@ const AddNewHabit:React.FC = () => {
         }
     },[detailedGoal])
     return (
-        <div className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            modal
+        <Box className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
+            {modal}
             {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
-                {habitInputs.addNewHabitHeader.length > 0 ? <div className={`add-new-habit-header`}>
+                {habitInputs.addNewHabitHeader.length > 0 ? <Box className={`add-new-habit-header`}>
                     <Typography variant='h6' >{habitInputs.addNewHabitHeader}</Typography>
-                </div> : null}
-                <div className={`add-new-habit-controls`}>
+                </Box> : null}
+                <Box className={`add-new-habit-controls`}>
                     {detailedHabit ? <Tooltip title="Archive Item">
-                        <div className='archive-habit'>
+                        <Box className='archive-habit'>
                             <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{openDialogHandler("archive",detailedHabit,habitInputs.pairedGoal)}}/>
-                        </div>
+                        </Box>
                     </Tooltip> : null}
-                    <div className='add-new-habit-timepicker-wrapper'>
+                    <Box className='add-new-habit-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
                             value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
                         />
-                    </div>
+                    </Box>
                     {detailedHabit ? <Tooltip title="Delete Item">
-                        <div className='delete-habit'>
+                        <Box className='delete-habit'>
                             <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{openDialogHandler("delete",detailedHabit,habitInputs.pairedGoal)}}/>
-                        </div>
+                        </Box>
                     </Tooltip> : null}
-                </div>
-                {habitInputs.selectedTime ? <div className={`add-new-habit-alarm-switches`}>
+                </Box>
+                {habitInputs.selectedTime ? <Box className={`add-new-habit-alarm-switches`}>
                     <FormGroup>
                         <FormControlLabel control={<Switch checked={habitInputs.habitAlarmUsed} onChange={habitAlarmSwitchHandler} />} label="Habit alarm" />
                     </FormGroup>
-                </div> : null}
+                </Box> : null}
                 <TextField value={habitInputs.habitTitle} onChange={(event)=>{habitInputsHandler(event.target.value,'habitTitle')}} label='Habit Title' className="add-new-habit-title" multiline required />
                 <FormControl className="weekdays-selector" component="fieldset" variant="standard">
                     <FormLabel>
@@ -217,20 +217,20 @@ const AddNewHabit:React.FC = () => {
                         })}
                     </FormGroup>
                 </FormControl>
-                <div className={`add-new-habit-paired-goal`}>
+                <Box className={`add-new-habit-paired-goal`}>
                     <Autocomplete
                         value={habitInputs.pairedGoal} defaultValue={habitInputs.pairedGoal}
                         onChange={(event: any, newValue: GoalInterface|null) => {pairedGoalSelect(newValue)}}
                         options={goalList} getOptionLabel={(option) => option.title}
                         renderInput={(params) => <TextField {...params} label="Paired Goal" />}
                     />
-                </div>
-                <div className="add-new-habit-buttons">
+                </Box>
+                <Box className="add-new-habit-buttons">
                     <Button variant="outlined" type='button' className='button' onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className='button' >{detailedHabit ? 'Update' : 'Submit'}</Button>
-                </div>
+                </Box>
             </Card>}
-        </div>
+        </Box>
     )
 }
 

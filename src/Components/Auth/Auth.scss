@@ -8,7 +8,6 @@
         align-items: center;
         border-radius: 10px;
         padding: 10px 2% 10px 2%;
-        border: 2px grey solid;
         .auth-form{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
             @include grid(4fr 1fr,100%);
@@ -32,6 +31,7 @@
             font-weight: 500;
             font-size: 1.2rem;
             border-radius: 30px;
+            box-shadow: none;
             transition: box-shadow 0.15s;
         }
         .auth-switch:hover{

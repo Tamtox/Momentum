@@ -8,7 +8,7 @@ import Loading from '../Misc/Loading';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState,useRef, useEffect} from 'react';
-import { TextField,Button,Card,Tooltip,FormControlLabel,FormGroup,Switch} from '@mui/material';
+import { TextField,Button,Card,Tooltip,FormControlLabel,FormGroup,Switch, Box} from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/x-date-pickers';
 import { BsTrash,BsArchive } from 'react-icons/bs';
 import { useLocation,useNavigate } from 'react-router-dom';
@@ -99,45 +99,45 @@ const AddNewTodo:React.FC = () => {
         }
     },[detailedTodo])
     return(
-        <div className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
+        <Box className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
             {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
-                <div className={`add-new-todo-controls`}>
+                <Box className={`add-new-todo-controls`}>
                     {detailedTodo ? <Tooltip title="Archive Item">
-                        <div className='archive-todo'>
+                        <Box className='archive-todo'>
                             <BsArchive className={`icon-interactive archive-todo-icon`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
-                        </div>
+                        </Box>
                     </Tooltip> : null}
-                    <div className='add-new-todo-datepicker-wrapper'>
+                    <Box className='add-new-todo-datepicker-wrapper'>
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
                             renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
                             value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
                         />
-                    </div>
-                    {todoInputs.selectedDate ? <div className='add-new-todo-timepicker-wrapper'>
+                    </Box>
+                    {todoInputs.selectedDate ? <Box className='add-new-todo-timepicker-wrapper'>
                         <TimePicker 
                             inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
                             value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
                         />
-                    </div> : null}
+                    </Box> : null}
                     {detailedTodo ? <Tooltip title="Delete Item">
-                        <div className='delete-todo'>
+                        <Box className='delete-todo'>
                             <BsTrash className={`icon-interactive delete-todo-icon`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>
-                        </div>
+                        </Box>
                     </Tooltip> : null}
-                </div>
+                </Box>
                 {(todoInputs.selectedDate && todoInputs.selectedTime) ? <FormGroup className='add-new-todo-alarm-switch'>
                     <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />
                 </FormGroup> : null}
                 <TextField value={todoInputs.todoTitle} onChange={(event)=>{todoInputsHandler(event.target.value,'todoTitle')}} className={`add-new-todo-title focus input`} label='Title' multiline required />
                 <TextField value={todoInputs.todoDescription} onChange={(event)=>{todoInputsHandler(event.target.value,'todoDescription')}} label="Description (Optional) " className={`add-new-todo-description focus`} multiline />
-                <div className={`add-new-todo-buttons`}>
+                <Box className={`add-new-todo-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedTodo?'Update':'Submit'}</Button>
-                </div>
+                </Box>
             </Card>}
-        </div>
+        </Box>
     )
 }
 

@@ -8,7 +8,7 @@ import useJournalHooks from '../../Hooks/useJournalHooks';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{ useState,useEffect} from 'react';
-import { Container,TextField,Button,Typography} from '@mui/material';
+import { Container,TextField,Button,Typography, Box} from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 
@@ -62,23 +62,23 @@ const Journal:React.FC = () => {
     return (
         <Container component="section" className={`journal ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
             {journalLoading ? <Loading height='100%'/>: <form className="journal-form scale-in" onSubmit={journalUpdateHandler}>
-                <div className={`journal-date`}>
+                <Box className={`journal-date`}>
                     <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(journalInputs.date.getTime() - 86400000))}}>
                         <CgArrowLeft className='journal-date-icon icon-interactive nav-icon' />
                         <Typography className='journal-date-button-text'>Prev Day</Typography>
                     </Button>
-                    <div className='journal-datepicker-wrapper'>
+                    <Box className='journal-datepicker-wrapper'>
                         <DatePicker 
                             inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date-picker`}  {...props} />}
                             value={journalInputs.date} onChange={(newDate:Date|null)=>{selectJournalEntryByDate(newDate)}}
                         />
-                    </div>
+                    </Box>
                     <Button variant='outlined' className={`button journal-date-button`} onClick={()=>{selectJournalEntryByDate(new Date(journalInputs.date.getTime() + 86400000))}}>
                         <Typography className='journal-date-button-text'>Next Day</Typography>
                         <CgArrowRight className='journal-date-icon icon-interactive nav-icon' />
                     </Button>
-                </div>
+                </Box>
                 <TextField value={journalInputs.journalEntry} onChange={(event)=>{journalInputsHandler(event.target.value,'journalEntry')}} className={`focus journal-entry input`} placeholder="Write down what is on you mind." fullWidth multiline required autoFocus />
                 <Button type="submit" variant="contained" className={`journal-button button`}>{journalEntry?._id ?'Update':'New Entry'}</Button>
             </form>}

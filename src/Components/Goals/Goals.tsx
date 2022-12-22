@@ -5,7 +5,7 @@ import React,{useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {useLocation,useNavigate} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
-import { Container,Typography,Card,} from '@mui/material';
+import { Container,Typography,Card, Box,} from '@mui/material';
 // Components
 import Toolbar from '../UI/Toolbar/Toolbar';
 import Loading from '../Misc/Loading';
@@ -13,7 +13,7 @@ import {RootState} from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import type {GoalInterface} from '../../Misc/Interfaces';
 
-function filterList(list:GoalInterface[],sortQuery:string|null,searchQuery:string|null) {
+const filterList = (list:GoalInterface[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
         if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime())};
         if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime())};
@@ -39,11 +39,11 @@ const Goals:React.FC = () => {
     const goalLoading = useSelector<RootState,boolean>(state=>state.goalSlice.goalLoading);
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
-     // Sorting by query params
+    // Sorting by query params
     const location = useLocation();
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
-    const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] ;
+    const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')];
     const filteredList = filterList([...goalList],sortQuery,searchQuery);
     useEffect(() => {
         goalListLoaded || goalHooks.loadGoalData();
@@ -52,20 +52,20 @@ const Goals:React.FC = () => {
         <Container component="main" className={`goals ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'goal'} addNewItem={():any=>navigate(`${location.pathname}/new-goal`)}/>
             {goalLoading ? <Loading height='80vh'/>:
-            <div className="goal-list">
+            <Box className="goal-list">
                 {filteredList.map((goalItem:GoalInterface)=>{
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
-                            <div className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.status)}}>
+                            <Box className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.status)}}>
                                 {goalItem.status === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.status}`} />}
-                            </div>
-                            <div className={`goal-item-title`} onClick={()=>{navigate(`${location.pathname}/${goalItem._id}`)}}>
+                            </Box>
+                            <Box className={`goal-item-title`} onClick={()=>{navigate(`${location.pathname}/${goalItem._id}`)}}>
                                 <Typography className={`goal-item-title-text`}>{goalItem.title}</Typography>
-                            </div>
+                            </Box>
                         </Card>
                     )
                 })}
-            </div>}
+            </Box>}
         </Container>
     )
 }

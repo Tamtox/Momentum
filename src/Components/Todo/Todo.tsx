@@ -11,17 +11,17 @@ import {useSelector} from 'react-redux';
 import React,{useEffect} from 'react';
 import {useLocation,useNavigate} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
-import { Container,Typography,Card} from '@mui/material';
+import { Container,Typography,Card, Box} from '@mui/material';
 
 const filterList = (list:TodoInterface[],sortQuery:string|null,searchQuery:string|null) => {
     if(sortQuery) {
-        if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
-        if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
-        if (sortQuery === 'statusPend') { list = list.filter(item=>item.status === 'Pending') };
-        if (sortQuery === 'statusComp') { list = list.filter(item=>item.status === 'Complete') };
+        if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime())};
+        if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime())};
+        if (sortQuery === 'statusPend') { list = list.filter((item)=>item.status === 'Pending') };
+        if (sortQuery === 'statusComp') { list = list.filter((item)=>item.status === 'Complete') };
     }
     if(searchQuery) {
-        list = list.filter((item)=>{
+        list = list.filter((item) => {
             if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
                 return item;
             } else {
@@ -52,20 +52,20 @@ const Todo:React.FC = () => {
         <Container component="main" className={`todo ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'todo'} addNewItem={():any=>navigate(`${location.pathname}/new-todo`)}/>
             {todoLoading ? <Loading height='80vh'/>:
-            <div className="todo-list">
+            <Box className="todo-list">
                 {filteredList.map((todoItem:TodoInterface)=>{
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
-                            <div className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.status)}}>
+                            <Box className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.status)}}>
                                 {todoItem.status === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive ${todoItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${todoItem.status}`}/>}
-                            </div>
-                            <div  className={`todo-item-title`} onClick={()=>{navigate(`${location.pathname}/${todoItem._id}`)}}>
+                            </Box>
+                            <Box  className={`todo-item-title`} onClick={()=>{navigate(`${location.pathname}/${todoItem._id}`)}}>
                                 <Typography className='todo-item-title-text'>{todoItem.title}</Typography>
-                            </div>
+                            </Box>
                         </Card>
                     )
                 })}
-            </div>}
+            </Box>}
         </Container>
     )
 }

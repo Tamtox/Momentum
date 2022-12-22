@@ -3,7 +3,7 @@ import './Habits.scss';
 //Dependencies
 import React,{ useState,useEffect } from 'react';
 import {useSelector} from 'react-redux';
-import {Container,TextField,Button,Typography,Card} from '@mui/material';
+import {Container,TextField,Button,Typography,Card, Box} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { CgArrowLeft, CgArrowRight } from 'react-icons/cg';
 import {IoCheckboxOutline,IoSquareOutline} from 'react-icons/io5';
@@ -79,7 +79,7 @@ const Habits:React.FC = () => {
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'habit'} addNewItem={():any=>navigate(`${location.pathname}/new-habit`)}/>
-            <div className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
+            <Box className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
                     <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() - 86400000 * 7))}}>
                         <CgArrowLeft className='habit-date-button-icon icon-interactive nav-icon' />
                         <Typography className='habit-date-button-text'>Prev Week</Typography>
@@ -99,39 +99,39 @@ const Habits:React.FC = () => {
                         <Typography className='habit-date-button-text'>Next Week</Typography>
                         <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
                     </Button> 
-                </div>
-            {habitLoading ? <Loading height='80vh'/> : <div className={`habit-list scale-in`}>
+                </Box>
+            {habitLoading ? <Loading height='80vh'/> : <Box className={`habit-list scale-in`}>
                 {filteredList.map((habitListItem:HabitInterface)=>{
                     return (
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
-                            <div className={`habit-list-item-title`} onClick={()=>{navigate(`${location.pathname}/${habitListItem._id}`)}}> 
+                            <Box className={`habit-list-item-title`} onClick={()=>{navigate(`${location.pathname}/${habitListItem._id}`)}}> 
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
-                            </div>
+                            </Box>
                             {Object.values(habitListItem.entries).every(entry=> entry === null) ? 
                                 <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem)}} className={`populate-week`}>Poplulate with Entries</Button> 
-                                :<div className={`habit-weekdays`}>
+                                :<Box className={`habit-weekdays`}>
                                     {weekdays.map((weekday:number)=>{
                                         const habitEntry:HabitEntryInterface | null = habitListItem.entries[weekday];
                                         if(habitEntry) {
                                             const isCurrentDay = new Date(habitEntry.date).toLocaleDateString('en-GB') === new Date().toLocaleDateString('en-GB');
                                             return (
-                                                <div key={weekday} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitEntry,weekday)}}>
+                                                <Box key={weekday} className={`habit-weekday`} onClick={()=>{habitHooks.changeHabitStatus(habitEntry,weekday)}}>
                                                     <Typography className={`habit-weekday-label ${isCurrentDay && 'current-day'}`}>{weekdaysList[weekday]}</Typography>
                                                     {habitEntry.status === 'Complete' ? 
                                                     <IoCheckboxOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} /> : 
                                                     <IoSquareOutline className={`icon-interactive habit-weekday-icon ${habitEntry.status}`} />}
-                                                </div>
+                                                </Box>
                                             )
                                         } else {
                                             return null;
                                         }
                                     })}
-                                </div>
+                                </Box>
                             }
                         </Card>
                     )
                 })}
-            </div>
+            </Box>
             } 
         </Container>
     )
