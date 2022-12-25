@@ -10,7 +10,7 @@ interface AuthSchema {
     user:UserInterface,
     loading:boolean,
     authLoading:boolean,
-    darkMode:boolean|undefined,
+    darkMode:boolean,
     sidebarFull:boolean,
     sidebarVisible:boolean
 }

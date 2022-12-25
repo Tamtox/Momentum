@@ -8,6 +8,7 @@
         align-items: center;
         border-radius: 10px;
         padding: 10px 2% 10px 2%;
+        box-shadow: 0px 2px 5px grey;
         .auth-form{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
             @include grid(4fr 1fr,100%);
@@ -37,5 +38,9 @@
         .auth-switch:hover{
             box-shadow: 0 1px 6px gray;
         }
+    }
+    .auth-card-dark{
+        @extend .auth-card;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
     }
 }

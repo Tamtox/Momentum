@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 // Components
-import { authActions,todoActions,journalActions,habitsActions,goalActions } from "../Store/Store";
+import { authActions,todoActions,journalActions,habitsActions,goalActions,scheduleActions } from "../Store/Store";
 import useTodoHooks from "./useTodoHooks";
 import useHabitHooks from "./useHabitHooks";
 import useGoalHooks from "./userGoalHooks";
@@ -71,6 +71,7 @@ const useAuthHooks = () => {
         dispatch(journalActions.clearEntry());
         dispatch(habitsActions.clearHabitData());
         dispatch(goalActions.clearGoalData());
+        dispatch(scheduleActions.clearScheduleList());
         dispatch(authActions.logout());
         navigate('/auth');
         dispatch(authActions.setLoading(false))

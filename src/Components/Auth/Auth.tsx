@@ -9,9 +9,12 @@ import { LoadingButton } from '@mui/lab';
 import {RootState} from '../../Store/Store';
 import useAuthHooks from '../../Hooks/useAuthHooks';
 
+
+
 const Auth:React.FC = () => {
     const authHooks = useAuthHooks();
     const loading = useSelector<RootState,boolean>(state=>state.authSlice.loading);
+    const isDarkMode = useSelector<RootState,boolean>(state=>state.authSlice.darkMode);
     // Toggle sign in/sign up
     const [authInputs,setAuthInputs] = useState({
         email:'',
@@ -81,7 +84,7 @@ const Auth:React.FC = () => {
     ) : null
     return (
         <Container component="main" className='auth page'>
-            {passResetForm || <Box className={`auth-card scale-in`}>
+            {passResetForm || <Box className={`auth-card${isDarkMode?"-dark":""} scale-in`}>
                 <Typography component="h5" variant="h5">{authInputs.authLabel}</Typography>
                 <form className={`auth-form`} onSubmit={authFormSubmit}>
                     <Box className={`auth-inputs scale-in`}>
