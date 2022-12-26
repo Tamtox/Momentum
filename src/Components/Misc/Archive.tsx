@@ -76,22 +76,9 @@ const Archive:React.FC = () => {
     const restoreItem = (item:any) => {
         archiveMode === 'todo' &&  todoHooks.toggleTodoArchiveStatus(item);
         if( archiveMode === 'goal') {
-            if(item.habitId) {
-                const habitItem:HabitInterface = habitArchive.filter((habitItem)=>habitItem.goalId === item._id)[0];
-                habitHooks.toggleHabitArchiveStatus(habitItem,item);
-                goalHooks.toggleGoalArchiveStatus(item,habitItem);
-            } else {
-                goalHooks.toggleGoalArchiveStatus(item,null);
-            }
-        }
-        if(archiveMode === 'habit') {
-            if(item.goalId) {
-                const goalItem:GoalInterface = goalArchive.filter((goalItem)=>goalItem.habitId === item._id)[0];
-                goalHooks.toggleGoalArchiveStatus(goalItem,item);
-                habitHooks.toggleHabitArchiveStatus(item,goalItem);
-            } else {
-                habitHooks.toggleHabitArchiveStatus(item,null);
-            }
+            goalHooks.toggleGoalArchiveStatus(item);
+        } else if(archiveMode === 'habit') {
+            habitHooks.toggleHabitArchiveStatus(item);
         }
     }
     useEffect(() => {

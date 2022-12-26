@@ -71,14 +71,6 @@ const habitsSlice = createSlice({
                 return item;
             })
         },
-        updateGoalId(state,action) {
-            state.habitList = state.habitList.map(item=>{
-                if(item._id === action.payload._id) {
-                    item.goalId = action.payload.goalId;
-                }
-                return item;
-            })
-        },
         toggleArchiveStatus(state,action) {
             const habitItem = action.payload;
             if(habitItem.isArchived) {

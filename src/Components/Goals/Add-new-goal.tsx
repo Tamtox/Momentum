@@ -4,21 +4,19 @@ import './Add-new-goal.scss';
 import React,{useState,useRef, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Autocomplete,Dialog,DialogActions,DialogContent,DialogContentText, Box } from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography, Box } from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
-import useHabitHooks from '../../Hooks/useHabitHooks';
-import type {GoalInterface,HabitInterface} from '../../Misc/Interfaces';
+import type {GoalInterface} from '../../Misc/Interfaces';
 import Loading from '../Misc/Loading';
 
 const AddNewGoal:React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const goalHooks = useGoalHooks();
-    const habitHooks = useHabitHooks();
     // Close menu if click is on backdrop
     const backdropRef = useRef<HTMLDivElement>(null);
     const backdropClickHandler = (event:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -30,16 +28,12 @@ const AddNewGoal:React.FC = () => {
     const goalList = useSelector<RootState,GoalInterface[]>(state=>state.goalSlice.goalList);
     const id = location.pathname.split('/')[2];
     const detailedGoal = goalList.find((goalitem:GoalInterface)=>goalitem._id === id);
-    // Get paired habit if one exists
-    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
-    const detailedHabit = habitList.find((habititem:HabitInterface)=>habititem.goalId === id);
     const [goalInputs,setGoalInputs] = useState({
         addNewGoalHeader: "",
         goalTitle:detailedGoal?.title || '',
         selectedDate:detailedGoal?.targetDate ? new Date(detailedGoal.targetDate) : null,
         goalCreationUTCOffset:detailedGoal?.creationUTCOffset || new Date().getTimezoneOffset(),
         goalAlarmUsed:detailedGoal?.alarmUsed || false,
-        pairedHabit:detailedHabit ? detailedHabit : null
     })
     const goalInputsHandler = (newValue:string,input:string) => {
         setGoalInputs((prevState)=>({
@@ -60,19 +54,13 @@ const AddNewGoal:React.FC = () => {
             selectedDate:newDateFixed
         }))
     }
-    const pairedHabitSelect = (newPairedHabit:HabitInterface|null) => {
-        if (newPairedHabit?.goalId) {
-            setGoalInputs((prevState)=>({
-                ...prevState,
-                addNewGoalHeader:"Habit is already paired"
-            }))
+    const goalArchiveDeleteHandler = (goal:GoalInterface,action:string) => {
+        if(action === "archive") {
+            goalHooks.toggleGoalArchiveStatus(goal);
         } else {
-            setGoalInputs((prevState)=>({
-                ...prevState,
-                pairedHabit:newPairedHabit,
-                addNewGoalHeader:"Habit successfully paired"
-            }))
+            goalHooks.deleteGoal(goal);
         }
+        navigate("/goals");
     }
     // Submit or update goal 
     const updateGoal = async (event:React.FormEvent) => {
@@ -84,66 +72,13 @@ const AddNewGoal:React.FC = () => {
             status:detailedGoal?.status || 'Pending',
             dateCompleted:detailedGoal?.dateCompleted || '',
             isArchived:detailedGoal?.isArchived || false,
-            habitId:goalInputs.pairedHabit?._id || null ,
             creationUTCOffset: goalInputs.goalCreationUTCOffset,
             alarmUsed:goalInputs.goalAlarmUsed,
             _id: detailedGoal?._id || ''
         }
-        let pairedHabit = null;
-        let oldPairedHabit = null;
-        if (goalInputs.pairedHabit) pairedHabit = Object.assign({},goalInputs.pairedHabit);
-        if (detailedHabit) oldPairedHabit = Object.assign({},detailedHabit);
-        detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal,pairedHabit,oldPairedHabit) : goalHooks.addGoal(newGoal,pairedHabit);
+        detailedGoal ? goalHooks.updateGoal(newGoal,detailedGoal) : goalHooks.addGoal(newGoal);
         navigate("/goals");
     }
-    // Dialog control and actions 
-    const [openDialog,setOpenDialog] = useState(false);
-    const [dialogMode,setDialogMode] = useState("archive");
-    const openDialogHandler = (newDialogMode:string,goalItem:GoalInterface,pairedHabit:HabitInterface|null) => {
-        if(pairedHabit) {
-            setDialogMode(newDialogMode);
-            setOpenDialog(true);
-        } else {
-            if(newDialogMode === "archive") {
-                goalHooks.toggleGoalArchiveStatus(goalItem,null);
-            } else if (newDialogMode === "delete") {
-                goalHooks.deleteGoal(goalItem,null);
-            }
-            navigate("/goals");
-        }
-    }
-    const goalArchiveDeleteHandler = (mode:string,habitAction:boolean) => {
-        if (mode === "archive") {
-            if(habitAction) {
-                detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal,null);
-                goalInputs.pairedHabit && habitHooks.toggleHabitArchiveStatus(goalInputs.pairedHabit,null);
-            } else {
-                detailedGoal && goalHooks.toggleGoalArchiveStatus(detailedGoal,goalInputs.pairedHabit);
-            }
-        } else if(mode === "delete") {
-            if(habitAction) {
-                detailedGoal && goalHooks.deleteGoal(detailedGoal,null);
-                goalInputs.pairedHabit && habitHooks.deleteHabit(goalInputs.pairedHabit,null)
-            } else {
-                detailedGoal && goalHooks.deleteGoal(detailedGoal,goalInputs.pairedHabit);
-            }
-        }
-        navigate("/goals");
-    }
-    // Paired habit archive/deletion modal
-    let modal = (
-        <Dialog className={`add-new-goal-dialog`} open={openDialog} onClose={()=>{setOpenDialog(false)}}>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    {`Selected goal has paired habit. Do you want to ${dialogMode.toLowerCase()} it as well?`}
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions sx={{ display: 'flex',justifyContent: 'space-around' }}>
-                <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,false)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} goal`}</Button>
-                <Button onClick={()=>{goalArchiveDeleteHandler(dialogMode,true)}} variant="outlined">{`${dialogMode[0].toUpperCase()}${dialogMode.slice(1)} both`}</Button>
-            </DialogActions>
-        </Dialog>
-    )
     // Set goal state from store value
     useEffect(()=>{
         if(detailedGoal) {
@@ -157,18 +92,8 @@ const AddNewGoal:React.FC = () => {
             }))
         }
     },[detailedGoal])
-    // Set habit state from store value
-    useEffect(()=>{
-        if(detailedHabit) {
-            setGoalInputs((prevState)=>({
-                ...prevState,
-                pairedHabit:detailedHabit ? detailedHabit : null
-            }))
-        }
-    },[detailedHabit])
     return(
         <Box className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            {modal}
             {goalLoading ? <Loading height='80vh'/> : <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
                 {goalInputs.addNewGoalHeader.length > 0 ? <Box className={`add-new-goal-header`}>
                     <Typography variant='h6' >{goalInputs.addNewGoalHeader}</Typography>
@@ -176,7 +101,7 @@ const AddNewGoal:React.FC = () => {
                 <Box className={`add-new-goal-controls`}>
                     {detailedGoal ? <Tooltip title="Archive Item">
                         <Box className='archive-goal'>
-                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{openDialogHandler("archive",detailedGoal,goalInputs.pairedHabit)}}/>
+                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalArchiveDeleteHandler(detailedGoal,"archive")}}/>
                         </Box>
                     </Tooltip> : null}
                     <Box className='add-new-goal-datepicker-wrapper'>
@@ -189,7 +114,7 @@ const AddNewGoal:React.FC = () => {
                     </Box>
                     {detailedGoal ? <Tooltip title="Delete Item">
                         <Box className='delete-goal'>
-                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{openDialogHandler("delete",detailedGoal,goalInputs.pairedHabit);}}/>
+                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalArchiveDeleteHandler(detailedGoal,"delete")}}/>
                         </Box>
                     </Tooltip> : null}
                 </Box>
@@ -199,14 +124,6 @@ const AddNewGoal:React.FC = () => {
                     </FormGroup>
                 </Box> : null}
                 <TextField value={goalInputs.goalTitle} onChange={(event)=>{goalInputsHandler(event.target.value,'goalTitle')}} className={`add-new-goal-title focus input`} label='Goal Title' multiline required />
-                <Box className={`add-new-goal-paired-habit`}>
-                    <Autocomplete
-                        value={goalInputs.pairedHabit} defaultValue={goalInputs.pairedHabit}
-                        onChange={(event: any, newValue: HabitInterface|null) => {pairedHabitSelect(newValue)}}
-                        options={habitList} getOptionLabel={(option) => option.title}
-                        renderInput={(params) => <TextField {...params} label="Paired Habit" />}
-                    />
-                </Box>
                 <Box className={`add-new-goal-buttons`}>
                     <Button variant="outlined" className={`button`} onClick={()=>{navigate(-1)}}>Back</Button>
                     <Button variant="outlined" type='submit' className={`button`}>{detailedGoal ? 'Update' : 'Submit'}</Button>

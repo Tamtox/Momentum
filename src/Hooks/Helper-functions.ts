@@ -1,4 +1,4 @@
-import { HabitEntryInterface, HabitInterface, ScheduleInterface } from "../Misc/Interfaces";
+import { HabitEntryInterface, HabitInterface, ScheduleInterface, TodoInterface } from "../Misc/Interfaces";
 
 const getDate = (clientDayStartTime:number,timezoneOffset:number) => {
     const utcDayStartMidDay:number = new Date(clientDayStartTime).setHours(12,0,0,0) + timezoneOffset * - 60000;
@@ -63,7 +63,7 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
         const habitCreationDatesWeekStart = new Date(habitCreationTime).setHours(12,0,0,0) + 86400000 * (habitCreationWeekday ? 1 - habitCreationWeekday : -6);
         if(habitCreationDatesWeekStart > weekStartTime + 86400000 * 7 - 1 && !populateBeforeCreationDate) break;
         // Stop creating entries if target paired goals date has been reached
-        if(habitItem.goalTargetDate && new Date(date).getTime() > new Date(habitItem.goalTargetDate).getTime()) break;
+        if(habitItem.targetDate && new Date(date).getTime() > new Date(habitItem.targetDate).getTime()) break;
         // Check if existing entry status is complete
         if(existingHabitEntries) {
             existingHabitEntries.forEach((entry:HabitEntryInterface)=>{
@@ -86,6 +86,33 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
 
 const generateAlarmTimes = (scheduleList:ScheduleInterface[]) => {
 
+}
+
+// Compare todo items to determine if update is necessary
+const compareTodo = (newTodo:TodoInterface,oldTodo:TodoInterface):boolean => {
+    const keys:string[] = Object.keys(newTodo);
+    let result = true;
+    for(let key of keys) {
+        if(newTodo[key as keyof TodoInterface] !== oldTodo[key as keyof TodoInterface]) {
+            result = false;
+            break;
+        }
+    }
+    return result;
+}
+
+// Compare habit items to determine if update is necessary
+const compareHabits = (newHabit:TodoInterface,oldHabit:TodoInterface):boolean => {
+    const keys = Object.keys(newHabit);
+    let result = true;
+    return result
+}
+
+// Compare goal items to determine if update is necessary
+const compareGoals = (newGoal:TodoInterface,oldGoal:TodoInterface):boolean => {
+    const keys = Object.keys(newGoal);
+    let result = true;
+    return result
 }
 
 export {getWeekDates,createPairedScheduleItem,determineScheduleAction,createHabitEntries};

@@ -56,14 +56,6 @@ const goalSlice = createSlice({
                 })
             }
         },
-        updateHabitId(state,action) {
-            state.goalList = state.goalList.map(item=>{
-                if(item._id === action.payload._id) {
-                    item.habitId = action.payload.habitId
-                }
-                return item
-            })
-        },
         toggleArchiveStatus(state,action) {
             if(action.payload.isArchived) {
                 state.goalList = state.goalList.filter(item=>{

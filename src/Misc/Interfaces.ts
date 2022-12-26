@@ -38,7 +38,6 @@ interface GoalInterface {
     targetDate:string | null, /* Date format : .toIsoString() */
     status:string,
     dateCompleted:string, /* Date format : .toIsoString() */
-    habitId:string | null,
     isArchived:boolean,
     creationUTCOffset:number,
     alarmUsed:boolean,
@@ -58,8 +57,7 @@ interface HabitInterface {
     time:string | null, /* Date format : .toLocaleTimeString() */
     creationDate:string, /* Date format : .toIsoString() */
     weekdays:{[weekday:number]:boolean},
-    goalId:string | null,
-    goalTargetDate:string | null, /* Date format : .toIsoString() */
+    targetDate:string | null, /* Date format : .toIsoString() */
     isArchived:boolean,
     creationUTCOffset:number,
     alarmUsed:boolean,

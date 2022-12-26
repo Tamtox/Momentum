@@ -83,7 +83,7 @@ const useTodoHooks = () => {
             dispatch(todoActions.setTodoLoading(false))
         }
     }
-    // Update or add todo
+    // Update todo
     const updateTodo = async (newTodo:TodoInterface,oldTodo:TodoInterface) => {
         dispatch(todoActions.setTodoLoading(true))
         // Determine the schedule action
