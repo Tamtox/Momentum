@@ -116,17 +116,25 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            // Add or update habit and habit schedule
-            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[]}} = await axios.request({
+            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[],scheduleEntries:ScheduleInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            const {habitEntries} = newHabitResponse.data;
+            const {habitEntries,scheduleEntries} = newHabitResponse.data;
+            // 
             if(habitEntries) {
                 const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
                 newHabit.entries = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,habitEntries);
+            }
+            // Update schedule entries
+            if(scheduleEntries) {
+                console.log(scheduleEntries)
+                // // Add schedule items
+                // for (let entry of scheduleEntries) {
+                //     dispatch(scheduleActions.addScheduleItem(entry));
+                // }
             }
             // Determine if paired goal needs to be updated
             if (newPairedGoal && (newHabit.goalId !== oldHabit.goalId || !oldPairedGoal)) {
