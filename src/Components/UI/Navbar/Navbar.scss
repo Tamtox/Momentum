@@ -1,106 +1,111 @@
 @import '../../../Misc/mixins';
 
 .navbar{
-    @include widthAndHeight(calc(min(100%,100%)),calc(min(100%,7vh)));
+    height: calc(min(100%,7vh));
     position: fixed;
-    top:0;
+    top: 0;
+    left: 0;
     z-index: 50;
-    @include grid(100%,1fr 1fr 1fr);
+    @include grid(100%,100%);
     align-items: center;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.7);
     max-width: 100%;
-    .navbar-icon-container{
-        @include widthAndHeight(calc(min(100%, 40px)),calc(min(100%,40px)));
-        @include flex;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: box-shadow 0.15s , background 0.15s ;
-    }
-    .navbar-icon-container:hover{
-        background: white;
-        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-    }
-    .navbar-icon-container-dark{
-        @extend .navbar-icon-container;
-    }
-    .navbar-icon-container-dark:hover{
-        background: #121212;
-        box-shadow: 0 1px 6px rgba(255, 255, 255, 1);
-    }
+    transition: width 0.3s;
     .navbar-main{
         @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
         @include flex(flex-start,center);
-        padding: 0 0rem 0 0.65rem;
+        padding: 0.2rem 0.5rem 0.2rem 0.5rem;
         .toggle-sidebar-icon-container{
+            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,2.5rem)));
+            @include flex(flex-start,center);
+            white-space: nowrap;
+            position: relative;
+            padding: 0 0.5rem 0 0.5rem ; 
+            gap: 1rem;
+            transition: 0.3s;
+            border-radius: 20px;
+            cursor: pointer;
             .toggle-sidebar-icon{
                 color: white;
                 font-size: 23px;
             }
+            .toggle-sidebar-text{
+                color: white;
+                font-size: 1.2rem;
+                transform: translateY(2px)
+            }
+        }
+        .toggle-sidebar-icon-container-dark{
+            @extend .toggle-sidebar-icon-container;
             .toggle-sidebar-icon-dark{
                 color: white;
                 font-size: 23px;
             }
+            .toggle-sidebar-text-dark{
+                color: white;
+                font-size: 1.2rem;
+                transform: translateY(2px)
+            }
         }
         .toggle-sidebar-icon-container:hover{
+            background: white;
+            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.7);
             .toggle-sidebar-icon{
                 color: black;
-                font-size: 23px;
             }
-        }
-    }
-    .navbar-title{
-        @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
-        @include flex;
-        color: white;
-        grid-area: 1 / 2 / span 1 / span 1;
-    }
-    .navbar-utility{
-        @include widthAndHeight(calc(min(100%, 7rem)),calc(min(100%,100%)));
-        @include flex(center,center);
-        gap: 1rem;
-        justify-self: flex-end;
-        grid-area: 1 / 3 / span 1 / span 1;
-        .nav-notifications-icon-container{
-            .nav-notifications-icon{
-                color: white;
-                font-size: 28px;
-            }
-            .nav-notifications-icon-dark{
-                font-size: 28px;
-            }
-        }
-        .nav-notifications-icon-container:hover{
-            .nav-notifications-icon{
+            .toggle-sidebar-text{
                 color: black;
             }
         }
-        .toggle-dark-mode{
-            .toggle-dark-mode-moon{
-                color: rgb(255, 255, 175);
-                font-size: 26px;
-            }
-            .toggle-dark-mode-sun{
-                color: rgb(255, 166, 87);
-                font-size: 28px;
+        .toggle-sidebar-icon-container-dark:hover{
+            background: black;
+            .toggle-sidebar-icon-dark{
+                color: white;
             }
         }
-        .sign-buttons{
-            .sign-icon{
-                color: white;
-                font-size: 26px;
-            }
-            .sign-icon-dark{
-                color: white;
-                font-size: 26px;
-            }
-        }
-        .sign-buttons:hover{
-            .sign-icon{
+    }
+}
+.navbar-full{
+    width: calc(min(100%,15rem));
+}
+.navbar-compact{
+    width: calc(min(100%,3.5rem));
+}
+.navbar-hidden{
+    box-shadow: none;
+    background: none;
+    .navbar-main{
+        .toggle-sidebar-icon-container{
+            .toggle-sidebar-icon{
                 color: black;
-                font-size: 26px;
             }
-            .sign-icon-dark{
-                font-size: 26px;
+        }
+        .toggle-sidebar-icon-container-dark{
+            .toggle-sidebar-icon-dark{
+                color: white;
+            }
+        }
+        .toggle-sidebar-icon-container:hover{
+            background: rgb(74, 0, 224);
+            .toggle-sidebar-icon{
+                color: white;
+            }
+        }
+        .toggle-sidebar-icon-container-dark:hover{
+            background: white;
+            .toggle-sidebar-icon-dark{
+                color: black;
+            }
+        }
+    }
+}
+
+@media only screen and (max-width:900px) {
+    .navbar{
+        width: 100%;
+        .navbar-main{
+            .toggle-sidebar-icon-container{
+                @include widthAndHeight(calc(min(100%, 15rem)),calc(min(100%,2.5rem)));
             }
         }
     }

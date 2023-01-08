@@ -3,8 +3,8 @@ Momemtum is an application intended to help you organize activities , develop ha
 Features : 
     Todo - create, organize and filter short-term tasks . 
     Journal - keep a daily record of your thoughts and activities .  
-    Habits - maintain your routines and daily activities . Pair your habits with goals .
-    Goals - set mid to long term goals that can be paired up with habits.
+    Habits - maintain your routines and daily activities . 
+    Goals - set mid to long term goals.
     Schedule - combines other features into day-to-day schedule for easy tracking and planning.
 
 Planned Features : 
@@ -16,3 +16,6 @@ Planned Features :
     Mobile design
     Error handling
     Subgoals
+    Multiple habit times
+    Logging
+    Validation

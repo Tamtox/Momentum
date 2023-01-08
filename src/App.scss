@@ -70,7 +70,7 @@ html,body{
         width: 100%;
         max-width: 100%;
         margin-left: 0 ;
-        padding: 7vh 10px 0 10px;
+        padding: 0 10px 0 10px;
         transition: 0.3s;
     }
     .page-full{
@@ -129,6 +129,10 @@ html,body{
 
 @media only screen and (max-width: 900px) {
     .app {
+        .page{
+            min-height: 93vh;
+            margin-top: 7vh;
+        }
         .page-full{
             width: 100rem;
             margin-left: 0;

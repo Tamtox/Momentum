@@ -4,7 +4,7 @@
     @include widthAndHeight(calc(min(70rem, 100%)),10vh);
     position: -webkit-sticky;
     position: sticky;
-    top: 6vh;
+    top: 0;
     z-index: 49;
     @include grid(100%,1fr 2fr 1fr);
     justify-items: center;

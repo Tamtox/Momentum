@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import type { UserInterface } from '../Misc/Interfaces';
 import Cookies from 'js-cookie';
+import { ActionTypes } from '@mui/base';
 
 const initialToken = Cookies.get('token');
 const initialDarkMode = Cookies.get('darkMode')
@@ -79,8 +80,8 @@ const authSlice = createSlice({
             state.darkMode = !state.darkMode
             Cookies.set('darkMode',`${state.darkMode}`,{sameSite:"Strict",secure:true,path:'/'});
         },
-        toggleSidebarSize(state) {
-            state.sidebarFull = !state.sidebarFull 
+        toggleSidebarSize(state,action) {
+            state.sidebarFull = action.payload 
         },
         toggleSidebarVisibility(state,action) {
             state.sidebarVisible = action.payload

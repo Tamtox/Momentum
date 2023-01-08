@@ -82,9 +82,13 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
     return newHabitEntries;
 }
 
-// Alarms generation
+// Schedule generation for habits
+const habitsScheduleGen = () => {
 
-const generateAlarmTimes = (scheduleList:ScheduleInterface[]) => {
+}
+
+// Alarms generation
+const generateAlarmTimes = (habitList:HabitInterface[],startDate:number,endDate:number) => {
 
 }
 

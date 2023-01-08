@@ -6,14 +6,35 @@
     left: 0;
     top: 7vh;
     display: grid;
-    grid-auto-rows: calc(min(100%,2.6rem));
+    grid-template: 78% 20% / 100% ;
     color: white;
     gap: 0.3rem;
     overflow-x: hidden;
+    z-index: 50;
     padding: 1rem 0.5rem 1rem 0.5rem;
     box-shadow: 0 3px 4px black;
     transition: width 0.3s;
     border-top: 2px white dotted;
+    .nav-sidebar-links{
+        display: grid;
+        grid-auto-rows: calc(min(100%,2.6rem));
+        gap: 0.3rem;
+        border-bottom: grey 1px solid;
+    }
+    .nav-sidebar-utility{
+        display: grid;
+        grid-auto-rows: calc(min(100%,2.6rem));
+        align-content: center;
+        gap: 0.3rem;
+        .toggle-dark-mode{
+            .toggle-dark-mode-moon{
+                color: rgb(250, 250, 187);
+            }
+            .toggle-dark-mode-sun{
+                color: rgb(255, 217, 0);
+            }
+        }
+    }
     .nav-icon{
         position: relative;
         display: block;
@@ -54,14 +75,9 @@
         gap: 1rem;
         transition: 0.3s;
         border-radius: 20px;
-        cursor: default;
-        .navigation-todo-icon{
-        }
-        .navigation-journal-icon{
-        }
-        .navigation-habit-icon{
-        }
-        .navigation-goal-icon{
+        cursor: pointer;
+        .nav-text{
+            transform: translateY(2px)
         }
     }
     .nav-element-dark{
