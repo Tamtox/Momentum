@@ -62,7 +62,7 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
         const habitCreationWeekday = new Date(habitCreationTime).getDay();
         const habitCreationDatesWeekStart = new Date(habitCreationTime).setHours(12,0,0,0) + 86400000 * (habitCreationWeekday ? 1 - habitCreationWeekday : -6);
         if(habitCreationDatesWeekStart > weekStartTime + 86400000 * 7 - 1 && !populateBeforeCreationDate) break;
-        // Stop creating entries if target paired goals date has been reached
+        // Stop creating entries if target date has been reached
         if(habitItem.targetDate && new Date(date).getTime() > new Date(habitItem.targetDate).getTime()) break;
         // Check if existing entry status is complete
         if(existingHabitEntries) {

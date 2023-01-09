@@ -122,7 +122,7 @@ const AddNewHabit:React.FC = () => {
                     </Tooltip> : null}
                     <Box className='add-new-habit-datepicker-wrapper'>
                         <DatePicker 
-                            inputFormat="dd/MM/yyyy" label="+Target Date" desktopModeMediaQuery='@media (min-width:769px)'
+                            inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                             value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{habitDatePick(newDate)}}
                             componentsProps={{actionBar: { actions: ['clear'],},}}

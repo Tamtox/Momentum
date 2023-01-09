@@ -89,7 +89,6 @@ const Habits:React.FC = () => {
                         renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
                         value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} maxDate={new Date(nextWeekStart)}
                     />
-                    -
                     <DatePicker 
                         inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
                         renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
