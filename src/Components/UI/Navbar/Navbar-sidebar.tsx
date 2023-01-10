@@ -31,6 +31,10 @@ const NavbarSidebar = React.forwardRef<HTMLDivElement,NavbarProps>((props,ref) =
     // Menus states 
     const sidebarFull = useSelector<RootState,boolean>(state=>state.authSlice.sidebarFull);
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
+    // Close sidebar on link click if it is compact
+    const closeSidebar = () => {
+        isCompact && authActions.toggleSidebarVisibility(false)
+    }
     // Sign In/Out Button Handler
     const signHandler = () => {
         isLoggedIn?authHooks.logout():navigate('/auth')
@@ -45,31 +49,31 @@ const NavbarSidebar = React.forwardRef<HTMLDivElement,NavbarProps>((props,ref) =
                 <Box className={`toggle-sidebar nav-element${isDarkMode?'-dark':''}`} onClick={()=>{dispatch(authActions.toggleSidebarSize(!sidebarFull))}}>
                     <CgArrowRightO className={`nav-icon toggle-sidebar-arrow-${sidebarFull?'full':'compact'}`} />
                 </Box>
-                <NavLink to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
+                <NavLink onClick={closeSidebar} to="/" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-home`}>
                     <CgHomeAlt className='nav-icon' />
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Home </Typography>
                 </NavLink>
-                <NavLink to="/profile" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-profile`}>
+                <NavLink onClick={closeSidebar} to="/profile" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-profile`}>
                     <CgProfile className='nav-icon' />
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Profile</Typography>
                 </NavLink>
-                <NavLink to="/todo" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-todo`}>
+                <NavLink onClick={closeSidebar} to="/todo" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-todo`}>
                     <BsCalendar2Check className='nav-icon navigation-todo-icon' />
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>To Do</Typography>
                 </NavLink>
-                <NavLink to="/journal" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-journal`}>
+                <NavLink onClick={closeSidebar} to="/journal" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-journal`}>
                     <BsFillJournalBookmarkFill className='nav-icon navigation-journal-icon' />
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Journal</Typography>
                 </NavLink>
-                <NavLink to="/habits" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-habits`}>
+                <NavLink onClick={closeSidebar} to="/habits" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-habits`}>
                     <MdSchedule className='nav-icon navigation-habit-icon' />
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Habits</Typography>
                 </NavLink>
-                <NavLink to="/goals" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-goals`}>
+                <NavLink onClick={closeSidebar} to="/goals" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-goals`}>
                     <FiTarget className='nav-icon navigation-goal-icon' />
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Goals</Typography>
                 </NavLink>
-                <NavLink to="/archive" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-archive`}>
+                <NavLink onClick={closeSidebar} to="/archive" className={(navData)=>`nav-link${navData.isActive?isDarkMode?'-active-dark':'-active':''} nav-element${isDarkMode?'-dark':''} navigation-archive`}>
                     <BsArchive className='nav-icon'/>
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Archive</Typography>
                 </NavLink>

@@ -9,8 +9,8 @@ import {TextField,Button,Typography,Card, Box} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 //Components
-import { scheduleActions } from '../../Store/Store';
-import type { ScheduleInterface } from '../../Misc/Interfaces';
+import { scheduleActions,habitsActions } from '../../Store/Store';
+import type { ScheduleInterface,HabitInterface } from '../../Misc/Interfaces';
 import useScheduleHooks from '../../Hooks/useScheduleHooks';
 import Loading from '../Misc/Loading';
 
@@ -21,18 +21,26 @@ const Schedule:React.FC = () => {
     const scheduleLoading = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleLoading);
     const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
+    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList) || [];
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
     // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
         newDate = newDate || new Date();
         setSelectedDate(newDate);
-        scheduleHooks.loadScheduleItems(newDate);
+        scheduleHooks.loadScheduleItems(newDate,habitList);
     }
     // const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     // console.log(sortedList);
+    // Navigate to schedule items parent 
+    const navigateToParent = (parentType:string,parentId:string) => {
+        if(parentType === 'habit') {
+        } else {
+            navigate(`/${parentType}${parentType === 'todo' ? '' : 's'}/${parentId}`);
+        }
+    }
     useEffect(() => {
-        scheduleHooks.loadScheduleItems(new Date(scheduleDate));
+        scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
     }, [])
     return(
         <Box className={`schedule`}>
@@ -62,7 +70,7 @@ const Schedule:React.FC = () => {
                         {scheduleItem.time && <Box className={`schedule-item-time`}>
                             <Typography className={`schedule-item-time-text`}>{`${scheduleItem.time.split(':')[0]}:${scheduleItem.time.split(':')[1]}`}</Typography>
                         </Box>}
-                        <Box className={`schedule-item-title`} onClick={()=>{navigate(`/${scheduleItem.parentType}${scheduleItem.parentType === 'todo' ? '' : 's'}/${scheduleItem.parentId}`)}}>
+                        <Box className={`schedule-item-title`} onClick={()=>{navigateToParent(scheduleItem.parentType,scheduleItem.parentId)}}>
                             <Typography className={`schedule-item-title-text`}>{scheduleItem.parentTitle}</Typography>
                         </Box>
                     </Card>

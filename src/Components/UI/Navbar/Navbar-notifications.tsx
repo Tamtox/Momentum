@@ -28,11 +28,11 @@ const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((
     const selectNotificationDate = (newDate:Date|null) => {
         newDate = newDate || new Date ();
         setSelectedDate(newDate);
-        scheduleHooks.loadScheduleItems(newDate);
+        // scheduleHooks.loadScheduleItems(newDate);
     }
     const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     useEffect(() => {
-        notificationListLoaded || scheduleHooks.loadScheduleItems(new Date());
+        // notificationListLoaded || scheduleHooks.loadScheduleItems(new Date());
     }, [])
     return (
         <Box ref={ref} className={`nav-notifications nav-notifications-${isDarkMode?'dark':'light'}`}>

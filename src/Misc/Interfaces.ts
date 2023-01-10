@@ -74,7 +74,7 @@ interface ScheduleInterface {
     status:string,
     dateCompleted:string | null,
     alarmUsed:boolean,
-    utcOffset:string,
+    utcOffset:number,
     isArchived:boolean,
     _id:string
 }

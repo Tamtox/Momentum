@@ -1,19 +1,23 @@
-import { HabitEntryInterface, HabitInterface, ScheduleInterface, TodoInterface } from "../Misc/Interfaces";
+import { HabitEntryInterface, HabitInterface, ScheduleInterface, TodoInterface, } from "../Misc/Interfaces";
 
+
+// Get day start and end of selected day
 const getDate = (clientDayStartTime:number,timezoneOffset:number) => {
-    const utcDayStartMidDay:number = new Date(clientDayStartTime).setHours(12,0,0,0) + timezoneOffset * - 60000;
+    const utcDayStartMidDay:number = new Date(clientDayStartTime).setHours(12,0,0,0) + timezoneOffset * - 60000; 
+    const utcNextDayMidDay:number = (new Date(clientDayStartTime).setHours(12,0,0,0) + timezoneOffset * - 60000) + 86400000;
     const clientDayStart:Date = new Date(clientDayStartTime);
     const clientNextDayStart:Date = new Date(clientDayStartTime + 86400000);
-    return {utcDayStartMidDay,clientDayStart,clientNextDayStart};
+    return {utcDayStartMidDay,utcNextDayMidDay,clientDayStart,clientNextDayStart};
 }
 
-const getWeekDates = (weekStartTime:number,timezoneOffset:number) => {
-    const utcWeekStartMidDay:number = new Date(weekStartTime + timezoneOffset * -60000).setHours(12,0,0,0);
-    const utcNextWeekStartMidDay:number = new Date(weekStartTime + timezoneOffset * -60000).setHours(12,0,0,0) + 86400000 * 7;
-    const clientWeekStart:Date = new Date(weekStartTime);
-    const clientNextWeekStart:Date = new Date(weekStartTime + 86400000 * 7);
+// Get week start and end
+const getWeekDates = (clientWeekStartTime:number,timezoneOffset:number) => {
+    const utcWeekStartMidDay = new Date(clientWeekStartTime).setHours(12,0,0,0) + timezoneOffset * -60000;
+    const utcNextWeekStartMidDay = (new Date(clientWeekStartTime).setHours(12,0,0,0) + timezoneOffset * -60000) + 86400000 * 7;
+    const clientWeekStart = new Date(clientWeekStartTime);
+    const clientNextWeekStart = new Date(clientWeekStartTime + 86400000 * 7);
     return {utcWeekStartMidDay,utcNextWeekStartMidDay,clientWeekStart,clientNextWeekStart};
-}
+} 
 
 const createPairedScheduleItem = async (time:string|null,targetDate:string,parentTitle:string,parentType:string,parentId:string,alarmUsed:boolean,creationUTCOffset:number,scheduleId:string) => {
     const {utcDayStartMidDay} = getDate(new Date(targetDate).getTime(),creationUTCOffset);
@@ -26,7 +30,7 @@ const createPairedScheduleItem = async (time:string|null,targetDate:string,paren
         status:"Pending",
         dateCompleted:null,
         alarmUsed:alarmUsed,
-        utcOffset:`${creationUTCOffset}`,
+        utcOffset:creationUTCOffset,
         isArchived:false,
         _id:scheduleId
     }
@@ -49,6 +53,7 @@ const determineScheduleAction = (dateNew:string|null, dateOld:string|null):strin
 const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:number,populateBeforeCreationDate:boolean,existingHabitEntries:HabitEntryInterface[]|null) => {
     const timezoneOffset = new Date().getTimezoneOffset();
     const newHabitEntries:{[weekday:number]:HabitEntryInterface|null} = {1:null,2:null,3:null,4:null,5:null,6:null,0:null};
+    const newScheduleEntries:ScheduleInterface[] = [];
     const habitId = habitItem._id;
     for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
         const date = new Date(new Date(currentTime).setHours(12,0,0,0) + timezoneOffset * - 60000).toISOString();
@@ -77,14 +82,73 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
         if(habitItem.weekdays[weekday]) {
             const newHabitEntry:HabitEntryInterface = {date,habitId,status,dateCompleted,_id:entryId};
             newHabitEntries[weekday] = newHabitEntry;
+            const {time,title,_id,alarmUsed,creationUTCOffset,isArchived} = habitItem;
+            const newScheduleEntry:ScheduleInterface = {date,time,parentId:_id,parentTitle:title,parentType:"habit",alarmUsed,utcOffset:creationUTCOffset,dateCompleted,status,isArchived,_id:entryId};
+            newScheduleEntries.push(newScheduleEntry);
         }
     }
-    return newHabitEntries;
+    return {newHabitEntries,newScheduleEntries};
 }
 
 // Schedule generation for habits
-const habitsScheduleGen = () => {
+const createScheduleEntries = (habitList:HabitInterface[],startTime:number,endTime:number,existingScheduleEntries:ScheduleInterface[]|null) => {
+    const timezoneOffset = new Date().getTimezoneOffset();
+    const newScheduleEntries:ScheduleInterface[] = [];
+    habitList.forEach((habitItem:HabitInterface)=> {
+        const {title,time,targetDate,alarmUsed,creationUTCOffset,creationDate,isArchived,_id} = habitItem;
+        for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
+            const date = new Date(new Date(currentTime).setHours(12,0,0,0) + timezoneOffset * - 60000);
+            let dateCompleted:string|null = null;
+            let status = 'Pending';
+            let entryId = "";
+            // Stop creating entries if selected date is before habit creation week's start
+            const habitCreationTime = new Date(creationDate).setHours(12,0,0,0)  + creationUTCOffset * -60000;
+            if(habitCreationTime > date.getTime()) break;
+            // Stop creating entries if target date has been reached
+            if(targetDate && date.getTime() > new Date(targetDate).getTime()) break;
+            // Check if existing entry status is complete
+            if(existingScheduleEntries) {
+                existingScheduleEntries.forEach((entry:ScheduleInterface)=>{
+                })
+            }
+            const newScheduleEntry:ScheduleInterface = {date:date.toISOString(),time,parentId:_id,parentTitle:title,parentType:"habit",alarmUsed,utcOffset:creationUTCOffset,dateCompleted,status,isArchived,_id:entryId};
+        }
+    })
+    return newScheduleEntries;
+}
 
+// Generate new schedule items for habits
+const generateHabitSchedule = (habitList:HabitsInterface[],startTime:number,endTime:number,existingSchedule:ScheduleInterface[]) => {
+    const habitSchedule:ScheduleInterface[] = existingSchedule.filter((scheduleItem:ScheduleInterface)=>scheduleItem.parentType === 'habit');
+    const newScheduleItems:ScheduleInterface[] = [];
+    for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
+        const date = new Date(currentTime).setHours(12,0,0,0);
+        habitList.forEach((habitItem:HabitInterface) => {
+            const habitExists:ScheduleInterface|undefined = habitSchedule.find((item:ScheduleInterface) => item.parentId === habitItem._id);
+            // Check if habit weekday is active
+            const isWeekday = habitItem.weekdays[new Date(date).getDay()];
+            // Check if goal target date reached
+            const habitGoalTargetReached:boolean = habitItem.targetDate ? new Date(date).getTime() > new Date(habitItem.targetDate).getTime() : false;
+            // Check habit creation date
+            const afterCreationDate:boolean = new Date(date).getTime() > new Date(habitItem.creationDate).getTime();
+            if(!habitExists && isWeekday && !habitGoalTargetReached && afterCreationDate) {
+                const newScheduleItem:ScheduleInterface = new ScheduleItem({
+                    date:new Date(date),
+                    time:habitItem.time,
+                    parentId:habitItem._id,
+                    parentTitle:habitItem.title,
+                    parentType:'habit',
+                    status:"Pending",
+                    dateCompleted:null,
+                    alarmUsed:habitItem.alarmUsed,
+                    utcOffset:habitItem.creationUTCOffset,
+                    isArchived:false,
+                })
+                newScheduleItems.push(newScheduleItem);
+            }
+        })
+    }
+    return newScheduleItems;
 }
 
 // Alarms generation
@@ -119,4 +183,4 @@ const compareGoals = (newGoal:TodoInterface,oldGoal:TodoInterface):boolean => {
     return result
 }
 
-export {getWeekDates,createPairedScheduleItem,determineScheduleAction,createHabitEntries};
+export {getWeekDates,getDate,createPairedScheduleItem,determineScheduleAction,createHabitEntries};

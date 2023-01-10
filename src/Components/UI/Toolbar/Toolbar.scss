@@ -14,19 +14,17 @@
     .toolbar-sort-wrapper{
         width: 100%;
         @include flex;
-        .toolbar-sort{}
     }
     .toolbar-search-wrapper{
         width: 100%;
         @include flex;
-        .toolbar-search{
-        }
         .clear-input{
             font-size: 26px;
         }
     }
     .toolbar-search-compact-wrapper{
-        display: none;
+        @include flex;
+        gap: 0.5rem;
         .toolbar-search-compact-icon{
             font-size: 26px;
         }
@@ -58,15 +56,6 @@
         @include widthAndHeight(calc(min(100%, 70rem)),10vh);
         @include flex;
         gap: 1rem;
-        .toolbar-search-wrapper{
-            display: none;
-        }
-        .toolbar-search-compact-wrapper{
-            @include flex(space-around,center);
-            gap: 0.5rem;
-        }
-        .toolbar-sort-wrapper{
-        }
         .toolbar-add-new-item-wrapper{
             .toolbar-add-new-item-button{
                 .toolbar-add-new-item-button-icon{

@@ -27,6 +27,7 @@ const useHabitHooks = () => {
             const {habitList,habitEntries} = habitsResponse.data;
             // Create/attach habit entries to habits
             let habitEntriesCopy:HabitEntryInterface[] = [...habitEntries];
+            let scheduleEntries:ScheduleInterface[] = [];
             const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
             const habitListWithEntries = habitList.map((habitItem:HabitInterface) => {
                 // Find entries of current habit
@@ -41,11 +42,16 @@ const useHabitHooks = () => {
                 });
                 habitEntriesCopy = otherHabitEntries;
                 const populateBeforeCreation = currentHabitEntries.length ? true : false
-                const newEntries = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,populateBeforeCreation,currentHabitEntries);
-                habitItem.entries = newEntries;
+                const {newHabitEntries,newScheduleEntries} = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,populateBeforeCreation,currentHabitEntries);
+                scheduleEntries = newScheduleEntries
+                habitItem.entries = newHabitEntries;
                 return habitItem
             })
-            dispatch(habitsActions.setHabits({habitList:habitListWithEntries,date:new Date(selectedDate).toISOString()}))
+            dispatch(habitsActions.setHabits({habitList:habitListWithEntries,date:new Date(selectedDate).toISOString()}));
+            // Add schedule items
+            for (let entry of scheduleEntries) {
+                dispatch(scheduleActions.addScheduleItem(entry));
+            }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {
@@ -74,19 +80,20 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{habitId:string,scheduleEntries:ScheduleInterface[]}} = await axios.request({
+            const newHabitResponse:{data:{habitId:string}} = await axios.request({
                 method:'POST',
                 url:`${httpAddress}/habits/addNewHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            const {habitId,scheduleEntries} = newHabitResponse.data;
+            const {habitId} = newHabitResponse.data;
             newHabit._id = habitId;
             // Generate new blank entries for new habit
             const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
-            newHabit.entries = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,null);
+            const {newHabitEntries,newScheduleEntries} = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,null);
+            newHabit.entries = newHabitEntries
             // Add schedule items
-            for (let entry of scheduleEntries) {
+            for (let entry of newScheduleEntries) {
                 dispatch(scheduleActions.addScheduleItem(entry));
             }
             dispatch(habitsActions.addHabit(newHabit));
@@ -102,25 +109,22 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[],scheduleEntries:ScheduleInterface[]}} = await axios.request({
+            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            const {habitEntries,scheduleEntries} = newHabitResponse.data;
+            const {habitEntries} = newHabitResponse.data;
             // Attach updated entries
             if(habitEntries) {
                 const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
-                newHabit.entries = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,habitEntries);
-            }
-            // Update schedule entries
-            if(scheduleEntries) {
-                console.log(scheduleEntries)
-                // // Add schedule items
-                // for (let entry of scheduleEntries) {
-                //     dispatch(scheduleActions.addScheduleItem(entry));
-                // }
+                const {newHabitEntries,newScheduleEntries} = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,habitEntries);
+                newHabit.entries = newHabitEntries;
+                // Update schedule entries
+                for (let entry of newScheduleEntries) {
+                    dispatch(scheduleActions.addScheduleItem(entry));
+                }
             }
             dispatch(habitsActions.updateHabit(newHabit))
         } catch (error) {
@@ -186,8 +190,8 @@ const useHabitHooks = () => {
                 dispatch(habitsActions.toggleArchiveStatus({...habit,isArchived}))
             } else {
                 const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
-                const newEntries = createHabitEntries(habit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,existingEntries);
-                dispatch(habitsActions.toggleArchiveStatus({...habit,isArchived,entries:newEntries}))
+                const {newHabitEntries,newScheduleEntries} = createHabitEntries(habit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,existingEntries);
+                dispatch(habitsActions.toggleArchiveStatus({...habit,isArchived,entries:newHabitEntries}))
             }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
@@ -200,27 +204,23 @@ const useHabitHooks = () => {
         dispatch(habitsActions.setHabitLoading(true));
         const clientSelectedWeekStartTime = new Date(selectedDate).setHours(0,0,0,0) + 86400000 * (new Date(selectedDate).getDay()? 1 - new Date(selectedDate).getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();
-        const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
-        const newEntries:{[weekday:number]:HabitEntryInterface|null} = createHabitEntries(habit,utcWeekStartMidDay,utcNextWeekStartMidDay,true,null);
         try {
-            const habitsResponse:{data:{populatedEntriesIds:{[weekday:number]:string|null},scheduleEntries:ScheduleInterface[]}} = await axios.request({
+            const habitsResponse:{data:{habitEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/populateHabit`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset,_id:habit._id},
                 headers:{Authorization: `Bearer ${token}`}
             })
-            // Attach ids to populated entries
-            const {populatedEntriesIds,scheduleEntries} = habitsResponse.data;
-            [1,2,3,4,5,6,0].forEach((weekday:number) => {
-                if (newEntries[weekday] && populatedEntriesIds[weekday]) {
-                    newEntries[weekday]!._id = populatedEntriesIds[weekday] || "";
-                }
-            })
-            // Add schedule items
-            for (let entry of scheduleEntries) {
+            const {habitEntries} = habitsResponse.data;
+            console.log(habitEntries)
+            const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
+            const {newHabitEntries,newScheduleEntries} = createHabitEntries(habit,utcWeekStartMidDay,utcNextWeekStartMidDay,true,habitEntries);
+            // Add schedule entries
+            console.log(newScheduleEntries)
+            for (let entry of newScheduleEntries) {
                 dispatch(scheduleActions.addScheduleItem(entry));
             }
-            dispatch(habitsActions.populateHabit({populatedEntries:newEntries,_id:habit._id}))
+            dispatch(habitsActions.populateHabit({populatedEntries:newHabitEntries,_id:habit._id}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {

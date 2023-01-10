@@ -74,7 +74,7 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
         </Box>
     )
     let searchItemsCompact = (
-        <Box className={`toolbar-search-compact-wrapper`}>
+        <Box className={`toolbar-search-compact-wrapper scale-in`}>
             {toolbarInputs.searchMode ? null :
             <Button onClick={()=>{modeHandler("searchMode",true)}} variant='outlined'><MdSearch className={`toolbar-search-compact-icon opacity-transition`}/></Button>}
             {toolbarInputs.searchMode ? <FormControl className={`toolbar-search-compact`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
@@ -97,8 +97,7 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
     return (
         <Box className={`toolbar${isDarkMode?'-dark':''} scale-in`}>
             {sortItems}
-            {searchItems}
-            {searchItemsCompact}
+            {isCompact ? searchItemsCompact : searchItems}
             {addNewItem}
         </Box>
     )
