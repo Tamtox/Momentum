@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 import { scheduleActions } from "../Store/Store";
 import type { HabitInterface, ScheduleInterface } from "../Misc/Interfaces";
-import {getDate,createHabitEntries} from './Helper-functions';
+import {getDate,generateHabitSchedule} from './Helper-functions';
 
 const httpAddress = `http://localhost:3001`;
 
@@ -23,13 +23,12 @@ const useScheduleHooks = () => {
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {scheduleList} = scheduleResponse.data;
-            const habitScheduleList = scheduleList.filter((scheduleItem:ScheduleInterface)=>scheduleItem.parentType === "habit");
+            // Generate blank schedule entries for habits
+            const habitScheduleList:ScheduleInterface[] = scheduleList.filter((scheduleItem:ScheduleInterface)=>scheduleItem.parentType === "habit");
             const {utcDayStartMidDay,utcNextDayMidDay} = getDate(clientSelectedDayStartTime,clientTimezoneOffset);
-            const newHabitScheduleList:ScheduleInterface[] = [];
-            habitList.forEach((habitItem:HabitInterface)=> {
-                // const {newScheduleEntries} = createHabitEntries(habitItem,utcDayStartMidDay,utcNextDayMidDay,false,);
-            })
-            dispatch(scheduleActions.setScheduleList({scheduleList,date:date.toISOString()}));
+            const newScheduleEntries = generateHabitSchedule(habitList,utcDayStartMidDay,utcNextDayMidDay,habitScheduleList);
+            const newScheduleList = scheduleList.concat(newScheduleEntries);
+            dispatch(scheduleActions.setScheduleList({scheduleList:newScheduleList,date:date.toISOString()}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         }   

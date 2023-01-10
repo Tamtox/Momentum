@@ -90,50 +90,27 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
     return {newHabitEntries,newScheduleEntries};
 }
 
-// Schedule generation for habits
-const createScheduleEntries = (habitList:HabitInterface[],startTime:number,endTime:number,existingScheduleEntries:ScheduleInterface[]|null) => {
-    const timezoneOffset = new Date().getTimezoneOffset();
-    const newScheduleEntries:ScheduleInterface[] = [];
-    habitList.forEach((habitItem:HabitInterface)=> {
-        const {title,time,targetDate,alarmUsed,creationUTCOffset,creationDate,isArchived,_id} = habitItem;
-        for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
-            const date = new Date(new Date(currentTime).setHours(12,0,0,0) + timezoneOffset * - 60000);
-            let dateCompleted:string|null = null;
-            let status = 'Pending';
-            let entryId = "";
-            // Stop creating entries if selected date is before habit creation week's start
-            const habitCreationTime = new Date(creationDate).setHours(12,0,0,0)  + creationUTCOffset * -60000;
-            if(habitCreationTime > date.getTime()) break;
-            // Stop creating entries if target date has been reached
-            if(targetDate && date.getTime() > new Date(targetDate).getTime()) break;
-            // Check if existing entry status is complete
-            if(existingScheduleEntries) {
-                existingScheduleEntries.forEach((entry:ScheduleInterface)=>{
-                })
-            }
-            const newScheduleEntry:ScheduleInterface = {date:date.toISOString(),time,parentId:_id,parentTitle:title,parentType:"habit",alarmUsed,utcOffset:creationUTCOffset,dateCompleted,status,isArchived,_id:entryId};
-        }
-    })
-    return newScheduleEntries;
-}
-
 // Generate new schedule items for habits
-const generateHabitSchedule = (habitList:HabitsInterface[],startTime:number,endTime:number,existingSchedule:ScheduleInterface[]) => {
-    const habitSchedule:ScheduleInterface[] = existingSchedule.filter((scheduleItem:ScheduleInterface)=>scheduleItem.parentType === 'habit');
+const generateHabitSchedule = (habitList:HabitInterface[],startTime:number,endTime:number,existingSchedule:ScheduleInterface[]) => {
+    const timezoneOffset = new Date().getTimezoneOffset();
     const newScheduleItems:ScheduleInterface[] = [];
     for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
-        const date = new Date(currentTime).setHours(12,0,0,0);
+        const date = new Date(new Date(currentTime).setHours(12,0,0,0) + timezoneOffset * - 60000);
         habitList.forEach((habitItem:HabitInterface) => {
-            const habitExists:ScheduleInterface|undefined = habitSchedule.find((item:ScheduleInterface) => item.parentId === habitItem._id);
+            // Check if habit has existing schedule entry for selected date
+            const habitExists:ScheduleInterface|undefined = existingSchedule.find((item:ScheduleInterface) => item.parentId === habitItem._id);
             // Check if habit weekday is active
             const isWeekday = habitItem.weekdays[new Date(date).getDay()];
-            // Check if goal target date reached
-            const habitGoalTargetReached:boolean = habitItem.targetDate ? new Date(date).getTime() > new Date(habitItem.targetDate).getTime() : false;
-            // Check habit creation date
-            const afterCreationDate:boolean = new Date(date).getTime() > new Date(habitItem.creationDate).getTime();
-            if(!habitExists && isWeekday && !habitGoalTargetReached && afterCreationDate) {
-                const newScheduleItem:ScheduleInterface = new ScheduleItem({
-                    date:new Date(date),
+            // Check if schedule entry is after habit's creation date
+            const habitCreationTime = new Date(habitItem.creationDate).getTime() + habitItem.creationUTCOffset * -60000;
+            const habitCreationWeekday = new Date(habitCreationTime).getDay();
+            const habitCreationDatesWeekStart = new Date(habitCreationTime).setHours(12,0,0,0) + 86400000 * (habitCreationWeekday ? 1 - habitCreationWeekday : -6);
+            const afterCreationDate:boolean = new Date(date).getTime() > habitCreationDatesWeekStart;
+            // Check if habit's target date is reached
+            const targetDateReached:boolean = habitItem.targetDate ? new Date(date).getTime() > new Date(habitItem.targetDate).getTime() : false;
+            if(!habitExists && isWeekday && afterCreationDate && !targetDateReached && !habitItem.isArchived) {
+                const newScheduleItem:ScheduleInterface = {
+                    date:date.toISOString(),
                     time:habitItem.time,
                     parentId:habitItem._id,
                     parentTitle:habitItem.title,
@@ -143,7 +120,8 @@ const generateHabitSchedule = (habitList:HabitsInterface[],startTime:number,endT
                     alarmUsed:habitItem.alarmUsed,
                     utcOffset:habitItem.creationUTCOffset,
                     isArchived:false,
-                })
+                    _id:""
+                }
                 newScheduleItems.push(newScheduleItem);
             }
         })
@@ -183,4 +161,4 @@ const compareGoals = (newGoal:TodoInterface,oldGoal:TodoInterface):boolean => {
     return result
 }
 
-export {getWeekDates,getDate,createPairedScheduleItem,determineScheduleAction,createHabitEntries};
+export {getWeekDates,getDate,createPairedScheduleItem,determineScheduleAction,createHabitEntries,generateHabitSchedule};

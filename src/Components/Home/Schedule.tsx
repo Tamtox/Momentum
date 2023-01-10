@@ -21,7 +21,7 @@ const Schedule:React.FC = () => {
     const scheduleLoading = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleLoading);
     const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
-    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList) || [];
+    const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
     // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
