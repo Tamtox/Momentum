@@ -82,9 +82,12 @@ const scheduleSlice = createSlice({
             const date = new Date(action.payload.date).toLocaleDateString('en-Gb');
             if (state.scheduleList[date]) {
                 state.scheduleList[date] = state.scheduleList[date].map((item:ScheduleInterface)=>{
-                    if (action.payload._id === item.parentId) {
+                    if (action.payload.parentId === item.parentId) {
                         item.dateCompleted = action.payload.dateCompleted;
                         item.status = action.payload.dateCompleted ? "Complete" : "Pending";
+                        if(action.payload.parentType === "habit") {
+                            item._id = action.payload._id 
+                        }
                     }
                     return item;
                 })

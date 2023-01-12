@@ -5,7 +5,7 @@ import axios from "axios";
 // Components
 import { habitsActions,scheduleActions } from "../Store/Store";
 import type { HabitInterface, HabitEntryInterface,ScheduleInterface } from '../Misc/Interfaces';
-import {getWeekDates,createPairedScheduleItem,determineScheduleAction,createHabitEntries} from './Helper-functions';
+import {getWeekDates,createHabitEntries} from './Helper-functions';
 
 const httpAddress = `http://localhost:3001`;
 
@@ -27,7 +27,6 @@ const useHabitHooks = () => {
             const {habitList,habitEntries} = habitsResponse.data;
             // Create/attach habit entries to habits
             let habitEntriesCopy:HabitEntryInterface[] = [...habitEntries];
-            let scheduleEntries:ScheduleInterface[] = [];
             const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
             const habitListWithEntries = habitList.map((habitItem:HabitInterface) => {
                 // Find entries of current habit
@@ -42,16 +41,11 @@ const useHabitHooks = () => {
                 });
                 habitEntriesCopy = otherHabitEntries;
                 const populateBeforeCreation = currentHabitEntries.length ? true : false
-                const {newHabitEntries,newScheduleEntries} = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,populateBeforeCreation,currentHabitEntries);
-                scheduleEntries = newScheduleEntries
+                const {newHabitEntries} = createHabitEntries(habitItem,utcWeekStartMidDay,utcNextWeekStartMidDay,populateBeforeCreation,currentHabitEntries);
                 habitItem.entries = newHabitEntries;
                 return habitItem
             })
             dispatch(habitsActions.setHabits({habitList:habitListWithEntries,date:new Date(selectedDate).toISOString()}));
-            // Add schedule items
-            for (let entry of scheduleEntries) {
-                dispatch(scheduleActions.addScheduleItem(entry));
-            }
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;
         } finally {
@@ -166,6 +160,10 @@ const useHabitHooks = () => {
             if (newEntry._id === '') {
                 newEntry._id = habitResponse.data._id;
             }
+            // Dispatch schedule status update
+            const {date,habitId,dateCompleted,status,_id} = newEntry;
+            const scheduleItemUpdate = {date,dateCompleted,status,parentId:habitId,parentType:"habit",_id};
+            dispatch(scheduleActions.updateScheduleItemStatus(scheduleItemUpdate));
             dispatch(habitsActions.changeHabitStatus({newEntry,weekday}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;

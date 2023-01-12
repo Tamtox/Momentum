@@ -23,11 +23,9 @@ const useScheduleHooks = () => {
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {scheduleList} = scheduleResponse.data;
-            // Generate blank schedule entries for habits
-            const habitScheduleList:ScheduleInterface[] = scheduleList.filter((scheduleItem:ScheduleInterface)=>scheduleItem.parentType === "habit");
+            // Generate schedule list wuth new habit schedule entries
             const {utcDayStartMidDay,utcNextDayMidDay} = getDate(clientSelectedDayStartTime,clientTimezoneOffset);
-            const newScheduleEntries = generateHabitSchedule(habitList,utcDayStartMidDay,utcNextDayMidDay,habitScheduleList);
-            const newScheduleList = scheduleList.concat(newScheduleEntries);
+            const newScheduleList = generateHabitSchedule(habitList,utcDayStartMidDay,utcNextDayMidDay,scheduleList);
             dispatch(scheduleActions.setScheduleList({scheduleList:newScheduleList,date:date.toISOString()}));
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;

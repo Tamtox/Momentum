@@ -37,7 +37,7 @@ interface GoalInterface {
     creationDate:string, /* Date format : .toIsoString() */
     targetDate:string | null, /* Date format : .toIsoString() */
     status:string,
-    dateCompleted:string, /* Date format : .toIsoString() */
+    dateCompleted:string | null, /* Date format : .toIsoString() */
     isArchived:boolean,
     creationUTCOffset:number,
     alarmUsed:boolean,

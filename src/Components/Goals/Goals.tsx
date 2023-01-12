@@ -56,7 +56,7 @@ const Goals:React.FC = () => {
                 {filteredList.map((goalItem:GoalInterface)=>{
                     return (
                         <Card variant='elevation' className={`goal-item scale-in`} key={goalItem._id}>
-                            <Box className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem._id,goalItem.status)}}>
+                            <Box className={`change-goal-status`} onClick={()=>{goalHooks.changeGoalStatus(goalItem)}}>
                                 {goalItem.status === 'Complete' ? <IoCheckmarkCircleOutline  className={`icon-interactive ${goalItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${goalItem.status}`} />}
                             </Box>
                             <Box className={`goal-item-title`} onClick={()=>{navigate(`${location.pathname}/${goalItem._id}`)}}>

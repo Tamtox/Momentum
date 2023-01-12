@@ -92,13 +92,14 @@ const createHabitEntries = (habitItem:HabitInterface,startTime:number,endTime:nu
 
 // Generate new schedule items for habits
 const generateHabitSchedule = (habitList:HabitInterface[],startTime:number,endTime:number,existingSchedule:ScheduleInterface[]) => {
+    const habitScheduleList:ScheduleInterface[] = existingSchedule.filter((scheduleItem:ScheduleInterface)=>scheduleItem.parentType === "habit");
     const timezoneOffset = new Date().getTimezoneOffset();
     const newScheduleItems:ScheduleInterface[] = [];
     for (let currentTime = startTime; currentTime < endTime; currentTime += 86400000) {
         const date = new Date(new Date(currentTime).setHours(12,0,0,0) + timezoneOffset * - 60000);
         habitList.forEach((habitItem:HabitInterface) => {
             // Check if habit has existing schedule entry for selected date
-            const habitExists:ScheduleInterface|undefined = existingSchedule.find((item:ScheduleInterface) => item.parentId === habitItem._id);
+            const habitExists:ScheduleInterface|undefined = habitScheduleList.find((item:ScheduleInterface) => item.parentId === habitItem._id);
             // Check if habit weekday is active
             const isWeekday = habitItem.weekdays[new Date(date).getDay()];
             // Check if schedule entry is after habit's creation date
@@ -126,7 +127,7 @@ const generateHabitSchedule = (habitList:HabitInterface[],startTime:number,endTi
             }
         })
     }
-    return newScheduleItems;
+    return existingSchedule.concat(newScheduleItems);
 }
 
 // Alarms generation

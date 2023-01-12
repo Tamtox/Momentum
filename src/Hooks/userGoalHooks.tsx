@@ -45,15 +45,20 @@ const useGoalHooks = () => {
         }
     }
     // Toggle Goal status
-    const changeGoalStatus = async (_id:string,status:string) => {
-        const dateCompleted = status ==="Pending" ? new Date().toISOString() : '';
+    const changeGoalStatus = async (newGoal:GoalInterface) => {
+        const status = newGoal.status === "Pending" ?  "Complete" : "Pending";
+        const dateCompleted =  newGoal.status === "Pending" ? new Date().toISOString() : null;
+        const {targetDate,_id} = newGoal;
         try {
             await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/goals/updateGoal`,
                 headers:{Authorization: `Bearer ${token}`},
-                data:{_id,status:status ==="Pending"?"Complete":"Pending",dateCompleted,timezoneOffset:new Date().getTimezoneOffset()}
+                data:{...newGoal,dateCompleted,status}
             })
+            // Dispatch schedule status update
+            const scheduleItemUpdate = {date:targetDate,dateCompleted,status,parentId:_id,parentType:"goal"};
+            dispatch(scheduleActions.updateScheduleItemStatus(scheduleItemUpdate));
             dispatch(goalActions.changeGoalStatus({_id,dateCompleted}))
         } catch (error) {
             axios.isAxiosError(error) ? alert(error.response?.data || error.message) : console.log(error) ;

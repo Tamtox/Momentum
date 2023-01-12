@@ -56,7 +56,7 @@ const Todo:React.FC = () => {
                 {filteredList.map((todoItem:TodoInterface)=>{
                     return (
                         <Card variant='elevation' className={`todo-item scale-in`} key={todoItem._id}>
-                            <Box className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem._id,todoItem.status)}}>
+                            <Box className={`change-todo-status`} onClick={()=>{todoHooks.changeTodoStatus(todoItem)}}>
                                 {todoItem.status === 'Complete' ? <IoCheckmarkCircleOutline className={`icon-interactive ${todoItem.status}`} /> : <IoEllipseOutline className={`icon-interactive ${todoItem.status}`}/>}
                             </Box>
                             <Box  className={`todo-item-title`} onClick={()=>{navigate(`${location.pathname}/${todoItem._id}`)}}>

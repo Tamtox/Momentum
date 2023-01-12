@@ -23,6 +23,7 @@ const Schedule:React.FC = () => {
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
+    console.log(scheduleList);
     // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
@@ -41,7 +42,7 @@ const Schedule:React.FC = () => {
     }
     useEffect(() => {
         scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
-    }, [])
+    }, [habitList])
     return(
         <Box className={`schedule`}>
             <Typography className='schedule-title'>Schedule</Typography>
