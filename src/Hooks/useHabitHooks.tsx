@@ -103,7 +103,7 @@ const useHabitHooks = () => {
         const clientCurrentWeekStartTime = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
         const clientTimezoneOffset = new Date().getTimezoneOffset();   
         try {
-            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[]}} = await axios.request({
+            const newHabitResponse:{data:{habitEntries:HabitEntryInterface[],scheduleEntries:ScheduleInterface[]}} = await axios.request({
                 method:'PATCH',
                 url:`${httpAddress}/habits/updateHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
@@ -116,6 +116,7 @@ const useHabitHooks = () => {
                 const {newHabitEntries,newScheduleEntries} = createHabitEntries(newHabit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,habitEntries);
                 newHabit.entries = newHabitEntries;
                 // Update schedule entries
+                dispatch(scheduleActions.deleteScheduleItem({_id:newHabit._id,parentType:'habit'}))
                 for (let entry of newScheduleEntries) {
                     dispatch(scheduleActions.addScheduleItem(entry));
                 }
@@ -185,7 +186,8 @@ const useHabitHooks = () => {
             // Update entries when habit is unarchived
             const {existingEntries} = habitsResponse.data;
             if (isArchived){
-                dispatch(habitsActions.toggleArchiveStatus({...habit,isArchived}))
+                dispatch(scheduleActions.deleteScheduleItem({parentType:"habit",_id:habit._id}));
+                dispatch(habitsActions.toggleArchiveStatus({...habit,isArchived}));
             } else {
                 const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientCurrentWeekStartTime,clientTimezoneOffset);
                 const {newHabitEntries,newScheduleEntries} = createHabitEntries(habit,utcWeekStartMidDay,utcNextWeekStartMidDay,false,existingEntries);
@@ -210,11 +212,9 @@ const useHabitHooks = () => {
                 headers:{Authorization: `Bearer ${token}`}
             })
             const {habitEntries} = habitsResponse.data;
-            console.log(habitEntries)
             const {utcWeekStartMidDay,utcNextWeekStartMidDay} = getWeekDates(clientSelectedWeekStartTime,clientTimezoneOffset);
             const {newHabitEntries,newScheduleEntries} = createHabitEntries(habit,utcWeekStartMidDay,utcNextWeekStartMidDay,true,habitEntries);
             // Add schedule entries
-            console.log(newScheduleEntries)
             for (let entry of newScheduleEntries) {
                 dispatch(scheduleActions.addScheduleItem(entry));
             }

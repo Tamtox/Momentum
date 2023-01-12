@@ -68,7 +68,11 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
             <FormControl className={`toolbar-search`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
                 <InputLabel>Search</InputLabel>
                 <OutlinedInput value={queries.searchQuery} onChange={(event)=>{searchQueryHandler(event.target.value)}} label="Search" 
-                    endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
+                    endAdornment={
+                        <InputAdornment position="end">
+                            {queries.searchQuery.length ? <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/> : null}
+                        </InputAdornment>
+                    }
                 />
             </FormControl>
         </Box>
@@ -80,7 +84,11 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
             {toolbarInputs.searchMode ? <FormControl className={`toolbar-search-compact`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
                 <InputLabel>Search</InputLabel>
                 <OutlinedInput value={queries.searchQuery} onChange={(event)=>{searchQueryHandler(event.target.value)}} label="Search" 
-                    endAdornment={<InputAdornment position="end">{!!queries.searchQuery.length && <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/>}</InputAdornment>}
+                    endAdornment={
+                        <InputAdornment position="end">
+                            {queries.searchQuery.length ? <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/> : null}
+                        </InputAdornment>
+                    }
                 />
             </FormControl> : null}
             {toolbarInputs.searchMode ? <Button className={`toolbar-search-compact-return`} onClick={()=>{modeHandler("searchMode",false)}} variant='outlined'>Back</Button> : null}

@@ -75,7 +75,7 @@ const scheduleSlice = createSlice({
                 scheduleItem.parentTitle = action.payload.newItem.title
                 scheduleItem.alarmUsed = action.payload.newItem.alarmUsed
                 scheduleItem.isArchived = action.payload.newItem.isArchived
-                state.scheduleList[newDate].push(scheduleItem)
+                state.scheduleList[newDate].push(scheduleItem);
             }
         },  
         updateScheduleItemStatus(state,action) {

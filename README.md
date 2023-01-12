@@ -8,14 +8,13 @@ Features :
     Schedule - combines other features into day-to-day schedule for easy tracking and planning.
 
 Planned Features : 
-    Overall design improvements
-    Calendar
+    Calendar for schedule 
     Notifications and Alarms 
     Events - recurring events, holidays.
     Data Visualization
     Mobile design
     Error handling
     Subgoals
-    Multiple habit times
+    Multiple habit times per day
     Logging
     Validation

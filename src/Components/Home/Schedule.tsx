@@ -23,7 +23,6 @@ const Schedule:React.FC = () => {
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
-    console.log(scheduleList);
     // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
@@ -32,7 +31,6 @@ const Schedule:React.FC = () => {
         scheduleHooks.loadScheduleItems(newDate,habitList);
     }
     // const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
-    // console.log(sortedList);
     // Navigate to schedule items parent 
     const navigateToParent = (parentType:string,parentId:string) => {
         if(parentType === 'habit') {
