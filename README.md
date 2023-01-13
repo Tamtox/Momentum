@@ -18,3 +18,4 @@ Planned Features :
     Multiple habit times per day
     Logging
     Validation
+    Configurable navbar

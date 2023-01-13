@@ -6,7 +6,7 @@ import { scheduleActions } from "../Store/Store";
 import type { HabitInterface, ScheduleInterface } from "../Misc/Interfaces";
 import {getDate,generateHabitSchedule} from './Helper-functions';
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useScheduleHooks = () => {
     const token = Cookies.get('token');
@@ -18,7 +18,7 @@ const useScheduleHooks = () => {
         try {
             const scheduleResponse:{data:{scheduleList:ScheduleInterface[]}} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/schedule/getSchedule`,
+                url:`${host}/schedule/getSchedule`,
                 data:{clientSelectedDayStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -36,7 +36,7 @@ const useScheduleHooks = () => {
         try {
             await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/schedule/updateScheduleItemStatus`,
+                url:`${host}/schedule/updateScheduleItemStatus`,
                 data:{dateCompleted:updatedScheduleItem.dateCompleted,_id:updatedScheduleItem._id},
                 headers:{Authorization: `Bearer ${token}`}
             })

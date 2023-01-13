@@ -44,7 +44,7 @@ const authSlice = createSlice({
             state.user.email = action.payload.email;
             state.user.name = action.payload.name;
             state.user.emailConfirmationStatus = action.payload.emailConfirmationStatus;
-            Cookies.set('token',action.payload.token,{expires:7,sameSite:"Strict",secure:true,path:'/'});
+            Cookies.set('token',action.payload.token,{expires:7,sameSite:"Strict",path:'/'});
         },
         logout(state) {
             state.token = undefined;

@@ -7,7 +7,7 @@ import { todoActions,scheduleActions } from "../Store/Store";
 import type {TodoInterface} from '../Misc/Interfaces';
 import {createPairedScheduleItem,determineScheduleAction} from './Helper-functions';
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useTodoHooks = () => {
     const token = Cookies.get('token');
@@ -18,7 +18,7 @@ const useTodoHooks = () => {
         try {
             const todoList = await axios.request({
                 method:'GET',
-                url:`${httpAddress}/todo/getTodos`,
+                url:`${host}/todo/getTodos`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(todoActions.setToDoList(todoList.data))
@@ -34,7 +34,7 @@ const useTodoHooks = () => {
         try {
             const todoList = await axios.request({
                 method:'GET',
-                url:`${httpAddress}/todo/getArchivedTodos`,
+                url:`${host}/todo/getArchivedTodos`,
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(todoActions.setArchivedToDoList(todoList.data))
@@ -52,7 +52,7 @@ const useTodoHooks = () => {
         try {
             await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/todo/updateTodo`,
+                url:`${host}/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{...newTodo,status,dateCompleted}
             })
@@ -70,7 +70,7 @@ const useTodoHooks = () => {
         try {
             const newTodoResponse:{data:{todoId:string,scheduleId:string}} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/todo/addNewTodo`,
+                url:`${host}/todo/addNewTodo`,
                 data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -96,7 +96,7 @@ const useTodoHooks = () => {
         try {
             const updateTodoResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/todo/updateTodo`,
+                url:`${host}/todo/updateTodo`,
                 data:{...newTodo,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -127,7 +127,7 @@ const useTodoHooks = () => {
         try {
             const todoResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/todo/updateTodo`,
+                url:`${host}/todo/updateTodo`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{...todoItem,isArchived}
             })
@@ -151,7 +151,7 @@ const useTodoHooks = () => {
         try {
             await axios.request({
                 method:'DELETE',
-                url:`${httpAddress}/todo/deleteTodo`,
+                url:`${host}/todo/deleteTodo`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:todoItem._id}
             })

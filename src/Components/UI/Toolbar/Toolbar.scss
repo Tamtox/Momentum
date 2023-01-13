@@ -18,8 +18,13 @@
     .toolbar-search-wrapper{
         width: 100%;
         @include flex;
-        .clear-input{
-            font-size: 26px;
+        .toolbar-clear-search-input-wrapper{
+            @include flex;
+            cursor: pointer;
+            border-radius: 20px;
+            .toolbar-clear-search-input-icon{
+                font-size: 26px;
+            }
         }
     }
     .toolbar-search-compact-wrapper{

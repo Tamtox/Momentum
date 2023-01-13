@@ -7,7 +7,7 @@ import { habitsActions,scheduleActions } from "../Store/Store";
 import type { HabitInterface, HabitEntryInterface,ScheduleInterface } from '../Misc/Interfaces';
 import {getWeekDates,createHabitEntries} from './Helper-functions';
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useHabitHooks = () => {
     const token = Cookies.get('token');
@@ -20,7 +20,7 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{habitList:HabitInterface[],habitEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/habits/getHabits`,
+                url:`${host}/habits/getHabits`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
@@ -58,7 +58,7 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{archivedHabitList:[]}} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/habits/getArchivedHabits`,
+                url:`${host}/habits/getArchivedHabits`,
                 headers:{Authorization: `Bearer ${token}`}
             })
             dispatch(habitsActions.setArchiveHabits(habitsResponse.data.archivedHabitList))
@@ -76,7 +76,7 @@ const useHabitHooks = () => {
         try {
             const newHabitResponse:{data:{habitId:string}} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/habits/addNewHabit`,
+                url:`${host}/habits/addNewHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -105,7 +105,7 @@ const useHabitHooks = () => {
         try {
             const newHabitResponse:{data:{habitEntries:HabitEntryInterface[],scheduleEntries:ScheduleInterface[]}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/habits/updateHabit`,
+                url:`${host}/habits/updateHabit`,
                 data:{...newHabit,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -134,7 +134,7 @@ const useHabitHooks = () => {
         try {
             await axios.request({
                 method:'DELETE',
-                url:`${httpAddress}/habits/deleteHabit`,
+                url:`${host}/habits/deleteHabit`,
                 data:{_id:habit._id},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -154,7 +154,7 @@ const useHabitHooks = () => {
         try {
             const habitResponse:{data:{_id:string}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/habits/updateHabitEntryStatus`,
+                url:`${host}/habits/updateHabitEntryStatus`,
                 data:{...newEntry},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -179,7 +179,7 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{existingEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/habits/updateHabitArchiveStatus`,
+                url:`${host}/habits/updateHabitArchiveStatus`,
                 data:{...habit,isArchived,clientCurrentWeekStartTime,clientTimezoneOffset},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -207,7 +207,7 @@ const useHabitHooks = () => {
         try {
             const habitsResponse:{data:{habitEntries:HabitEntryInterface[]}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/habits/populateHabit`,
+                url:`${host}/habits/populateHabit`,
                 data:{clientSelectedWeekStartTime,clientTimezoneOffset,_id:habit._id},
                 headers:{Authorization: `Bearer ${token}`}
             })

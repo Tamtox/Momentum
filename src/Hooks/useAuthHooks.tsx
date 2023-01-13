@@ -10,7 +10,7 @@ import useHabitHooks from "./useHabitHooks";
 import useGoalHooks from "./userGoalHooks";
 import useJournalHooks from "./useJournalHooks";
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useAuthHooks = () => {
     const token = Cookies.get('token');
@@ -26,7 +26,7 @@ const useAuthHooks = () => {
         try {
             const userDataResponse = await axios.request({
                 method:'GET',
-                url:`${httpAddress}/users/getUserData`,
+                url:`${host}/users/getUserData`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(authActions.setUsetData(userDataResponse.data))
@@ -44,7 +44,7 @@ const useAuthHooks = () => {
         try {
             const authResponse = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/users/${isLogin?'login':'signup'}`,
+                url:`${host}/users/${isLogin?'login':'signup'}`,
                 data:{email,password,name,creationDate:new Date().toString()},
             })
             dispatch(authActions.login(authResponse.data));
@@ -83,7 +83,7 @@ const useAuthHooks = () => {
         try {
             const verificationResponse = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/users/verify`,
+                url:`${host}/users/verify`,
                 data:{verificationCode},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -103,7 +103,7 @@ const useAuthHooks = () => {
         try {
             const passChangeResponse = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/users/changePassword`,
+                url:`${host}/users/changePassword`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{currentPass,newPass}
             })
@@ -123,7 +123,7 @@ const useAuthHooks = () => {
         try {
             const passChangeResponse = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/users/resetPassword`,
+                url:`${host}/users/resetPassword`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{email}
             })
@@ -142,7 +142,7 @@ const useAuthHooks = () => {
         try {
             const sendVerificationResponse = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/users/sendVerificationLetter`,
+                url:`${host}/users/sendVerificationLetter`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{email}
             })
@@ -161,7 +161,7 @@ const useAuthHooks = () => {
         try {
             const accountDeleteResponse = await axios.request({
                 method:'DELETE',
-                url:`${httpAddress}/users/delete`,
+                url:`${host}/users/delete`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{password}
             })

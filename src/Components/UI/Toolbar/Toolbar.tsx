@@ -70,7 +70,9 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
                 <OutlinedInput value={queries.searchQuery} onChange={(event)=>{searchQueryHandler(event.target.value)}} label="Search" 
                     endAdornment={
                         <InputAdornment position="end">
-                            {queries.searchQuery.length ? <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/> : null}
+                            {queries.searchQuery.length ? <Box className={`toolbar-clear-search-input-wrapper`}>
+                                <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition toolbar-clear-search-input-icon`}/>
+                            </Box> : null}
                         </InputAdornment>
                     }
                 />
@@ -86,7 +88,9 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
                 <OutlinedInput value={queries.searchQuery} onChange={(event)=>{searchQueryHandler(event.target.value)}} label="Search" 
                     endAdornment={
                         <InputAdornment position="end">
-                            {queries.searchQuery.length ? <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition clear-input`}/> : null}
+                            {queries.searchQuery.length ? <Box className={`toolbar-clear-search-input-wrapper`}>
+                                <IoCloseCircleOutline onClick={()=>{searchQueryHandler('')}} className={`icon-interactive opacity-transition toolbar-clear-search-input-icon`}/>
+                            </Box> : null}
                         </InputAdornment>
                     }
                 />

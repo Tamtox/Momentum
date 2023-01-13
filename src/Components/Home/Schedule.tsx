@@ -9,7 +9,6 @@ import {TextField,Button,Typography,Card, Box} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import {CgArrowRight,CgArrowLeft} from 'react-icons/cg';
 //Components
-import { scheduleActions,habitsActions } from '../../Store/Store';
 import type { ScheduleInterface,HabitInterface } from '../../Misc/Interfaces';
 import useScheduleHooks from '../../Hooks/useScheduleHooks';
 import Loading from '../Misc/Loading';
@@ -17,12 +16,10 @@ import Loading from '../Misc/Loading';
 const Schedule:React.FC = () => {
     const scheduleHooks = useScheduleHooks();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const scheduleLoading = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleLoading);
     const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
-    const scheduleListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
     // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
     const selectScheduleDate = (newDate:Date|null) => {
@@ -30,7 +27,6 @@ const Schedule:React.FC = () => {
         setSelectedDate(newDate);
         scheduleHooks.loadScheduleItems(newDate,habitList);
     }
-    // const sortedList = notificationList.sort((itemA,itemB)=>new Date(itemA.date).getTime() - new Date(itemB.date).getTime());
     // Navigate to schedule items parent 
     const navigateToParent = (parentType:string,parentId:string) => {
         if(parentType === 'habit') {

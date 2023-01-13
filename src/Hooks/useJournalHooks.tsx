@@ -6,7 +6,7 @@ import axios from "axios";
 import { journalActions } from "../Store/Store";
 import type { JournalEntryInterface } from "../Misc/Interfaces";
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useJournalHooks = () => {
     const token = Cookies.get('token');
@@ -19,7 +19,7 @@ const useJournalHooks = () => {
         try {
             const journalEntryResponse:{data:any[]} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/journal/getJournalEntry`,
+                url:`${host}/journal/getJournalEntry`,
                 headers:{Authorization: `Bearer ${newToken || token}`},
                 data:{clientSelectedDayStartTime,clientTimezoneOffset}
             })
@@ -42,7 +42,7 @@ const useJournalHooks = () => {
         try {
             const journalEntryResponse:{data:{journalId:string}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/journal/updateJournalEntry`,
+                url:`${host}/journal/updateJournalEntry`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{...newJournalEntry,clientSelectedDayStartTime,clientTimezoneOffset}
             })

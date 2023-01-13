@@ -7,7 +7,7 @@ import { goalActions,scheduleActions } from "../Store/Store";
 import type {GoalInterface} from '../Misc/Interfaces';
 import {createPairedScheduleItem,determineScheduleAction} from './Helper-functions';
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useGoalHooks = () => {
     const token = Cookies.get('token');
@@ -18,7 +18,7 @@ const useGoalHooks = () => {
         try {
             const goalListResponse = await axios.request({
                 method:'GET',
-                url:`${httpAddress}/goals/getGoals`,
+                url:`${host}/goals/getGoals`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(goalActions.setGoalList(goalListResponse.data))
@@ -34,7 +34,7 @@ const useGoalHooks = () => {
         try {
             const goalListResponse = await axios.request({
                 method:'GET',
-                url:`${httpAddress}/goals/getArchivedGoals`,
+                url:`${host}/goals/getArchivedGoals`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(goalActions.setArchivedGoalList(goalListResponse.data))
@@ -52,7 +52,7 @@ const useGoalHooks = () => {
         try {
             await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/goals/updateGoal`,
+                url:`${host}/goals/updateGoal`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{...newGoal,dateCompleted,status}
             })
@@ -70,7 +70,7 @@ const useGoalHooks = () => {
         try {
             const newGoalResponse:{data:{goalId:string,scheduleId:string}} = await axios.request({
                 method:'POST',
-                url:`${httpAddress}/goals/addNewGoal`,
+                url:`${host}/goals/addNewGoal`,
                 data:{...newGoal,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -97,7 +97,7 @@ const useGoalHooks = () => {
         try {
             const updateGoalResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/goals/updateGoal`,
+                url:`${host}/goals/updateGoal`,
                 data:{...newGoal,timezoneOffset:new Date().getTimezoneOffset()},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -129,7 +129,7 @@ const useGoalHooks = () => {
         try {
             const goalResponse:{data:{scheduleId:string}} = await axios.request({
                 method:'PATCH',
-                url:`${httpAddress}/goals/updateGoal`,
+                url:`${host}/goals/updateGoal`,
                 data:{...goalItem,isArchived},
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -153,7 +153,7 @@ const useGoalHooks = () => {
         try {
             await axios.request({
                 method:'DELETE',
-                url:`${httpAddress}/goals/deleteGoal`,
+                url:`${host}/goals/deleteGoal`,
                 headers:{Authorization: `Bearer ${token}`},
                 data:{_id:goalItem._id}
             })

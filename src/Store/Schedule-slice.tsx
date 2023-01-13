@@ -1,29 +1,46 @@
 import {createSlice} from '@reduxjs/toolkit';
 import type {ScheduleInterface} from "../Misc/Interfaces";
 
+// Sort schedule by time
+function sortScheduleList(array:ScheduleInterface[]):ScheduleInterface[] {
+    if (array.length <= 1) return array;
+    var pivot = array[0];
+    var left = []; 
+    var right = [];
+    for (var i = 1; i < array.length; i++) {
+        const pivotTime = Number(pivot.time?.split(":").join(""));
+        const itemTime = Number(array[i].time?.split(":").join(""));
+        itemTime < pivotTime ? left.push(array[i]) : right.push(array[i]);
+    }
+    return sortScheduleList(left).concat(pivot, sortScheduleList(right));
+};
+
 // Generates month with locale date strings in en-Gb format as keys 
-const generateMonth = (date:Date = new Date()):{[date:string]:ScheduleInterface[]} => {
+const generateMonth = (date:Date = new Date()) => {
     const monthStart:Date = new Date(date.getFullYear(),date.getMonth(),date.getDate() - (date.getDate()  - 1),0,0,0,0);
     const monthEnd:Date = new Date(new Date(date.getFullYear(),date.getMonth() + 1,1,0,0,0,0).getTime() - 1);
     const month:{[date:string]:ScheduleInterface[]} = {};
+    const monthLoaded:{[date:string]:boolean} = {};
     for (let i = monthStart.getDate(); i < monthEnd.getDate() + 1; i++) {
         const monthDate:Date = new Date(date.getFullYear(),date.getMonth(),i,0,0,0,0);
         month[monthDate.toLocaleDateString('en-Gb')] = [];
+        monthLoaded[monthDate.toLocaleDateString('en-Gb')] = false;
     }
-    return month
+    return {month,monthLoaded};
 }
 
 interface ScheduleSchema {
     scheduleLoading:boolean,
     scheduleList:{[date:string]:ScheduleInterface[]}, // toLocaleDateString('en-Gb')
-    scheduleListLoaded:boolean,
+    scheduleListLoaded:{[date:string]:boolean},
     scheduleDate:string
 }
 
+const {month,monthLoaded} = generateMonth()
 const initialScheduleState:ScheduleSchema = {
     scheduleLoading:false,
-    scheduleList:generateMonth(),
-    scheduleListLoaded:false,
+    scheduleList:month,
+    scheduleListLoaded:monthLoaded,
     scheduleDate: new Date().toISOString(),
 }
 
@@ -94,18 +111,29 @@ const scheduleSlice = createSlice({
             }
         },  
         setScheduleList(state,action) {
+            // Sort schedule List
+            const scheduleList:ScheduleInterface[] = action.payload.scheduleList;
+            const scheduleTimeList:ScheduleInterface[] = [];
+            const scheduleNoTimeList:ScheduleInterface[] = [];
+            scheduleList.forEach((scheduleItem:ScheduleInterface)=> {
+                scheduleItem.time ? scheduleTimeList.push(scheduleItem) : scheduleNoTimeList.push(scheduleItem);
+            })
+            const sortedScheduleTimeList:ScheduleInterface[] = sortScheduleList(scheduleTimeList);
             const date:Date = new Date(action.payload.date);
-            state.scheduleList = generateMonth(date);
-            state.scheduleList[date.toLocaleDateString('en-Gb')] = action.payload.scheduleList;
-            state.scheduleListLoaded = true;
+            const {month,monthLoaded} = generateMonth(date);
+            state.scheduleList = month;
+            state.scheduleListLoaded = monthLoaded;
+            state.scheduleList[date.toLocaleDateString('en-Gb')] = sortedScheduleTimeList.concat(scheduleNoTimeList);
+            state.scheduleListLoaded[date.toLocaleDateString('en-Gb')] = true;
             state.scheduleDate = action.payload.date
         },
         clearScheduleList(state) {
             state.scheduleDate = new Date().toISOString();
-            state.scheduleList = generateMonth(new Date());
-            state.scheduleListLoaded = false;
+            state.scheduleList = {};
+            state.scheduleListLoaded = {};
         }
     }
 })
 
 export default scheduleSlice
+

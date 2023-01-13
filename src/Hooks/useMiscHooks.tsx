@@ -8,7 +8,7 @@ import useHabitHooks from "./useHabitHooks";
 import useTodoHooks from "./useTodoHooks";
 import useGoalHooks from "./userGoalHooks";
 
-const httpAddress = `http://localhost:3001`;
+import { host } from "../Misc/variables";
 
 const useMiscHooks = () => {
     const token = Cookies.get('token');
@@ -26,7 +26,7 @@ const useMiscHooks = () => {
             // Preload user data
             const userDataResponse = await axios.request({
                 method:'GET',
-                url:`${httpAddress}/users/getUserData`,
+                url:`${host}/users/getUserData`,
                 headers:{Authorization: `Bearer ${newToken || token}`}
             })
             dispatch(authActions.setUsetData(userDataResponse.data))

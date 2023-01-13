@@ -22,7 +22,7 @@ const NavbarNotifications = React.forwardRef<HTMLDivElement,NotificationProps>((
     // Toggle dark mode slider
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const notificationList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date().toLocaleDateString('en-Gb')]) || [];
-    const notificationListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
+    // const notificationListLoaded = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleListLoaded);
     // Select Date for Notifications
     const [selectedDate, setSelectedDate] = useState(new Date());
     const selectNotificationDate = (newDate:Date|null) => {
