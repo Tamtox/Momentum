@@ -50,6 +50,10 @@
             }
         }
     }
+    .toolbar-archive-mode-select-wrapper{
+        width: 100%;
+        @include flex;
+    }
 }
 .toolbar-dark{
     @extend .toolbar;

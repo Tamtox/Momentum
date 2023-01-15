@@ -12,25 +12,7 @@ import React,{useEffect} from 'react';
 import {useLocation,useNavigate} from 'react-router-dom';
 import {IoCheckmarkCircleOutline,IoEllipseOutline} from 'react-icons/io5';
 import { Container,Typography,Card, Box} from '@mui/material';
-
-const filterList = (list:TodoInterface[],sortQuery:string|null,searchQuery:string|null) => {
-    if(sortQuery) {
-        if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime())};
-        if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime())};
-        if (sortQuery === 'statusPend') { list = list.filter((item)=>item.status === 'Pending') };
-        if (sortQuery === 'statusComp') { list = list.filter((item)=>item.status === 'Complete') };
-    }
-    if(searchQuery) {
-        list = list.filter((item) => {
-            if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
-                return item;
-            } else {
-                return false;
-            }
-        });
-    }
-    return list
-}
+import { sortByQueries } from '../../Misc/Helper-functions';
 
 const Todo:React.FC = () => {
     const todoHooks = useTodoHooks();
@@ -44,7 +26,7 @@ const Todo:React.FC = () => {
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')]; 
-    const filteredList = filterList([...todoList],sortQuery,searchQuery);
+    const filteredList = sortByQueries([...todoList],"todo",sortQuery,searchQuery);
     useEffect(() => {
         todoListLoaded || todoHooks.loadTodoData();
     }, [])

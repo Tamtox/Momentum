@@ -1,4 +1,4 @@
-import { HabitEntryInterface, HabitInterface, ScheduleInterface, TodoInterface, } from "../Misc/Interfaces";
+import { GoalInterface, HabitEntryInterface, HabitInterface, ScheduleInterface, TodoInterface } from "./Interfaces";
 
 
 // Get day start and end of selected day
@@ -10,7 +10,7 @@ const getDate = (clientDayStartTime:number,timezoneOffset:number) => {
     return {utcDayStartMidDay,utcNextDayMidDay,clientDayStart,clientNextDayStart};
 }
 
-// Get week start and end
+// Get week start and end of week
 const getWeekDates = (clientWeekStartTime:number,timezoneOffset:number) => {
     const utcWeekStartMidDay = new Date(clientWeekStartTime).setHours(12,0,0,0) + timezoneOffset * -60000;
     const utcNextWeekStartMidDay = (new Date(clientWeekStartTime).setHours(12,0,0,0) + timezoneOffset * -60000) + 86400000 * 7;
@@ -19,6 +19,7 @@ const getWeekDates = (clientWeekStartTime:number,timezoneOffset:number) => {
     return {utcWeekStartMidDay,utcNextWeekStartMidDay,clientWeekStart,clientNextWeekStart};
 } 
 
+// Create paired schedule item
 const createPairedScheduleItem = async (time:string|null,targetDate:string,parentTitle:string,parentType:string,parentId:string,alarmUsed:boolean,creationUTCOffset:number,scheduleId:string) => {
     const {utcDayStartMidDay} = getDate(new Date(targetDate).getTime(),creationUTCOffset);
     let scheduleItem:ScheduleInterface = {
@@ -162,4 +163,45 @@ const compareGoals = (newGoal:TodoInterface,oldGoal:TodoInterface):boolean => {
     return result
 }
 
-export {getWeekDates,getDate,createPairedScheduleItem,determineScheduleAction,createHabitEntries,generateHabitSchedule};
+// Sort list by queries
+
+
+const sortByQueries = (list:any[],listType:string,sortQuery:string|null,searchQuery:string|null) => {
+    let newList = [...list];
+    if(sortQuery) {
+        // Sort by creation date
+        if (sortQuery === 'dateAsc') { 
+            newList = newList.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime());
+        } else if (sortQuery === 'dateDesc') { 
+            newList = newList.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime());
+        }
+        if (listType === "goal" || listType === "todo") {
+            // Filter by status
+            if (sortQuery === 'statusPend') { 
+                newList = newList.filter((item)=>item.status === 'Pending'); 
+            } else if (sortQuery === 'statusComp') { 
+                newList = newList.filter((item)=>item.status === 'Complete'); 
+            }
+        } else if(listType === "habit") {
+            // Filter by habit entries presence
+            if (sortQuery === 'noEntries') { 
+                newList = newList.filter((item:HabitInterface)=>Object.values(item.entries).every(item => item === null));
+            } else if (sortQuery === 'hasEntries') { 
+                newList = newList.filter((item:HabitInterface)=>Object.values(item.entries).some(item => item !== null));
+            }
+        }
+    }
+    // Search by title or id
+    if(searchQuery) {
+        newList = newList.filter((item) => {
+            if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
+                return item;
+            } else {
+                return false;
+            }
+        });
+    }
+    return newList
+}
+
+export {getWeekDates,getDate,createPairedScheduleItem,determineScheduleAction,createHabitEntries,generateHabitSchedule,sortByQueries};

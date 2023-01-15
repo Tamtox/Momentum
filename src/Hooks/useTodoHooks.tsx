@@ -5,7 +5,7 @@ import axios from "axios";
 // Components
 import { todoActions,scheduleActions } from "../Store/Store";
 import type {TodoInterface} from '../Misc/Interfaces';
-import {createPairedScheduleItem,determineScheduleAction} from './Helper-functions';
+import {createPairedScheduleItem,determineScheduleAction} from '../Misc/Helper-functions';
 
 import { host } from "../Misc/variables";
 

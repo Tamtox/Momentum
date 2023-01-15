@@ -4,7 +4,7 @@ import {useDispatch} from 'react-redux';
 import axios from "axios";
 import { scheduleActions } from "../Store/Store";
 import type { HabitInterface, ScheduleInterface } from "../Misc/Interfaces";
-import {getDate,generateHabitSchedule} from './Helper-functions';
+import {getDate,generateHabitSchedule} from '../Misc/Helper-functions';
 
 import { host } from "../Misc/variables";
 

@@ -12,25 +12,7 @@ import Loading from '../Misc/Loading';
 import {RootState} from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
 import type {GoalInterface} from '../../Misc/Interfaces';
-
-const filterList = (list:GoalInterface[],sortQuery:string|null,searchQuery:string|null) => {
-    if(sortQuery) {
-        if (sortQuery === 'dateAsc') { list = list.sort((itemA,itemB)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime())};
-        if (sortQuery === 'dateDesc') { list = list.sort((itemA,itemB)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime())};
-        if (sortQuery === 'statusPend') { list = list.filter((item)=>item.status === 'Pending') };
-        if (sortQuery === 'statusComp') { list = list.filter((item)=>item.status === 'Complete') };
-    }
-    if(searchQuery) {
-        list = list.filter((item) => {
-            if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
-                return item;
-            } else {
-                return false;
-            }
-        });
-    }
-    return list
-}
+import { sortByQueries } from '../../Misc/Helper-functions';
 
 const Goals:React.FC = () => {
     const goalHooks = useGoalHooks();
@@ -44,7 +26,7 @@ const Goals:React.FC = () => {
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')];
-    const filteredList = filterList([...goalList],sortQuery,searchQuery);
+    const filteredList = sortByQueries([...goalList],"goal",sortQuery,searchQuery);
     useEffect(() => {
         goalListLoaded || goalHooks.loadGoalData();
     }, [])

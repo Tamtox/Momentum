@@ -11,8 +11,20 @@ import {MdOutlineAdd,MdSearch} from 'react-icons/md';
 import { InputLabel,Select,MenuItem,OutlinedInput,InputAdornment,FormControl,Button, Box, Typography} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+interface IToolbarProps {
+    mode:string,
+    archiveMode?:string,
+    addNewItem?:()=>{},
+    setArchiveMode?:(e:any)=>{},
+}
 
-const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
+const defaultToolbarProps:IToolbarProps = {
+    mode:"todo",
+    archiveMode:"todo"
+}
+
+
+const Toolbar:React.FC<IToolbarProps> = (props) => {
     const isDarkMode = useSelector<RootState,boolean|undefined>(state=>state.authSlice.darkMode);
     const isCompact = useMediaQuery('(max-width:769px)');
     // Sorting by query params
@@ -49,6 +61,7 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
             [name]:value
         }))
     }
+    // Sort component 
     let sortItems = (!toolbarInputs.searchMode || !isCompact) ? (
         <Box className={`toolbar-sort-wrapper`}>
             <FormControl className='toolbar-sort select' size='small' >
@@ -63,6 +76,7 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
             </FormControl>
         </Box>
     ) : null;
+    // Search components
     let searchItems = (
         <Box className={`toolbar-search-wrapper`}>
             <FormControl className={`toolbar-search`} sx={{width:"calc(min(100%, 33rem))"}} size='small' variant="outlined">
@@ -98,6 +112,7 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
             {toolbarInputs.searchMode ? <Button className={`toolbar-search-compact-return`} onClick={()=>{modeHandler("searchMode",false)}} variant='outlined'>Back</Button> : null}
         </Box>
     )
+    // Add new item component
     let addNewItem = (!toolbarInputs.searchMode || !isCompact) ? (
         <Box className={`toolbar-add-new-item-wrapper`}>
             <Button variant="outlined" onClick={props.addNewItem} className={`toolbar-add-new-item-button`} >
@@ -106,11 +121,24 @@ const Toolbar:React.FC<{mode:string,addNewItem:()=>{}}> = (props) => {
             </Button>
         </Box>
     ) : null;
+    // Archive mode selector component
+    let archiveModeSelector = (!toolbarInputs.searchMode || !isCompact) ? (
+        <Box className={`toolbar-archive-mode-select-wrapper`}>
+            <FormControl className='archive-mode-select select' size='small' >
+                <InputLabel id="archive-mode-label">Mode</InputLabel>
+                <Select labelId="archive-mode-label" value={props.archiveMode} onChange={props.setArchiveMode} size='small' label="Sort">
+                    <MenuItem value="todo">To Do</MenuItem>
+                    <MenuItem value="habit">Habits</MenuItem>
+                    <MenuItem value="goal">Goals</MenuItem>
+                </Select>
+            </FormControl>
+        </Box>
+    ) : null
     return (
         <Box className={`toolbar${isDarkMode?'-dark':''} scale-in`}>
             {sortItems}
             {isCompact ? searchItemsCompact : searchItems}
-            {addNewItem}
+            {props.mode === "archive" ? archiveModeSelector : addNewItem}
         </Box>
     )
 }

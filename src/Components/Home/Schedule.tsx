@@ -3,7 +3,7 @@ import './Schedule.scss';
 //Dependencies
 import React, { useEffect,useState} from 'react';
 import { useNavigate } from 'react-router';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type {RootState} from '../../Store/Store';
 import {TextField,Button,Typography,Card, Box} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';

@@ -5,7 +5,7 @@ import axios from "axios";
 // Components
 import { habitsActions,scheduleActions } from "../Store/Store";
 import type { HabitInterface, HabitEntryInterface,ScheduleInterface } from '../Misc/Interfaces';
-import {getWeekDates,createHabitEntries} from './Helper-functions';
+import {getWeekDates,createHabitEntries} from '../Misc/Helper-functions';
 
 import { host } from "../Misc/variables";
 

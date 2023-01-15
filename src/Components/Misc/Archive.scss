@@ -1,28 +1,6 @@
 @import '../../Misc/mixins';
 
 .archive{
-    .archive-controls{
-        @include widthAndHeight(calc(min(70rem, 100%)),10vh);
-        position: -webkit-sticky;
-        position: sticky;
-        top: 0;
-        z-index: 49;
-        @include grid(100%,1fr 2fr 1fr);
-        justify-items: center;
-        align-items: center;
-        margin: auto;
-        background: white;
-        .search-archive{
-            transform: translateY(2px);
-            .clear-input{
-                font-size: 26px;
-            }
-        }
-    }
-    .archive-controls-dark{
-        @extend .archive-controls;
-        background: #121212;
-    }
     .loading{
         height: 90%;
     }
@@ -57,19 +35,4 @@
         }
     }
 }
-
-@media only screen and (max-width: 769px) {
-    .archive{
-        .archive-controls{
-            @include widthAndHeight(calc(min(100%, 70rem)),15vh);
-            @include grid(1fr 1fr,1fr 1fr);
-            .search-archive{
-                grid-area: 1 / 1 / span 1 / span 2;
-                order: 0;
-            }
-            .sort-archive{
-                order: 1;
-            }
-        }
-    }
-}
+    

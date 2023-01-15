@@ -136,4 +136,3 @@ const scheduleSlice = createSlice({
 })
 
 export default scheduleSlice
-

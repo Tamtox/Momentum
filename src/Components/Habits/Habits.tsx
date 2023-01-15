@@ -1,7 +1,7 @@
 //Styles
 import './Habits.scss';
 //Dependencies
-import React,{ useState,useEffect } from 'react';
+import React,{ useEffect, useReducer } from 'react';
 import {useSelector} from 'react-redux';
 import {Container,TextField,Button,Typography,Card, Box} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -14,24 +14,12 @@ import Loading from '../Misc/Loading';
 import type {RootState} from '../../Store/Store';
 import useHabitHooks from '../../Hooks/useHabitHooks';
 import type {HabitInterface,HabitEntryInterface} from '../../Misc/Interfaces';
+import { sortByQueries } from '../../Misc/Helper-functions';
 
-const filterList = (list:HabitInterface[],sortQuery:string|null,searchQuery:string|null) => {
-    if(sortQuery) {
-        if (sortQuery === 'dateAsc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemA.creationDate).getTime() - new Date(itemB.creationDate).getTime()) };
-        if (sortQuery === 'dateDesc') { list = list.sort((itemA:HabitInterface,itemB:HabitInterface)=> new Date(itemB.creationDate).getTime() - new Date(itemA.creationDate).getTime()) };
-        if (sortQuery === 'noEntries') { list = list.filter((item:HabitInterface)=>Object.values(item.entries).every(item => item === null))};
-        if (sortQuery === 'hasEntries') { list = list.filter((item:HabitInterface)=>Object.values(item.entries).some(item => item !== null))};
-    }
-    if(searchQuery) {
-        list = list.filter((item:HabitInterface)=>{
-            if(item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item._id.includes(searchQuery.toLowerCase())) {
-                return item;
-            } else {
-                return false;
-            }
-        });
-    }
-    return list
+interface IHabitsWeekdatesState {
+    selectedDateWeekStart: Date,
+    selectedDateWeekEnd: Date,
+    isCurrentWeek: boolean
 }
 
 const Habits:React.FC = () => {
@@ -44,17 +32,17 @@ const Habits:React.FC = () => {
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     const habitListLoaded = useSelector<RootState,boolean>(state=>state.habitsSlice.habitListLoaded);
     // Sorting by query params
-    const location = useLocation();
-    const navigate = useNavigate();
+    const [navigate,location] = [useNavigate(),useLocation()];
     const queryParams = new URLSearchParams(location.search);
     const [sortQuery,searchQuery] = [queryParams.get('sort'),queryParams.get('search')] 
-    const filteredList = filterList([...habitList],sortQuery,searchQuery);
+    const filteredList = sortByQueries([...habitList],"habit",sortQuery,searchQuery);
+    // Week start and end 
     const currentWeekStart = new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6);
     const nextWeekStart = currentWeekStart + 86400000 * 7 - 1;
-    const datepickerDateWeekStart = datepickerDate.setHours(0,0,0,0) + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6);
-    const [selectedDate, setSelectedDate] = useState(new Date(new Date(datepickerDateWeekStart)));
-    const [selectedDateWeekEnd, setSelectedDateWeekEnd] = useState(new Date(new Date(datepickerDateWeekStart + 86400000 * 6)));
-    const [isCurrentWeek,setIsCurrentWeek] = useState(datepickerDateWeekStart === currentWeekStart ? true : false);
+    const selectedDateWeekStart = new Date(datepickerDate.setHours(0,0,0,0) + 86400000 * (datepickerDate.getDay()? 1 - datepickerDate.getDay() : -6));
+    const selectedDateWeekEnd = new Date(new Date(selectedDateWeekStart).setHours(23,59,59,999) + 86400000 * 6);
+    const isCurrentWeek = selectedDateWeekStart.getTime() === currentWeekStart ? true : false
+    const [state,setState] = useReducer((state:IHabitsWeekdatesState,action:Partial<IHabitsWeekdatesState>) => ({...state,...action}),{selectedDateWeekStart,selectedDateWeekEnd,isCurrentWeek});
     // Weekday list for labels 
     const weekdays = [1,2,3,4,5,6,0];
     const weekdaysList:{[key:string|number]:string} = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
@@ -62,44 +50,47 @@ const Habits:React.FC = () => {
     const loadSelectedDateData = async (newDate:Date|null) => {
         newDate = newDate || new Date ();
         // Load new week date only when week changes
-        const selectedWeekStartTime = selectedDate.setHours(0,0,0,0) + 86400000 * (selectedDate.getDay()? 1 - selectedDate.getDay() : -6);
+        const oldWeekStart = state.selectedDateWeekStart.getTime();
+        const oldWeekEnd = state.selectedDateWeekEnd.getTime();
         const newWeekStartTime = new Date(newDate).setHours(0,0,0,0) + 86400000 * (newDate.getDay()? 1 - newDate.getDay() : -6);
-        if(newDate.getTime() < selectedWeekStartTime || newDate.getTime() > new Date(selectedWeekStartTime).setHours(23,59,59,999)) {
+        if(newDate.getTime() < oldWeekStart || newWeekStartTime > oldWeekEnd) {
             habitHooks.loadHabitsData(new Date(newWeekStartTime))
         }
-        newWeekStartTime === currentWeekStart ? setIsCurrentWeek(true) : setIsCurrentWeek(false)
-        setSelectedDate(new Date(newWeekStartTime));
-        setSelectedDateWeekEnd(new Date(new Date(newWeekStartTime + 86400000 * 6)));
+        setState({
+            selectedDateWeekStart:new Date(newWeekStartTime),
+            selectedDateWeekEnd:new Date(new Date(newWeekStartTime).setHours(23,59,59,999)),
+            isCurrentWeek:newWeekStartTime === currentWeekStart ? true : false,
+        });
     }
     useEffect(() => {
-        if(!habitListLoaded) {
-            habitHooks.loadHabitsData(new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6)));
-        }
+        const currentWeekStart = new Date(new Date().setHours(0,0,0,0) + 86400000 * (new Date().getDay()? 1 - new Date().getDay() : -6));
+        habitListLoaded || habitHooks.loadHabitsData(currentWeekStart);
     }, [])
     return (
         <Container component="main" className={`habits ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`}>
             <Toolbar mode={'habit'} addNewItem={():any=>navigate(`${location.pathname}/new-habit`)}/>
             <Box className={`habit-week-range${isDarkMode?'-dark':''} scale-in`}>
-                    <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() - 86400000 * 7))}}>
-                        <CgArrowLeft className='habit-date-button-icon icon-interactive nav-icon' />
-                        <Typography className='habit-date-button-text'>Prev Week</Typography>
-                    </Button> 
-                    <DatePicker 
-                        inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                        value={selectedDate} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} maxDate={new Date(nextWeekStart)}
-                    />
-                    <DatePicker 
-                        inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
-                        renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
-                        value={selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
-                    />
-                    <Button disabled={isCurrentWeek ? true : false} variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(selectedDate.getTime() + 86400000 * 7))}}>
-                        <Typography className='habit-date-button-text'>Next Week</Typography>
-                        <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
-                    </Button> 
-                </Box>
-            {habitLoading ? <Loading height='80vh'/> : <Box className={`habit-list scale-in`}>
+                <Button variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(state.selectedDateWeekStart.getTime() - 86400000 * 7))}}>
+                    <CgArrowLeft className='habit-date-button-icon icon-interactive nav-icon' />
+                    <Typography className='habit-date-button-text'>Prev Week</Typography>
+                </Button> 
+                <DatePicker 
+                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
+                    renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
+                    value={state.selectedDateWeekStart} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} maxDate={new Date(nextWeekStart)}
+                />
+                <DatePicker 
+                    inputFormat="dd/MM/yyyy" className={`habit-date-picker date-picker`} desktopModeMediaQuery='@media (min-width:769px)'
+                    renderInput={(props) => <TextField size='small' className={`focus date-picker habit-date`}  {...props} />}
+                    value={state.selectedDateWeekEnd} onChange={(newDate:Date|null)=>{loadSelectedDateData(newDate);}} disabled
+                />
+                <Button disabled={state.isCurrentWeek ? true : false} variant='outlined' className={`button habit-date-button`} onClick={()=>{loadSelectedDateData(new Date(state.selectedDateWeekStart.getTime() + 86400000 * 7))}}>
+                    <Typography className='habit-date-button-text'>Next Week</Typography>
+                    <CgArrowRight className='habit-date-button-icon icon-interactive nav-icon' />
+                </Button> 
+            </Box>
+            {habitLoading ? <Loading height='80vh'/> : 
+            <Box className={`habit-list scale-in`}>
                 {filteredList.map((habitListItem:HabitInterface)=>{
                     return (
                         <Card variant='elevation' className={`habit-list-item`} key={habitListItem._id}>
@@ -107,7 +98,7 @@ const Habits:React.FC = () => {
                                 <Typography className={`habit-list-item-title-text`}>{habitListItem.title}</Typography>
                             </Box>
                             {Object.values(habitListItem.entries).every(entry=> entry === null) ? 
-                                <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDate),habitListItem)}} className={`populate-week`}>Poplulate with Entries</Button> 
+                                <Button onClick={()=>{habitHooks.populateHabit(new Date(selectedDateWeekStart),habitListItem)}} className={`populate-week`}>Poplulate with Entries</Button> 
                                 :<Box className={`habit-weekdays`}>
                                     {weekdays.map((weekday:number)=>{
                                         const habitEntry:HabitEntryInterface | null = habitListItem.entries[weekday];
