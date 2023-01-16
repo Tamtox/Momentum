@@ -33,7 +33,7 @@ const NavbarSidebar = React.forwardRef<HTMLDivElement,NavbarProps>((props,ref) =
     const sidebarVisible = useSelector<RootState,boolean>(state=>state.authSlice.sidebarVisible);
     // Close sidebar on link click if it is compact
     const closeSidebar = () => {
-        isCompact && authActions.toggleSidebarVisibility(false)
+        isCompact && dispatch(authActions.toggleSidebarVisibility(false));
     }
     // Sign In/Out Button Handler
     const signHandler = () => {

@@ -19,6 +19,7 @@ const Schedule:React.FC = () => {
     const scheduleLoading = useSelector<RootState,boolean>(state=>state.scheduleSlice.scheduleLoading);
     const scheduleDate = useSelector<RootState,string>(state=>state.scheduleSlice.scheduleDate);
     const scheduleList = useSelector<RootState,ScheduleInterface[]>(state=>state.scheduleSlice.scheduleList[new Date(scheduleDate).toLocaleDateString('en-Gb')]) || [];
+    const scheduleLoaded = useSelector<RootState,{[date:string]:boolean}>(state=>state.scheduleSlice.scheduleListLoaded) || {};
     const habitList = useSelector<RootState,HabitInterface[]>(state=>state.habitsSlice.habitList);
     // Select Date for Schedule
     const [selectedDate, setSelectedDate] = useState<Date>(new Date(scheduleDate));
@@ -26,6 +27,7 @@ const Schedule:React.FC = () => {
         newDate = newDate || new Date();
         setSelectedDate(newDate);
         scheduleHooks.loadScheduleItems(newDate,habitList);
+        scheduleLoaded[new Date(newDate).toLocaleDateString('en-Gb')] || scheduleHooks.loadScheduleItems(new Date(newDate),habitList);
     }
     // Navigate to schedule items parent 
     const navigateToParent = (parentType:string,parentId:string) => {
@@ -35,7 +37,7 @@ const Schedule:React.FC = () => {
         }
     }
     useEffect(() => {
-        scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
+        scheduleLoaded[new Date(scheduleDate).toLocaleDateString('en-Gb')] || scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
     }, [habitList])
     return(
         <Box className={`schedule`}>

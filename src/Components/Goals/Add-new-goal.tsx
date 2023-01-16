@@ -4,9 +4,10 @@ import './Add-new-goal.scss';
 import React,{useState,useRef, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography, Box } from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Box,InputAdornment } from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
+import {IoCloseCircleOutline} from 'react-icons/io5';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
@@ -109,7 +110,18 @@ const AddNewGoal:React.FC = () => {
                             inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                             value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate)}}
-                            componentsProps={{actionBar: { actions: ['clear'],},}}
+                            // endAdornment={
+                            //     <InputAdornment position="end">
+                            //         <Box className={`toolbar-clear-search-input-wrapper`}>
+                            //             <IoCloseCircleOutline  className={`icon-interactive opacity-transition toolbar-clear-search-input-icon`}/>
+                            //         </Box>
+                            //     </InputAdornment>
+                            // }
+                            componentsProps={{
+                                actionBar: {
+                                    actions: (variant) => (variant === 'desktop' ? ['clear'] : ['clear']),
+                                },
+                            }}
                         />
                     </Box>
                     {detailedGoal ? <Tooltip title="Delete Item">

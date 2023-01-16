@@ -33,7 +33,7 @@ const initialAuthState:AuthSchema = {
     authLoading:false,
     darkMode:initialDarkMode === undefined?false:initialDarkMode === "true"?true:false,
     sidebarFull:true,
-    sidebarVisible:true
+    sidebarVisible:false
 } 
 const authSlice = createSlice({
     name:'auth',
@@ -84,6 +84,7 @@ const authSlice = createSlice({
             state.sidebarFull = action.payload 
         },
         toggleSidebarVisibility(state,action) {
+            console.log(action.payload)
             state.sidebarVisible = action.payload
         }
     }

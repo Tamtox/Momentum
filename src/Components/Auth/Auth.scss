@@ -6,9 +6,11 @@
         @include widthAndHeight(calc(min(98%,30rem)),calc(min(98vh,35rem)));
         @include grid(10% 80% 10%,100%);
         align-items: center;
-        border-radius: 10px;
+        border-radius: 8px;
         padding: 10px 2% 10px 2%;
-        box-shadow: 0px 2px 5px grey;
+        backdrop-filter: blur(20px);
+        box-shadow: 0px 2px 12px rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.3);
         .auth-form{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%)));
             @include grid(4fr 1fr,100%);
@@ -42,5 +44,7 @@
     .auth-card-dark{
         @extend .auth-card;
         background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+        box-shadow: 0px 2px 12px rgba(255,255,255,0.3);
+        border: 1px solid rgba(255,255,255,0.3);;
     }
 }
