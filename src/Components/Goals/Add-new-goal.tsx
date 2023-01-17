@@ -4,10 +4,9 @@ import './Add-new-goal.scss';
 import React,{useState,useRef, useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import { useLocation,useNavigate } from 'react-router-dom';
-import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Tooltip,Typography,Box,InputAdornment } from '@mui/material';
+import { TextField,Button,Card,FormGroup,Switch,FormControlLabel,Typography,Box } from '@mui/material';
 import { DatePicker} from '@mui/x-date-pickers';
 import {BsTrash,BsArchive} from 'react-icons/bs';
-import {IoCloseCircleOutline} from 'react-icons/io5';
 // Components
 import { RootState } from '../../Store/Store';
 import useGoalHooks from '../../Hooks/userGoalHooks';
@@ -49,10 +48,9 @@ const AddNewGoal:React.FC = () => {
         }));
     }
     const goalDatePick = (newDate:Date | null) => {
-        const newDateFixed = new Date(newDate || new Date());
         setGoalInputs((prevState)=>({
             ...prevState,
-            selectedDate:newDateFixed
+            selectedDate:newDate
         }))
     }
     const goalArchiveDeleteHandler = (goal:GoalInterface,action:string) => {
@@ -69,7 +67,7 @@ const AddNewGoal:React.FC = () => {
         const newGoal:GoalInterface = {
             title:goalInputs.goalTitle,
             creationDate:detailedGoal?.creationDate || new Date().toISOString(),
-            targetDate:goalInputs.selectedDate ? new Date(goalInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedGoal?.targetDate || null),
+            targetDate:goalInputs.selectedDate ? new Date(goalInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : null,
             status:detailedGoal?.status || 'Pending',
             dateCompleted:detailedGoal?.dateCompleted || '',
             isArchived:detailedGoal?.isArchived || false,
@@ -95,40 +93,39 @@ const AddNewGoal:React.FC = () => {
     },[detailedGoal])
     return(
         <Box className={`add-new-goal-backdrop backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            {goalLoading ? <Loading height='80vh'/> : <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
-                {goalInputs.addNewGoalHeader.length > 0 ? <Box className={`add-new-goal-header`}>
-                    <Typography variant='h6' >{goalInputs.addNewGoalHeader}</Typography>
-                </Box> : null}
+            {goalLoading ? <Loading height='80vh'/> : 
+            <Card component="form" className={`add-new-goal-form scale-in`} onSubmit={updateGoal}>
                 <Box className={`add-new-goal-controls`}>
-                    {detailedGoal ? <Tooltip title="Archive Item">
-                        <Box className='archive-goal'>
-                            <BsArchive className={`icon-interactive archive-goal-icon`} onClick={()=>{goalArchiveDeleteHandler(detailedGoal,"archive")}}/>
-                        </Box>
-                    </Tooltip> : null}
+                    {detailedGoal ?
+                        <Box className='archive-goal-wrapper'>
+                            <Button className='archive-goal-button' variant='outlined' onClick={()=>{goalArchiveDeleteHandler(detailedGoal,"archive")}}>
+                                <BsArchive className={`icon-interactive archive-goal-icon`}/>
+                                <Typography className={`archive-goal-text`}>Archive</Typography>
+                            </Button>
+                        </Box> : null
+                    }
+                    {detailedGoal ?
+                        <Box className='delete-goal-wrapper'>
+                            <Button className='delete-goal-button' variant='outlined' onClick={()=>{goalArchiveDeleteHandler(detailedGoal,"delete")}}>
+                                <BsTrash className={`icon-interactive delete-goal-icon`}/>
+                                <Typography className={`delete-goal-text`}>Delete</Typography>
+                            </Button>
+                        </Box> : null
+                    }
+                </Box>
+                <Box className={`add-new-goal-dates`}>
                     <Box className='add-new-goal-datepicker-wrapper'>
                         <DatePicker 
+                            className={`focus add-new-goal-datepicker`} 
                             inputFormat="dd/MM/yyyy" label="Goal Target Date" desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' {...props} />}
                             value={goalInputs.selectedDate} onChange={(newDate:Date|null)=>{goalDatePick(newDate)}}
-                            // endAdornment={
-                            //     <InputAdornment position="end">
-                            //         <Box className={`toolbar-clear-search-input-wrapper`}>
-                            //             <IoCloseCircleOutline  className={`icon-interactive opacity-transition toolbar-clear-search-input-icon`}/>
-                            //         </Box>
-                            //     </InputAdornment>
-                            // }
+                            closeOnSelect={true}
                             componentsProps={{
-                                actionBar: {
-                                    actions: (variant) => (variant === 'desktop' ? ['clear'] : ['clear']),
-                                },
+                                actionBar: {actions: ['today','clear'],},
                             }}
                         />
                     </Box>
-                    {detailedGoal ? <Tooltip title="Delete Item">
-                        <Box className='delete-goal'>
-                            <BsTrash className={`icon-interactive delete-goal-icon`} onClick={()=>{goalArchiveDeleteHandler(detailedGoal,"delete")}}/>
-                        </Box>
-                    </Tooltip> : null}
                 </Box>
                 {goalInputs.selectedDate ? <Box className={`add-new-goal-alarm-switches`}>
                     <FormGroup>

@@ -37,7 +37,7 @@ const initialAuthState:AuthSchema = {
 } 
 const authSlice = createSlice({
     name:'auth',
-    initialState:initialAuthState,
+    initialState:initialAuthState,  
     reducers:{
         login(state,action) {
             state.token = action.payload.token;
@@ -84,7 +84,6 @@ const authSlice = createSlice({
             state.sidebarFull = action.payload 
         },
         toggleSidebarVisibility(state,action) {
-            console.log(action.payload)
             state.sidebarVisible = action.payload
         }
     }

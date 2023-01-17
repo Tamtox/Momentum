@@ -8,7 +8,7 @@ import Loading from '../Misc/Loading';
 //Dependencies
 import {useSelector} from 'react-redux';
 import React,{useState,useRef, useEffect} from 'react';
-import { TextField,Button,Card,Tooltip,FormControlLabel,FormGroup,Switch, Box} from '@mui/material';
+import { TextField,Button,Card,FormControlLabel,FormGroup,Switch,Box,Typography } from '@mui/material';
 import { DatePicker,TimePicker } from '@mui/x-date-pickers';
 import { BsTrash,BsArchive } from 'react-icons/bs';
 import { useLocation,useNavigate } from 'react-router-dom';
@@ -50,20 +50,24 @@ const AddNewTodo:React.FC = () => {
         }));
     }
     const datePick = (newDate: Date | null) => {
-        const newDateFixed = new Date(newDate || new Date())
         setTodoInputs((prevState)=>({
             ...prevState,
-            selectedDate:newDateFixed,
-            datePickerUsed:true
+            selectedDate:newDate,
         }));
     }
     const timePick = (newTime: Date | null) => {
-        const newTimeFixed = new Date(newTime || new Date())
         setTodoInputs((prevState)=>({
             ...prevState,
-            selectedTime:newTimeFixed,
-            timePickerUsed:true
+            selectedTime:newTime,
         }));
+    }
+    const todoArchiveDeleteHandler = (todo:TodoInterface,action:string) => {
+        if(action === "archive") {
+            todoHooks.toggleTodoArchiveStatus(todo);
+        } else {
+            todoHooks.deleteToDo(todo);
+        }
+        navigate("/todo");
     }
     // Submit or update Todo 
     const updateTodo = async (event:React.FormEvent) => {
@@ -72,8 +76,8 @@ const AddNewTodo:React.FC = () => {
             title:todoInputs.todoTitle,
             description:todoInputs.todoDescription,
             creationDate:detailedTodo?.creationDate || new Date().toISOString(),
-            targetDate:todoInputs.selectedDate ? todoInputs.selectedDate.toISOString() : (detailedTodo?.targetDate || null),
-            targetTime:todoInputs.selectedTime ? new Date(new Date(todoInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedTodo?.targetTime || null),
+            targetDate:todoInputs.selectedDate ? todoInputs.selectedDate.toISOString() : null,
+            targetTime:todoInputs.selectedDate ? (todoInputs.selectedTime ? new Date(new Date(todoInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : null) : null,
             status:detailedTodo?.status || 'Pending',
             dateCompleted:detailedTodo?.dateCompleted || null,
             isArchived:detailedTodo?.isArchived || false,
@@ -100,32 +104,53 @@ const AddNewTodo:React.FC = () => {
     },[detailedTodo])
     return(
         <Box className={`backdrop opacity-transition`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            {todoLoading ? <Loading height='80vh'/>:<Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
+            {todoLoading ? <Loading height='80vh'/>:
+            <Card component="form" className={`add-new-todo-form scale-in`} onSubmit={updateTodo}>
                 <Box className={`add-new-todo-controls`}>
-                    {detailedTodo ? <Tooltip title="Archive Item">
-                        <Box className='archive-todo'>
-                            <BsArchive className={`icon-interactive archive-todo-icon`} onClick={()=>{todoHooks.toggleTodoArchiveStatus(detailedTodo!);navigate("/todo")}}/>
-                        </Box>
-                    </Tooltip> : null}
+                    {detailedTodo ?
+                        <Box className='archive-todo-wrapper'>
+                            <Button className='archive-todo-button' variant='outlined' onClick={()=>{todoArchiveDeleteHandler(detailedTodo,"archive")}}>
+                                <BsArchive className={`icon-interactive archive-todo-icon`}/>
+                                <Typography className={`archive-todo-text`}>Archive</Typography>
+                            </Button>
+                        </Box> : null
+                    }
+                    {detailedTodo ?
+                        <Box className='delete-todo-wrapper'>
+                            <Button className='delete-todo-button' variant='outlined' onClick={()=>{todoArchiveDeleteHandler(detailedTodo,"delete")}}>
+                                <BsTrash className={`icon-interactive delete-todo-icon`}/>
+                                <Typography className={`delete-todo-text`}>Delete</Typography>
+                            </Button>
+                        </Box> : null
+                    }
+                </Box>
+                <Box className={`add-new-todo-dates`}>
                     <Box className='add-new-todo-datepicker-wrapper'>
                         <DatePicker 
+                            className={`focus add-new-todo-datepicker`}
                             inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)' 
-                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-date`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' {...props} />}
                             value={todoInputs.selectedDate} onChange={(newDate:Date|null)=>{datePick(newDate);}}
+                            closeOnSelect={true}
+                            componentsProps={{
+                                actionBar: {actions: ['today','clear'],},
+                            }}
                         />
                     </Box>
-                    {todoInputs.selectedDate ? <Box className='add-new-todo-timepicker-wrapper'>
-                        <TimePicker 
-                            inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-todo-time`}  {...props} />}
-                            value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
-                        />
-                    </Box> : null}
-                    {detailedTodo ? <Tooltip title="Delete Item">
-                        <Box className='delete-todo'>
-                            <BsTrash className={`icon-interactive delete-todo-icon`} onClick={()=>{todoHooks.deleteToDo(detailedTodo);navigate("/todo")}}/>
-                        </Box>
-                    </Tooltip> : null}
+                    {todoInputs.selectedDate ? 
+                        <Box className='add-new-todo-timepicker-wrapper'>
+                            <TimePicker 
+                                className={`focus add-new-todo-timepicker`}
+                                inputFormat="HH:mm" ampm={false} ampmInClock={false} label="Target Time" desktopModeMediaQuery='@media (min-width:769px)'
+                                renderInput={(props) => <TextField size='small' {...props} />}
+                                value={todoInputs.selectedTime} onChange={(newTime:Date|null)=>{timePick(newTime);}}
+                                closeOnSelect={true}
+                                componentsProps={{
+                                    actionBar: {actions: ['clear'],},
+                                }}
+                            />
+                        </Box> : null
+                    }
                 </Box>
                 {(todoInputs.selectedDate && todoInputs.selectedTime) ? <FormGroup className='add-new-todo-alarm-switch'>
                     <FormControlLabel control={<Switch checked={todoInputs.alarmUsed} onChange={alarmSwitchHandler} />} label="Set todo alarm" />

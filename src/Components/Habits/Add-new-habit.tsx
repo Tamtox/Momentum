@@ -51,17 +51,15 @@ const AddNewHabit:React.FC = () => {
         }));
     }
     const habitTimePick = (newTime:Date | null) => {
-        const newTimeFixed = new Date(newTime || new Date());
         setHabitInputs((prevState)=>({
             ...prevState,
-            selectedTime:newTimeFixed
+            selectedTime:newTime
         }))
     }
     const habitDatePick = (newDate:Date | null) => {
-        const newDateFixed = new Date(newDate || new Date());
         setHabitInputs((prevState)=>({
             ...prevState,
-            selectedDate:newDateFixed
+            selectedDate:newDate
         }))
     }
     const habitArchiveDeleteHandler = (habit:HabitInterface,action:string) => {
@@ -82,12 +80,12 @@ const AddNewHabit:React.FC = () => {
         let activeDays = Object.values(weekdays).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:weekdays;
         const newHabit:HabitInterface = {
             title: habitInputs.habitTitle ,
-            time: habitInputs.selectedTime ? new Date(new Date(habitInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : (detailedHabit?.time || null),
+            time: habitInputs.selectedTime ? new Date(new Date(habitInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : null,
             creationDate:detailedHabit?.creationDate || new Date().toISOString(),
             isArchived:detailedHabit?.isArchived || false,
             weekdays:activeDays,
             entries: detailedHabit?.entries || {1:null,2:null,3:null,4:null,5:null,6:null,0:null},
-            targetDate:habitInputs.selectedDate ? new Date(habitInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : (detailedHabit?.targetDate || null) ,
+            targetDate:habitInputs.selectedDate ? new Date(habitInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : null ,
             creationUTCOffset: habitInputs.habitCreationUTCOffset,
             alarmUsed:habitInputs.habitAlarmUsed,
             _id:detailedHabit?._id || ''
@@ -110,36 +108,49 @@ const AddNewHabit:React.FC = () => {
     },[detailedHabit])
     return (
         <Box className={`opacity-transition add-new-habit-backdrop backdrop`} ref={backdropRef} onClick={(event)=>backdropClickHandler(event)}>
-            {habitLoading ? <Loading height='80vh'/>:<Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
-                {habitInputs.addNewHabitHeader.length > 0 ? <Box className={`add-new-habit-header`}>
-                    <Typography variant='h6' >{habitInputs.addNewHabitHeader}</Typography>
-                </Box> : null}
+            {habitLoading ? <Loading height='80vh'/>:
+            <Card component="form" onSubmit={updateHabit} className={`add-new-habit-form scale-in`}>
                 <Box className={`add-new-habit-controls`}>
-                    {detailedHabit ? <Tooltip title="Archive Item">
-                        <Box className='archive-habit'>
-                            <BsArchive className={`icon-interactive archive-habit-icon`} onClick={()=>{habitArchiveDeleteHandler(detailedHabit,"archive")}}/>
-                        </Box>
-                    </Tooltip> : null}
+                    {detailedHabit ?
+                        <Box className='archive-habit-wrapper'>
+                            <Button className='archive-habit-button' variant='outlined' onClick={()=>{habitArchiveDeleteHandler(detailedHabit,"archive")}}>
+                                <BsArchive className={`icon-interactive archive-habit-icon`}/>
+                                <Typography className={`archive-habit-text`}>Archive</Typography>
+                            </Button>
+                        </Box> : null
+                    }
+                    {detailedHabit ?
+                        <Box className='delete-habit-wrapper'>
+                            <Button className='delete-habit-button' variant='outlined' onClick={()=>{habitArchiveDeleteHandler(detailedHabit,"delete")}}>
+                                <BsTrash className={`icon-interactive delete-habit-icon`}/>
+                                <Typography className={`delete-habit-text`}>Delete</Typography>
+                            </Button>
+                        </Box> : null
+                    }
+                </Box>
+                <Box className={`add-new-habit-dates`}>
                     <Box className='add-new-habit-datepicker-wrapper'>
                         <DatePicker 
+                            className={`focus add-new-habit-datepicker`}
                             inputFormat="dd/MM/yyyy" label="Target Date" desktopModeMediaQuery='@media (min-width:769px)'
                             renderInput={(props) => <TextField size='small' className={`focus date-picker`}  {...props} />}
                             value={habitInputs.selectedDate} onChange={(newDate:Date|null)=>{habitDatePick(newDate)}}
-                            componentsProps={{actionBar: { actions: ['clear'],},}}
+                            componentsProps={{
+                                actionBar: {actions: ['today','clear'],},
+                            }}
                         />
                     </Box>
                     <Box className='add-new-habit-timepicker-wrapper'>
                         <TimePicker 
+                            className={`focus add-new-habit-timepicker`}
                             inputFormat="HH:mm" label="Habit Time" ampm={false} ampmInClock={false} desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props) => <TextField size='small' className={`focus date-picker add-new-goal-date`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' {...props} />}
                             value={habitInputs.selectedTime} onChange={(newTime:Date|null)=>{habitTimePick(newTime);}}
+                            componentsProps={{
+                                actionBar: {actions: ['clear'],},
+                            }}
                         />
                     </Box>
-                    {detailedHabit ? <Tooltip title="Delete Item">
-                        <Box className='delete-habit'>
-                            <BsTrash className={`icon-interactive delete-habit-icon`} onClick={()=>{habitArchiveDeleteHandler(detailedHabit,"delete")}}/>
-                        </Box>
-                    </Tooltip> : null}
                 </Box>
                 {habitInputs.selectedTime ? <Box className={`add-new-habit-alarm-switches`}>
                     <FormGroup>

@@ -9,18 +9,55 @@
     gap: 1.5rem;
     .add-new-habit-controls{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        @include flex(space-around,center);
-        gap: 1rem;  
-        .archive-habit{
-            .archive-habit-icon{
-                font-size: 2rem;
+        @include flex(space-between,center);
+        gap: 1rem;      
+        .archive-habit-wrapper{
+            justify-self: start;
+            @include flex(center,center);
+            .archive-habit-button{
+                @include flex(center,center);
+                gap: 1rem;
                 color: orange;
+                .archive-habit-icon{
+                    font-size: 23px;
+                }
+                .archive-habit-text{
+                    transform: translateY(1px)
+                }
+            }
+        }   
+        .delete-habit-wrapper{
+            justify-self: start;
+            @include flex(center,center);
+            .delete-habit-button{
+                @include flex(center,center);
+                gap: 1rem;
+                color: red;
+                .delete-habit-icon{
+                    font-size: 23px;
+                }
+                .delete-habit-text{
+                    transform: translateY(1px)
+                }
+            }
+        }   
+    }
+    .add-new-habit-dates{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+        @include flex;
+        gap: 1rem;
+        .add-new-habit-datepicker-wrapper{
+            @include flex;
+            gap: 0.5rem;
+            .add-new-habit-datepicker{
+                transform: translateY(-2px);
             }
         }
-        .delete-habit{
-            .delete-habit-icon{
-                font-size: 2rem;
-                color: red;
+        .add-new-habit-timepicker-wrapper{
+            @include flex;
+            gap: 0.5rem;
+            .add-new-habit-timepicker{
+                transform: translateY(-2px);
             }
         }
     }
@@ -43,9 +80,6 @@
                 margin: 0;
             }
         }
-    }
-    .add-new-habit-paired-goal{
-        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
     }
     .add-new-habit-buttons{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 

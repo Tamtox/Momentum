@@ -9,20 +9,55 @@
     gap: 1.5rem;
     .add-new-todo-controls{
         @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
-        @include flex(space-around,center);
-        gap: 1rem;
-        .archive-todo{
+        @include flex(space-between,center);
+        gap: 1rem;      
+        .archive-todo-wrapper{
+            justify-self: start;
             @include flex(center,center);
-            .archive-todo-icon{
-                font-size: 2rem;
+            .archive-todo-button{
+                @include flex(center,center);
+                gap: 1rem;
                 color: orange;
+                .archive-todo-icon{
+                    font-size: 23px;
+                }
+                .archive-todo-text{
+                    transform: translateY(1px)
+                }
+            }
+        }   
+        .delete-todo-wrapper{
+            justify-self: start;
+            @include flex(center,center);
+            .delete-todo-button{
+                @include flex(center,center);
+                gap: 1rem;
+                color: red;
+                .delete-todo-icon{
+                    font-size: 23px;
+                }
+                .delete-todo-text{
+                    transform: translateY(1px)
+                }
+            }
+        }   
+    }
+    .add-new-todo-dates{
+        @include widthAndHeight(calc(min(100%,100%)),calc(min(100%, 100%))); 
+        @include flex;
+        gap: 1rem;
+        .add-new-todo-datepicker-wrapper{
+            @include flex;
+            gap: 0.5rem;
+            .add-new-todo-datepicker{
+                transform: translateY(-2px);
             }
         }
-        .delete-todo{
-            @include flex(center,center);
-            .delete-todo-icon{
-                font-size: 2rem;
-                color: red;
+        .add-new-todo-timepicker-wrapper{
+            @include flex;
+            gap: 0.5rem;
+            .add-new-todo-timepicker{
+                transform: translateY(-2px);
             }
         }
     }
