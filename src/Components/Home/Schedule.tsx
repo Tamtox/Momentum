@@ -27,7 +27,6 @@ const Schedule:React.FC = () => {
         newDate = newDate || new Date();
         setSelectedDate(newDate);
         scheduleHooks.loadScheduleItems(newDate,habitList);
-        scheduleLoaded[new Date(newDate).toLocaleDateString('en-Gb')] || scheduleHooks.loadScheduleItems(new Date(newDate),habitList);
     }
     // Navigate to schedule items parent 
     const navigateToParent = (parentType:string,parentId:string) => {
@@ -37,7 +36,8 @@ const Schedule:React.FC = () => {
         }
     }
     useEffect(() => {
-        scheduleLoaded[new Date(scheduleDate).toLocaleDateString('en-Gb')] || scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
+        //scheduleLoaded[new Date(scheduleDate).toLocaleDateString('en-Gb')] || scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
+        scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);
     }, [habitList])
     return(
         <Box className={`schedule`}>

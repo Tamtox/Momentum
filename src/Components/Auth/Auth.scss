@@ -2,6 +2,7 @@
 
 .auth{
     @include flex;
+    display: flex !important;
     .auth-card{
         @include widthAndHeight(calc(min(98%,30rem)),calc(min(98vh,35rem)));
         @include grid(10% 80% 10%,100%);

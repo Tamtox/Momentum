@@ -35,6 +35,4 @@
 
     Validation
 
-    SMTP verification 
-
     Translations

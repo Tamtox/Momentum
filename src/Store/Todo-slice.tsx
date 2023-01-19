@@ -1,5 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { keyboard } from '@testing-library/user-event/dist/types/setup/directApi';
 import type {TodoInterface} from '../Misc/Interfaces';
 
 interface TodoSchema {

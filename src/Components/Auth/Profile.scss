@@ -1,7 +1,8 @@
 @import '../../Misc/mixins';
 
 .profile{
-    @include flex;
+    @include flex ;
+    display: flex !important;
     .profile-card{
         @include widthAndHeight(calc(min(100%, 40rem)),fit-content);
         @include flex;

@@ -55,13 +55,6 @@ const useAuthHooks = () => {
         } finally {
             dispatch(authActions.setLoading(false));
         }
-        if(isLogin && newToken) {
-            todoHooks.loadTodoData(newToken);
-            goalHooks.loadGoalData(newToken);
-            habitHooks.loadHabitsData(new Date(),newToken);
-            journalHooks.loadJournalData(new Date(),newToken);
-            getUserData(newToken);
-        }
         return message
     }
     // Logout

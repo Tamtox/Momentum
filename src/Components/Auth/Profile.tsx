@@ -126,7 +126,7 @@ const Profile:React.FC = () => {
         </form>
     ) : null
     return (
-        <Container className={`profile ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
+        <Container component="main" className={`profile ${sidebarVisible?`page-${sidebarFull?'compact':'full'}`:'page'}`} >
             {loading ? <Loading height='100%'/> : (passwordChangeForm || verificationForm || sendVerificationLetterForm || deleteAccountForm ||  
             <Card className={`profile-card scale-in`}>
                 <Typography className={`username profile-card-item`} component="h5" variant="h5">{`${userData.name}`}</Typography>

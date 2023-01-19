@@ -9,6 +9,7 @@
         .journal-date{
             @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,100%))); 
             @include flex(space-around,center);
+            gap: 1rem;
             .journal-datepicker-wrapper{
                 transform: translateY(-2px);
             }

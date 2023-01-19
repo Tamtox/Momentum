@@ -102,7 +102,7 @@ const App:React.FC = () => {
     } else { 
         dispatch(authActions.logout())
     }
-  },[])
+  },[token])
   return (
     <ThemeProvider theme={theme}>
       <Box className={`app`} sx={{color:'text.primary',display:'flex',justifyContent:'center',alignItems:'center'}}>
@@ -110,27 +110,18 @@ const App:React.FC = () => {
         <Navbar />
         <Suspense fallback={<Loading height='100vh'/>}>
             <Routes>
-              <Route path='/' element={isLoggedIn ? <Home/> : <Auth/>} />
-              <Route path='/auth' element={isLoggedIn ? <Todo/> : <Auth/>} />
-              <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
-              <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
-              <Route path='/todo' element={isLoggedIn ? <Todo/> : <Auth />} />
-              <Route path='/todo/:id' element={isLoggedIn ? <TodoItem/> : <Auth />} />
-              <Route path='/journal' element={isLoggedIn ? <Journal/> : <Auth/>} />
-              <Route path='/habits' element={isLoggedIn ? <Habits/> : <Auth/>} />
-              <Route path='/habits/:id' element={isLoggedIn ? <HabitItem/> : <Auth />} />
-              <Route path='/goals' element={isLoggedIn ? <Goals/> : <Auth/>} />
-              <Route path='/goals/:id' element={isLoggedIn ? <GoalItem/> : <Auth />} />
-              <Route path='/archive' element={isLoggedIn ? <Archive/> : <Auth/>} />
-              <Route path='*' element={isLoggedIn ? <NotFound/> : <Auth/>} />
-              {/* <Route path='/' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
-              <Route path='/auth' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth/>} />
+              <Route path='/' element={isLoggedIn ? (verificationStatus === "Complete" ? <Home/> : <Profile/>) : <Auth/>} />
+              <Route path='/auth' element={isLoggedIn ? (verificationStatus === "Complete" ? <Home/> : <Profile/>) : <Auth/>} />
               <Route path='/profile' element={isLoggedIn ? <Profile/> : <Auth/>} />
               <Route path='/todo' element={isLoggedIn ? (verificationStatus === "Complete" ? <Todo/> : <Profile/>) : <Auth />} />
+              <Route path='/todo/:id' element={isLoggedIn ? (verificationStatus === "Complete" ? <TodoItem/> : <Profile/>) : <Auth />} />
               <Route path='/journal' element={isLoggedIn ? (verificationStatus === "Complete" ? <Journal/> : <Profile/>) : <Auth/>} />
               <Route path='/habits' element={isLoggedIn ? (verificationStatus === "Complete" ? <Habits/> : <Profile/>) : <Auth/>} />
+              <Route path='/habits/:id' element={isLoggedIn ? (verificationStatus === "Complete" ? <HabitItem/> : <Profile/>) : <Auth />} />
               <Route path='/goals' element={isLoggedIn ? (verificationStatus === "Complete" ? <Goals/> : <Profile/>) : <Auth/>} />
-              <Route path='/archive' element={isLoggedIn ? (verificationStatus === "Complete" ? <Archive/> : <Profile/>) : <Auth/>} /> */}
+              <Route path='/goals/:id' element={isLoggedIn ? (verificationStatus === "Complete" ? <GoalItem/> : <Profile/>) : <Auth />} />
+              <Route path='/archive' element={isLoggedIn ? (verificationStatus === "Complete" ? <Archive/> : <Profile/>) : <Auth/>} />
+              <Route path='*' element={isLoggedIn ? <NotFound/> : <Auth/>} />
             </Routes>
         </Suspense>
       </Box>

@@ -69,8 +69,9 @@ const Journal:React.FC = () => {
                     </Button>
                     <Box className='journal-datepicker-wrapper'>
                         <DatePicker 
+                            className={`focus journal-datepicker`}
                             inputFormat="dd/MM/yyyy" desktopModeMediaQuery='@media (min-width:769px)'
-                            renderInput={(props) => <TextField size='small' className={`focus date-picker journal-date-picker`}  {...props} />}
+                            renderInput={(props) => <TextField size='small' {...props} />}
                             value={journalInputs.date} onChange={(newDate:Date|null)=>{selectJournalEntryByDate(newDate)}}
                         />
                     </Box>
