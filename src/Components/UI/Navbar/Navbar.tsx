@@ -57,7 +57,7 @@ const Navbar:React.FC = () => {
                 <Box className='navbar-main'>
                     <Box className={`toggle-sidebar-icon-container${isDarkMode ? '-dark' : ''}`} ref={sidebarIconRef} >
                         <FaBars className={`toggle-sidebar-icon${isDarkMode ? '-dark' : ''}`} />
-                        <Typography className={`toggle-sidebar-text${isDarkMode ? '-dark' : ''} ${!isCompact && !sidebarFull &&'display-none'}`}>
+                        <Typography className={`toggle-sidebar-text${isDarkMode ? '-dark' : ''} ${(!isCompact && !sidebarFull) &&'display-none'}`}>
                             Momentum
                         </Typography>
                     </Box>

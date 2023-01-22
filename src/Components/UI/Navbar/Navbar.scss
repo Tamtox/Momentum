@@ -16,7 +16,8 @@
         @include flex(flex-start,center);
         padding: 0.2rem 0.5rem 0.2rem 0.5rem;
         .toggle-sidebar-icon-container{
-            @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,2.5rem)));
+            // @include widthAndHeight(calc(min(100%, 100%)),calc(min(100%,2.5rem)));
+            height: calc(min(100%,2.5rem));
             @include flex(flex-start,center);
             white-space: nowrap;
             position: relative;
@@ -26,6 +27,8 @@
             border-radius: 20px;
             cursor: pointer;
             .toggle-sidebar-icon{
+                position: relative;
+                display: block;
                 color: white;
                 font-size: 23px;
             }
