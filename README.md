@@ -17,6 +17,9 @@
 
 
 ## Planned Features : 
+
+    Schedule slice for whole month
+
     Calendar for schedule 
 
     Notifications and Alarms 

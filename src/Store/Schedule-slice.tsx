@@ -116,16 +116,16 @@ const scheduleSlice = createSlice({
             const {month,monthLoaded} = generateMonth(date);
             state.scheduleList = month;
             state.scheduleListLoaded = monthLoaded;
-            // Sort schedule List
+            // Sort schedule list by time
             const scheduleList:ScheduleInterface[] = action.payload.scheduleList;
             const scheduleTimeList:ScheduleInterface[] = [];
             const scheduleNoTimeList:ScheduleInterface[] = [];
             scheduleList.forEach((scheduleItem:ScheduleInterface)=> {
                 scheduleItem.time ? scheduleTimeList.push(scheduleItem) : scheduleNoTimeList.push(scheduleItem);
             })
-            const sortedScheduleTimeList:ScheduleInterface[] = sortScheduleList(scheduleTimeList);
+            const sortedScheduleTimeList:ScheduleInterface[] = sortScheduleList(scheduleTimeList).concat(scheduleNoTimeList);
             // Set sorted schedule list
-            state.scheduleList[date.toLocaleDateString('en-Gb')] = sortedScheduleTimeList.concat(scheduleNoTimeList);
+            state.scheduleList[date.toLocaleDateString('en-Gb')] = sortedScheduleTimeList;
             state.scheduleListLoaded[date.toLocaleDateString('en-Gb')] = true;
             state.scheduleDate = action.payload.date
         },
