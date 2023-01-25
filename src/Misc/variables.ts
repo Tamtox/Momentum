@@ -1,4 +1,4 @@
 
-const host = `http://localhost:3001`;
+const host = `https://momentum-app.fly.dev`;
 
 export { host };
