@@ -73,17 +73,16 @@ const AddNewHabit:React.FC = () => {
     // Set Active weekdays
     const weekdaysArr = [1,2,3,4,5,6,0];
     const weekdaysLabels:{[key:number]:string} = {1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',0:'Sun'};
-    const [weekdays,setWeekdays] = useState<{[key:number]:boolean}>(detailedHabit?.weekdays || {1:false,2:false,3:false,4:false,5:false,6:false,0:false});
+    const [weekdays,setWeekdays] = useState<{[key:number]:boolean}>(detailedHabit?.weekdays || {1:true,2:true,3:true,4:true,5:true,6:true,0:true});
     // Update or add habit
     const updateHabit = async (event:React.FormEvent) => {
         event.preventDefault();
-        let activeDays = Object.values(weekdays).every(item=>item===false)?{1:true,2:true,3:true,4:true,5:true,6:true,0:true}:weekdays;
         const newHabit:HabitInterface = {
             title: habitInputs.habitTitle ,
             time: habitInputs.selectedTime ? new Date(new Date(habitInputs.selectedTime).setSeconds(0)).toLocaleTimeString("en-GB") : null,
             creationDate:detailedHabit?.creationDate || new Date().toISOString(),
             isArchived:detailedHabit?.isArchived || false,
-            weekdays:activeDays,
+            weekdays:weekdays,
             entries: detailedHabit?.entries || {1:null,2:null,3:null,4:null,5:null,6:null,0:null},
             targetDate:habitInputs.selectedDate ? new Date(habitInputs.selectedDate.setHours(12 + new Date().getTimezoneOffset()/-60 ,0,0,0)).toISOString() : null ,
             creationUTCOffset: habitInputs.habitCreationUTCOffset,

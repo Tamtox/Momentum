@@ -30,10 +30,7 @@ const Schedule:React.FC = () => {
     }
     // Navigate to schedule items parent 
     const navigateToParent = (parentType:string,parentId:string) => {
-        if(parentType === 'habit') {
-        } else {
-            navigate(`/${parentType}${parentType === 'todo' ? '' : 's'}/${parentId}`);
-        }
+        navigate(`/${parentType}${parentType === 'todo' ? '' : 's'}/${parentId}`);
     }
     useEffect(() => {
         //scheduleLoaded[new Date(scheduleDate).toLocaleDateString('en-Gb')] || scheduleHooks.loadScheduleItems(new Date(scheduleDate),habitList);

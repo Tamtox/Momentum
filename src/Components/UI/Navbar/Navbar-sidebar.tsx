@@ -2,13 +2,13 @@
 import './Navbar-sidebar.scss';
 //Dependencies
 import React, { useEffect} from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { useSelector,useDispatch } from 'react-redux';
 import type {RootState} from '../../../Store/Store';
 import {Box, Typography} from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {FaSun,FaMoon} from 'react-icons/fa';
+import {FaSun,FaMoon,FaGithub} from 'react-icons/fa';
 import {CgArrowRightO,CgProfile,CgHomeAlt} from 'react-icons/cg';
 import {BsFillJournalBookmarkFill,BsCalendar2Check,BsArchive} from 'react-icons/bs';
 import {MdSchedule} from 'react-icons/md';
@@ -87,9 +87,13 @@ const NavbarSidebar = React.forwardRef<HTMLDivElement,NavbarProps>((props,ref) =
                     <RiLogoutBoxRLine className={`nav-icon sign-icon${isDarkMode?'-dark':''} icon`}/>
                     <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Log Out</Typography>
                 </Box>
+                <a className={`github-link nav-element${isDarkMode?'-dark':''}`} href="https://github.com/Tamtox" target={"_blank"}>
+                    <FaGithub className={`nav-icon sign-icon${isDarkMode?'-dark':''} icon`}/>
+                    <Typography className={`nav-text ${!sidebarFull&&'display-none'}`}>Github</Typography>
+                </a>
             </Box>
         </Box>
-    )
+    )   
 });
 
 export default NavbarSidebar

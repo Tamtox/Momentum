@@ -6,7 +6,7 @@
     left: 0;
     top: 7vh;
     display: grid;
-    grid-template: 78% 20% / 100% ;
+    grid-template: 74% 24% / 100% ;
     color: white;
     gap: 0.3rem;
     overflow-x: hidden;
@@ -55,6 +55,9 @@
         text-decoration: none;
         color: white;
         font-size: 16px;
+    }
+    .github-link{
+        color: white
     }
     .nav-link-active{
         @extend .nav-link;
